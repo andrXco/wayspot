@@ -1,2 +1,2 @@
-# wayspot
+# Wayspot
 Proyecto Computación Movíl
