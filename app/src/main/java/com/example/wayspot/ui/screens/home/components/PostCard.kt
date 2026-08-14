@@ -43,7 +43,7 @@ fun PostCard(
             ) {
                 Text(
                     text = post.categoria,
-                    color = Color.Blue,
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold
                 )
