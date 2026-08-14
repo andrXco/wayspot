@@ -1,6 +1,7 @@
 package com.example.wayspot.ui.preview
 
 import com.example.wayspot.model.Post
+import com.example.wayspot.model.Review
 
 object PreviewData {
     val samplePost1 = Post(
@@ -24,4 +25,11 @@ object PreviewData {
     )
 
     val listPosts = listOf(samplePost1, samplePost2)
+
+    val sampleReview = Review(
+        usuario = "@viajero99",
+        comentario = "Increíble lugar, volvería mil veces.",
+        rating = 5,
+        fecha = "12/08/2026"
+    )
 }
