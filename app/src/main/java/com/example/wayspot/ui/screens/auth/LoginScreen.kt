@@ -1,4 +1,4 @@
-package com.example.wayspot.ui
+package com.example.wayspot.ui.screens.auth
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -12,11 +12,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
+import com.example.wayspot.ui.components.LogoApp
+import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
-fun SignUpScreen(onSignUpClick: () -> Unit, onBackToLoginClick: () -> Unit, modifier: Modifier = Modifier) {
-    var nombre by remember { mutableStateOf("") }
-    var correo by remember { mutableStateOf("") }
+fun LoginScreen(
+    onLoginClick: () -> Unit,
+    onSignUpClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var usuario by remember { mutableStateOf("") }
     var contrasena by remember { mutableStateOf("") }
 
     Column(
@@ -29,7 +34,7 @@ fun SignUpScreen(onSignUpClick: () -> Unit, onBackToLoginClick: () -> Unit, modi
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = stringResource(R.string.signup_title),
+            text = stringResource(R.string.login_title),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Blue
@@ -37,27 +42,15 @@ fun SignUpScreen(onSignUpClick: () -> Unit, onBackToLoginClick: () -> Unit, modi
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Campo para el nombre
         OutlinedTextField(
-            value = nombre,
-            onValueChange = { nombre = it },
-            label = { Text(stringResource(R.string.label_full_name)) },
+            value = usuario,
+            onValueChange = { usuario = it },
+            label = { Text(stringResource(R.string.label_user)) },
             modifier = Modifier.fillMaxWidth(0.8f)
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Campo para el correo
-        OutlinedTextField(
-            value = correo,
-            onValueChange = { correo = it },
-            label = { Text(stringResource(R.string.label_email)) },
-            modifier = Modifier.fillMaxWidth(0.8f)
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Campo para la contraseña
         OutlinedTextField(
             value = contrasena,
             onValueChange = { contrasena = it },
@@ -67,25 +60,25 @@ fun SignUpScreen(onSignUpClick: () -> Unit, onBackToLoginClick: () -> Unit, modi
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Botón para registrarse
         Button(
-            onClick = { onSignUpClick() },
+            onClick = { onLoginClick() },
             modifier = Modifier.fillMaxWidth(0.6f)
         ) {
-            Text(stringResource(R.string.button_signup))
+            Text(stringResource(R.string.button_login))
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Botón para volver al login
-        TextButton(onClick = { onBackToLoginClick() }) {
-            Text(stringResource(R.string.button_already_have_account))
+        TextButton(onClick = { onSignUpClick() }) {
+            Text(stringResource(R.string.button_no_account))
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun SignUpScreenPreview() {
-    SignUpScreen(onSignUpClick = {}, onBackToLoginClick = {})
+private fun LoginPreview() {
+    WayspotTheme {
+        LoginScreen(onLoginClick = {}, onSignUpClick = {})
+    }
 }
