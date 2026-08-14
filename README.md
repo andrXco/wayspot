@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌎 WaySpot
+#  WaySpot
 <img width="470" height="405" alt="Branding_logo_claro_WaySpot (1)" src="https://github.com/user-attachments/assets/4debffe2-fa8f-4ef6-b2e5-f73d80e3a410" />
 
 
@@ -21,7 +21,9 @@ Los usuarios podrán explorar nuevos lugares, compartir sus experiencias mediant
 > **Nuestra idea:** facilitar el descubrimiento de nuevos lugares a través de las experiencias reales de la comunidad.
 
 ---
+##  Propuesta de Valor
 
+WaySpot es una red social de turismo que permite descubrir, calificar y compartir experiencias sobre lugares turísticos. A través de reseñas auténticas de otros viajeros, los usuarios pueden encontrar destinos de interés, tomar mejores decisiones de viaje y conectar con una comunidad apasionada por explorar el mundo.
 ## Funcionalidades principales
 
 * Explorar lugares turísticos y spots especiales.
