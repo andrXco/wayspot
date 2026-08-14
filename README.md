@@ -24,7 +24,7 @@ Los usuarios podrán explorar nuevos lugares, compartir sus experiencias mediant
 ##  Propuesta de Valor
 
 WaySpot es una red social de turismo que permite descubrir, calificar y compartir experiencias sobre lugares turísticos. A través de reseñas auténticas de otros viajeros, los usuarios pueden encontrar destinos de interés, tomar mejores decisiones de viaje y conectar con una comunidad apasionada por explorar el mundo.
-<img width="270" height="733" alt="image" src="https://github.com/user-attachments/assets/308211e9-1c8e-4347-9568-548debae9295" />
+<img width="370" height="733" alt="image" src="https://github.com/user-attachments/assets/308211e9-1c8e-4347-9568-548debae9295" />
 
 ## Funcionalidades principales
 
