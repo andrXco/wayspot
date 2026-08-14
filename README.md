@@ -1,7 +1,7 @@
 <div align="center">
 
 # 🌎 WaySpot
-<img width="570" height="505" alt="Branding_logo_claro_WaySpot (1)" src="https://github.com/user-attachments/assets/4debffe2-fa8f-4ef6-b2e5-f73d80e3a410" />
+<img width="470" height="405" alt="Branding_logo_claro_WaySpot (1)" src="https://github.com/user-attachments/assets/4debffe2-fa8f-4ef6-b2e5-f73d80e3a410" />
 
 
 ### Descubre lugares. Comparte experiencias. Encuentra tu próximo spot.
