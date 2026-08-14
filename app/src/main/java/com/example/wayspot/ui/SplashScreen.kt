@@ -1,3 +1,5 @@
+@file:JvmName("SplashScreenKt")
+
 package com.example.wayspot.ui
 
 import androidx.compose.foundation.Image

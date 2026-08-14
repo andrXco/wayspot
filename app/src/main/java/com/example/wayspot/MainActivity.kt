@@ -11,6 +11,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.example.wayspot.ui.BodyScreen
+import com.example.wayspot.ui.HomeScreen
 import com.example.wayspot.ui.LoginScreen
 import com.example.wayspot.ui.SignUpScreen
 import com.example.wayspot.ui.theme.WayspotTheme
@@ -21,18 +22,18 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             WayspotTheme {
-                // Empezamos en la pantalla "home"
-                var pantallaActual by remember { mutableStateOf("home") }
+                // Empezamos en la pantalla "splash" que renderizará tu BodyScreen
+                var pantallaActual by remember { mutableStateOf("splash") }
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
                         when (pantallaActual) {
-                            "home" -> {
+                            "splash" -> {
                                 BodyScreen(onComenzarClick = { pantallaActual = "login" })
                             }
                             "login" -> {
                                 LoginScreen(
-                                    onLoginClick = { pantallaActual = "home" },
+                                    onLoginClick = { pantallaActual = "home" }, // Tras loguearse, va al feed
                                     onSignUpClick = { pantallaActual = "signup" }
                                 )
                             }
@@ -41,6 +42,9 @@ class MainActivity : ComponentActivity() {
                                     onSignUpClick = { pantallaActual = "login" },
                                     onBackToLoginClick = { pantallaActual = "login" }
                                 )
+                            }
+                            "home" -> {
+                                HomeScreen() // Renderiza la nueva pantalla del Home Feed
                             }
                         }
                     }
