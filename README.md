@@ -50,6 +50,7 @@ Los usuarios podrán explorar nuevos lugares, compartir sus experiencias mediant
 **Descubre · Comparte · Explora**
 
 </div>
+---
 # Paleta de Colores — WaySpot
 
 | Color | Código hexadecimal |
