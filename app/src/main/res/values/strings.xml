@@ -1,3 +1,31 @@
 <resources>
     <string name="app_name">wayspot</string>
+    <string name="welcome_message">Bienvenido a %1$s</string>
+    <string name="logo_content_description">Logo wayspot</string>
+    <string name="app_title">Wayspot</string>
+    <string name="button_start">Comenzar</string>
+    <string name="login_title">Iniciar Sesión</string>
+    <string name="label_user">Usuario</string>
+    <string name="label_password">Contraseña</string>
+    <string name="button_login">Entrar</string>
+    <string name="button_no_account">¿No tienes cuenta? Regístrate</string>
+    <string name="signup_title">Crear Cuenta</string>
+    <string name="label_full_name">Nombre Completo</string>
+    <string name="label_email">Correo Electrónico</string>
+    <string name="button_signup">Registrarse</string>
+    <string name="button_already_have_account">¿Ya tienes cuenta? Inicia sesión</string>
+    <string name="mar_a_gonz_lez">María González</string>
+    <string name="maria_g">\@maria_g</string>
+    <string name="hace_2_horas">Hace 2 horas</string>
+    <string name="patrimonio">PATRIMONIO</string>
+    <string name="machu_picchu">Machu Picchu</string>
+    <string name="cusco_per">Cusco, Perú</string>
+    <string name="una_experiencia_que_te_cambia_la_vida_ver_el_amanecer_sobre_las_ruinas_con_la_neblina_entre_las_monta_as_es_algo_que_no_olvidar_s_jam_s_recomiendo_subir_temprano">Una experiencia que te cambia la vida. Ver el amanecer sobre las ruinas con la neblina entre las montañas es algo que no olvidarás jamás. Recomiendo subir temprano.</string>
+    <string name="carlos_ram_rez">Carlos Ramírez</string>
+    <string name="carlos_r">\@carlos_r</string>
+    <string name="hace_5_horas">Hace 5 horas</string>
+    <string name="arte">ARTE</string>
+    <string name="parque_g_ell">Parque Güell</string>
+    <string name="barcelona_espa_a">Barcelona, España</string>
+    <string name="el_dise_o_de_gaud_es_simplemente_surrealista_las_vistas_de_la_ciudad_desde_la_terraza_son_espectaculares_compra_entradas_con_anticipaci_n_hay">El diseño de Gaudí es simplemente surrealista. Las vistas de la ciudad desde la terraza son espectaculares. Compra entradas con anticipación, hay...</string>
 </resources>
