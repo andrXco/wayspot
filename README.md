@@ -69,3 +69,7 @@ Los usuarios podrán explorar nuevos lugares, compartir sus experiencias mediant
 | Blanco cálido | `#F7F8F5` |
 | Blanco | `#FFFFFF` |
 
+## Iconos de la app — WaySpot
+<img width="300" height="325" alt="Branding_Icono_Oscuro_WaySpot" src="https://github.com/user-attachments/assets/dae3d43e-c711-4fdc-b0b7-35519f6b09bf" />
+<img width="300" height="325" alt="Branding_Icono_Claro_WaySpot" src="https://github.com/user-attachments/assets/fbdee757-4ae3-4cb3-9240-6221b85e6a79" />
+
