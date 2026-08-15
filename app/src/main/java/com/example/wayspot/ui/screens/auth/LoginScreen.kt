@@ -5,8 +5,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,12 +25,15 @@ fun LoginScreen(
 ) {
     var usuario by remember { mutableStateOf("") }
     var contrasena by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
 
     LoginContent(
         usuario = usuario,
         onUsuarioChange = { usuario = it },
         contrasena = contrasena,
         onContrasenaChange = { contrasena = it },
+        passwordVisible = passwordVisible,
+        onTogglePasswordVisibility = { passwordVisible = !passwordVisible },
         onLoginClick = onLoginClick,
         onSignUpClick = onSignUpClick,
         modifier = modifier
@@ -40,6 +46,8 @@ fun LoginContent(
     onUsuarioChange: (String) -> Unit,
     contrasena: String,
     onContrasenaChange: (String) -> Unit,
+    passwordVisible: Boolean,
+    onTogglePasswordVisibility: () -> Unit,
     onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -76,7 +84,17 @@ fun LoginContent(
             value = contrasena,
             onValueChange = onContrasenaChange,
             label = { Text(stringResource(R.string.label_password)) },
-            modifier = Modifier.fillMaxWidth(0.8f)
+            modifier = Modifier.fillMaxWidth(0.8f),
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                IconButton(onClick = onTogglePasswordVisibility) {
+                    Icon(
+                        painter = painterResource(id = if (passwordVisible) R.drawable.hidden else R.drawable.view),
+                        contentDescription = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña",
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -107,6 +125,8 @@ private fun LoginPreview() {
             onUsuarioChange = {},
             contrasena = "",
             onContrasenaChange = {},
+            passwordVisible = false,
+            onTogglePasswordVisibility = {},
             onLoginClick = {},
             onSignUpClick = {}
         )

@@ -8,7 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.ui.preview.PreviewData
-import com.example.wayspot.ui.screens.home.components.HomeTopSection
+import com.example.wayspot.ui.screens.home.components.HomeHeader
+import com.example.wayspot.ui.screens.home.components.HomeSearch
 import com.example.wayspot.ui.screens.home.components.PostCard
 import com.example.wayspot.ui.theme.WayspotTheme
 
@@ -36,10 +37,13 @@ fun HomeContent(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        HomeTopSection(
+        HomeHeader(onNotificationsClick = onNotificationsClick)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        HomeSearch(
             searchText = searchText,
-            onSearchChange = onSearchChange,
-            onNotificationsClick = onNotificationsClick
+            onSearchChange = onSearchChange
         )
 
         Spacer(modifier = Modifier.height(16.dp))
