@@ -23,11 +23,33 @@ fun LoginScreen(
     var usuario by remember { mutableStateOf("") }
     var contrasena by remember { mutableStateOf("") }
 
+    LoginContent(
+        usuario = usuario,
+        onUsuarioChange = { usuario = it },
+        contrasena = contrasena,
+        onContrasenaChange = { contrasena = it },
+        onLoginClick = onLoginClick,
+        onSignUpClick = onSignUpClick,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun LoginContent(
+    usuario: String,
+    onUsuarioChange: (String) -> Unit,
+    contrasena: String,
+    onContrasenaChange: (String) -> Unit,
+    onLoginClick: () -> Unit,
+    onSignUpClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(
         modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.weight(1f))
+
         LogoApp()
         
         Spacer(modifier = Modifier.height(16.dp))
@@ -43,7 +65,7 @@ fun LoginScreen(
 
         OutlinedTextField(
             value = usuario,
-            onValueChange = { usuario = it },
+            onValueChange = onUsuarioChange,
             label = { Text(stringResource(R.string.label_user)) },
             modifier = Modifier.fillMaxWidth(0.8f)
         )
@@ -52,7 +74,7 @@ fun LoginScreen(
 
         OutlinedTextField(
             value = contrasena,
-            onValueChange = { contrasena = it },
+            onValueChange = onContrasenaChange,
             label = { Text(stringResource(R.string.label_password)) },
             modifier = Modifier.fillMaxWidth(0.8f)
         )
@@ -60,17 +82,19 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { onLoginClick() },
+            onClick = onLoginClick,
             modifier = Modifier.fillMaxWidth(0.6f)
         ) {
             Text(stringResource(R.string.button_login))
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.weight(1f))
 
-        TextButton(onClick = { onSignUpClick() }) {
+        TextButton(onClick = onSignUpClick) {
             Text(stringResource(R.string.button_no_account))
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
@@ -78,6 +102,13 @@ fun LoginScreen(
 @Composable
 private fun LoginPreview() {
     WayspotTheme {
-        LoginScreen(onLoginClick = {}, onSignUpClick = {})
+        LoginContent(
+            usuario = "",
+            onUsuarioChange = {},
+            contrasena = "",
+            onContrasenaChange = {},
+            onLoginClick = {},
+            onSignUpClick = {}
+        )
     }
 }

@@ -14,20 +14,37 @@ import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
+    HomeContent(
+        posts = PreviewData.listPosts,
+        searchText = "",
+        onSearchChange = { /* Lógica de búsqueda */ },
+        onNotificationsClick = { /* Lógica de notificaciones */ },
+        modifier = modifier
+    )
+}
+
+@Composable
+fun HomeContent(
+    posts: List<com.example.wayspot.model.Post>,
+    searchText: String,
+    onSearchChange: (String) -> Unit,
+    onNotificationsClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
         HomeTopSection(
-            searchText = "",
-            onSearchChange = { /* Lógica de búsqueda */ },
-            onNotificationsClick = { /* Lógica de notificaciones */ }
+            searchText = searchText,
+            onSearchChange = onSearchChange,
+            onNotificationsClick = onNotificationsClick
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        PostList(posts = PreviewData.listPosts)
+        PostList(posts = posts)
     }
 }
 
@@ -47,6 +64,11 @@ private fun PostList(posts: List<com.example.wayspot.model.Post>, modifier: Modi
 @Composable
 private fun HomeScreenPreview() {
     WayspotTheme {
-        HomeScreen()
+        HomeContent(
+            posts = PreviewData.listPosts,
+            searchText = "",
+            onSearchChange = {},
+            onNotificationsClick = {}
+        )
     }
 }

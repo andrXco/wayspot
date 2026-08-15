@@ -28,4 +28,8 @@
     <string name="parque_g_ell">Parque Güell</string>
     <string name="barcelona_espa_a">Barcelona, España</string>
     <string name="el_dise_o_de_gaud_es_simplemente_surrealista_las_vistas_de_la_ciudad_desde_la_terraza_son_espectaculares_compra_entradas_con_anticipaci_n_hay">El diseño de Gaudí es simplemente surrealista. Las vistas de la ciudad desde la terraza son espectaculares. Compra entradas con anticipación, hay...</string>
+    <string name="notifications_content_description">Notificaciones</string>
+    <string name="search_placeholder">Busca un lugar o ciudad...</string>
+    <string name="search_content_description">Buscar</string>
+    <string name="star_content_description">Estrella</string>
 </resources>

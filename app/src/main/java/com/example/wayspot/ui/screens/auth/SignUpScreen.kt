@@ -24,11 +24,37 @@ fun SignUpScreen(
     var correo by remember { mutableStateOf("") }
     var contrasena by remember { mutableStateOf("") }
 
+    SignUpContent(
+        nombre = nombre,
+        onNombreChange = { nombre = it },
+        correo = correo,
+        onCorreoChange = { correo = it },
+        contrasena = contrasena,
+        onContrasenaChange = { contrasena = it },
+        onSignUpClick = onSignUpClick,
+        onBackToLoginClick = onBackToLoginClick,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun SignUpContent(
+    nombre: String,
+    onNombreChange: (String) -> Unit,
+    correo: String,
+    onCorreoChange: (String) -> Unit,
+    contrasena: String,
+    onContrasenaChange: (String) -> Unit,
+    onSignUpClick: () -> Unit,
+    onBackToLoginClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(
         modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.weight(1f))
+
         LogoApp()
         
         Spacer(modifier = Modifier.height(16.dp))
@@ -44,7 +70,7 @@ fun SignUpScreen(
 
         OutlinedTextField(
             value = nombre,
-            onValueChange = { nombre = it },
+            onValueChange = onNombreChange,
             label = { Text(stringResource(R.string.label_full_name)) },
             modifier = Modifier.fillMaxWidth(0.8f)
         )
@@ -53,7 +79,7 @@ fun SignUpScreen(
 
         OutlinedTextField(
             value = correo,
-            onValueChange = { correo = it },
+            onValueChange = onCorreoChange,
             label = { Text(stringResource(R.string.label_email)) },
             modifier = Modifier.fillMaxWidth(0.8f)
         )
@@ -62,7 +88,7 @@ fun SignUpScreen(
 
         OutlinedTextField(
             value = contrasena,
-            onValueChange = { contrasena = it },
+            onValueChange = onContrasenaChange,
             label = { Text(stringResource(R.string.label_password)) },
             modifier = Modifier.fillMaxWidth(0.8f)
         )
@@ -70,17 +96,19 @@ fun SignUpScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { onSignUpClick() },
+            onClick = onSignUpClick,
             modifier = Modifier.fillMaxWidth(0.6f)
         ) {
             Text(stringResource(R.string.button_signup))
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.weight(1f))
 
-        TextButton(onClick = { onBackToLoginClick() }) {
+        TextButton(onClick = onBackToLoginClick) {
             Text(stringResource(R.string.button_already_have_account))
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
@@ -88,6 +116,15 @@ fun SignUpScreen(
 @Composable
 private fun SignUpScreenPreview() {
     WayspotTheme {
-        SignUpScreen(onSignUpClick = {}, onBackToLoginClick = {})
+        SignUpContent(
+            nombre = "",
+            onNombreChange = {},
+            correo = "",
+            onCorreoChange = {},
+            contrasena = "",
+            onContrasenaChange = {},
+            onSignUpClick = {},
+            onBackToLoginClick = {}
+        )
     }
 }
