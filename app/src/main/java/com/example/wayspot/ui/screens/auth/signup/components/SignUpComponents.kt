@@ -9,18 +9,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -29,29 +25,44 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
+import com.example.wayspot.ui.preview.WayspotMultiPreview
+import com.example.wayspot.ui.screens.auth.components.AuthSwitchPrompt
 import com.example.wayspot.ui.theme.ArenaDorado
 import com.example.wayspot.ui.theme.Terracota
 import com.example.wayspot.ui.theme.VerdeBosque
 import com.example.wayspot.ui.theme.VerdeSalvia
+import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
-fun PasswordVisibilityButton(
-    visible: Boolean,
-    onClick: () -> Unit,
+internal fun SignUpActionsSection(
+    termsAccepted: Boolean,
+    onTermsAcceptedChange: (Boolean) -> Unit,
+    signUpEnabled: Boolean,
+    onSignUpClick: () -> Unit,
+    onBackToLoginClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    IconButton(onClick = onClick, modifier = modifier) {
-        Icon(
-            painter = painterResource(if (visible) R.drawable.hidden else R.drawable.view),
-            contentDescription = stringResource(
-                if (visible) {
-                    R.string.hide_password_content_description
-                } else {
-                    R.string.show_password_content_description
-                }
-            ),
-            modifier = Modifier.size(22.dp)
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        TermsAcceptance(
+            checked = termsAccepted,
+            onCheckedChange = onTermsAcceptedChange,
+            modifier = Modifier.fillMaxWidth()
         )
+        Spacer(modifier = Modifier.height(18.dp))
+        SignUpActionButton(
+            onClick = onSignUpClick,
+            enabled = signUpEnabled
+        )
+        Spacer(modifier = Modifier.height(18.dp))
+        AuthSwitchPrompt(
+            prompt = stringResource(R.string.already_have_account_prompt),
+            action = stringResource(R.string.login_action),
+            onClick = onBackToLoginClick
+        )
+        Spacer(modifier = Modifier.height(12.dp))
     }
 }
 
@@ -159,6 +170,62 @@ fun SignUpActionButton(
         Text(
             text = stringResource(R.string.welcome_signup_button),
             fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+// Previews
+
+@WayspotMultiPreview
+@Composable
+private fun PasswordStrengthIndicatorPreview() {
+    WayspotTheme {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            PasswordStrengthIndicator(password = "")
+            PasswordStrengthIndicator(password = "weak")
+            PasswordStrengthIndicator(password = "Strong123")
+        }
+    }
+}
+
+@WayspotMultiPreview
+@Composable
+private fun TermsAcceptancePreview() {
+    WayspotTheme {
+        TermsAcceptance(
+            checked = true, 
+            onCheckedChange = {},
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@WayspotMultiPreview
+@Composable
+private fun SignUpActionButtonPreview() {
+    WayspotTheme {
+        SignUpActionButton(
+            onClick = {}, 
+            enabled = true,
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@WayspotMultiPreview
+@Composable
+private fun SignUpActionsSectionPreview() {
+    WayspotTheme {
+        SignUpActionsSection(
+            termsAccepted = true,
+            onTermsAcceptedChange = {},
+            signUpEnabled = true,
+            onSignUpClick = {},
+            onBackToLoginClick = {},
+            modifier = Modifier.padding(16.dp)
         )
     }
 }

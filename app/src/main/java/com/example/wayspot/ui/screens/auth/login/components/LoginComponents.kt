@@ -24,7 +24,32 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.wayspot.ui.preview.WayspotMultiPreview
+import com.example.wayspot.ui.theme.WayspotTheme
 import com.example.wayspot.R
+import com.example.wayspot.ui.screens.auth.components.AuthSwitchPrompt
+
+@Composable
+internal fun LoginActionsSection(
+    onLoginClick: () -> Unit,
+    onGoogleClick: () -> Unit,
+    onSignUpClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        LoginActionButton(onClick = onLoginClick)
+        SocialLoginSection(onGoogleClick = onGoogleClick)
+        Spacer(modifier = Modifier.height(32.dp))
+        AuthSwitchPrompt(
+            prompt = stringResource(R.string.no_account_prompt),
+            action = stringResource(R.string.register_action),
+            onClick = onSignUpClick
+        )
+    }
+}
 
 @Composable
 fun ForgotPasswordButton(
@@ -98,5 +123,51 @@ fun SocialLoginSection(
                 color = MaterialTheme.colorScheme.onSurface
             )
         }
+    }
+}
+
+@WayspotMultiPreview
+@Composable
+private fun ForgotPasswordPreview() {
+    WayspotTheme {
+        ForgotPasswordButton(
+            onClick = {},
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@WayspotMultiPreview
+@Composable
+private fun LoginActionButtonPreview() {
+    WayspotTheme {
+        LoginActionButton(
+            onClick = {},
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@WayspotMultiPreview
+@Composable
+private fun SocialLoginSectionPreview() {
+    WayspotTheme {
+        SocialLoginSection(
+            onGoogleClick = {},
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@WayspotMultiPreview
+@Composable
+private fun LoginActionsSectionPreview() {
+    WayspotTheme {
+        LoginActionsSection(
+            onLoginClick = {},
+            onGoogleClick = {},
+            onSignUpClick = {},
+            modifier = Modifier.padding(16.dp)
+        )
     }
 }

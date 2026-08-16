@@ -27,7 +27,12 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.padding
 import com.example.wayspot.R
+import com.example.wayspot.ui.preview.WayspotMultiPreview
+import com.example.wayspot.ui.theme.WayspotTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Email
 
 @Composable
 internal fun AuthHeader(
@@ -144,5 +149,45 @@ internal fun AuthSwitchPrompt(
                 fontSize = 14.sp
             )
         }
+    }
+}
+
+@WayspotMultiPreview
+@Composable
+private fun AuthHeaderPreview() {
+    WayspotTheme {
+        AuthHeader(
+            title = "Wayspot",
+            subtitle = "Tu guía de lugares favoritos",
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@WayspotMultiPreview
+@Composable
+private fun AuthTextFieldPreview() {
+    WayspotTheme {
+        AuthTextField(
+            value = "",
+            onValueChange = {},
+            label = "Email",
+            placeholder = "ejemplo@correo.com",
+            leadingIcon = Icons.Outlined.Email,
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@WayspotMultiPreview
+@Composable
+private fun AuthSwitchPromptPreview() {
+    WayspotTheme {
+        AuthSwitchPrompt(
+            prompt = "¿No tienes cuenta?",
+            action = "Regístrate",
+            onClick = {},
+            modifier = Modifier.padding(16.dp)
+        )
     }
 }
