@@ -1,28 +1,62 @@
 package com.example.wayspot.ui.screens.auth
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
-import com.example.wayspot.ui.components.LogoApp
 import com.example.wayspot.ui.preview.WayspotMultiPreview
+import com.example.wayspot.ui.screens.auth.components.AuthHeader
+import com.example.wayspot.ui.screens.auth.components.AuthSwitchPrompt
+import com.example.wayspot.ui.screens.auth.components.AuthTextField
 import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun LoginScreen(
     onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onForgotPasswordClick: () -> Unit = {},
+    onGoogleClick: () -> Unit = {}
 ) {
     var usuario by remember { mutableStateOf("") }
     var contrasena by remember { mutableStateOf("") }
@@ -37,12 +71,12 @@ fun LoginScreen(
         onTogglePasswordVisibility = { passwordVisible = !passwordVisible },
         onLoginClick = onLoginClick,
         onSignUpClick = onSignUpClick,
+        onForgotPasswordClick = onForgotPasswordClick,
+        onGoogleClick = onGoogleClick,
         modifier = modifier
     )
 }
 
-
-//state hoisting
 @Composable
 fun LoginContent(
     usuario: String,
@@ -53,71 +87,138 @@ fun LoginContent(
     onTogglePasswordVisibility: () -> Unit,
     onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
+    onForgotPasswordClick: () -> Unit,
+    onGoogleClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(rememberScrollState())
+            .imePadding()
+            .padding(horizontal = 24.dp, vertical = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.weight(1f))
-
-        LogoApp()
-        
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = stringResource(R.string.login_title),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+        AuthHeader(
+            title = stringResource(R.string.app_title),
+            subtitle = stringResource(R.string.auth_login_tagline)
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        OutlinedTextField(
+        AuthTextField(
             value = usuario,
             onValueChange = onUsuarioChange,
-            label = { Text(stringResource(R.string.label_user)) },
-            modifier = Modifier.fillMaxWidth(0.8f)
+            label = stringResource(R.string.label_email),
+            placeholder = stringResource(R.string.email_placeholder),
+            leadingIcon = Icons.Outlined.Email,
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
+            )
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(14.dp))
 
-        OutlinedTextField(
+        AuthTextField(
             value = contrasena,
             onValueChange = onContrasenaChange,
-            label = { Text(stringResource(R.string.label_password)) },
-            modifier = Modifier.fillMaxWidth(0.8f),
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            label = stringResource(R.string.label_password),
+            placeholder = stringResource(R.string.password_placeholder),
+            leadingIcon = Icons.Outlined.Lock,
+            modifier = Modifier.fillMaxWidth(),
+            visualTransformation = if (passwordVisible) {
+                VisualTransformation.None
+            } else {
+                PasswordVisualTransformation()
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done
+            ),
             trailingIcon = {
                 IconButton(onClick = onTogglePasswordVisibility) {
                     Icon(
-                        painter = painterResource(id = if (passwordVisible) R.drawable.hidden else R.drawable.view),
-                        contentDescription = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña",
-                        modifier = Modifier.size(24.dp)
+                        painter = painterResource(
+                            if (passwordVisible) R.drawable.hidden else R.drawable.view
+                        ),
+                        contentDescription = stringResource(
+                            if (passwordVisible) {
+                                R.string.hide_password_content_description
+                            } else {
+                                R.string.show_password_content_description
+                            }
+                        ),
+                        modifier = Modifier.size(22.dp)
                     )
                 }
             }
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        TextButton(
+            onClick = onForgotPasswordClick,
+            modifier = Modifier.align(Alignment.End)
+        ) {
+            Text(text = stringResource(R.string.forgot_password))
+        }
 
         Button(
             onClick = onLoginClick,
-            modifier = Modifier.fillMaxWidth(0.6f)
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(54.dp),
+            shape = MaterialTheme.shapes.medium
         ) {
-            Text(stringResource(R.string.button_login))
+            Text(
+                text = stringResource(R.string.welcome_login_button),
+                fontWeight = FontWeight.Bold
+            )
         }
 
-        Spacer(modifier = Modifier.weight(1f))
-
-        TextButton(onClick = onSignUpClick) {
-            Text(stringResource(R.string.button_no_account))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            HorizontalDivider(modifier = Modifier.weight(1f))
+            Text(
+                text = stringResource(R.string.or_continue_with),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 12.sp
+            )
+            HorizontalDivider(modifier = Modifier.weight(1f))
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        OutlinedButton(
+            onClick = onGoogleClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(54.dp),
+            shape = RoundedCornerShape(14.dp)
+        ) {
+            Image(
+                painter = painterResource(R.drawable.icon_google),
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.size(10.dp))
+            Text(
+                text = stringResource(R.string.continue_with_google),
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        AuthSwitchPrompt(
+            prompt = stringResource(R.string.no_account_prompt),
+            action = stringResource(R.string.register_action),
+            onClick = onSignUpClick
+        )
     }
 }
 
@@ -133,7 +234,9 @@ private fun LoginPreview() {
             passwordVisible = false,
             onTogglePasswordVisibility = {},
             onLoginClick = {},
-            onSignUpClick = {}
+            onSignUpClick = {},
+            onForgotPasswordClick = {},
+            onGoogleClick = {}
         )
     }
 }

@@ -16,7 +16,10 @@ fun AppNavigation() {
 
     when (currentRoute) {
         Routes.SPLASH -> {
-            SplashScreen(onComenzarClick = { currentRoute = Routes.LOGIN })
+            SplashScreen(
+                onLoginClick = { currentRoute = Routes.LOGIN },
+                onSignUpClick = { currentRoute = Routes.SIGNUP }
+            )
         }
         Routes.LOGIN -> {
             LoginScreen(
