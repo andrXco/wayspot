@@ -1,4 +1,4 @@
-package com.example.wayspot.ui.screens.home.components
+package com.example.wayspot.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -22,7 +22,7 @@ data class BottomNavItem(
 )
 
 @Composable
-fun HomeBottomBar(
+fun WayspotBottomBar(
     currentRoute: String,
     onNavItemClick: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -66,9 +66,9 @@ fun HomeBottomBar(
 
 @Preview
 @Composable
-private fun HomeBottomBarPreview() {
+private fun WayspotBottomBarPreview() {
     WayspotTheme {
-        HomeBottomBar(
+        WayspotBottomBar(
             currentRoute = Routes.HOME,
             onNavItemClick = {}
         )

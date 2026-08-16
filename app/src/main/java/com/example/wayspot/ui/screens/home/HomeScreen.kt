@@ -10,9 +10,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.navigation.Routes
 import com.example.wayspot.ui.preview.PreviewData
-import com.example.wayspot.ui.screens.home.components.HomeBottomBar
-import com.example.wayspot.ui.screens.home.components.HomeHeader
-import com.example.wayspot.ui.screens.home.components.HomeSearch
+import com.example.wayspot.ui.components.WayspotBottomBar
+import com.example.wayspot.ui.components.WayspotHeader
+import com.example.wayspot.ui.components.WayspotSearch
 import com.example.wayspot.ui.screens.home.components.PostCard
 import com.example.wayspot.ui.theme.WayspotTheme
 
@@ -43,13 +43,13 @@ fun HomeContent(
 ) {
     Scaffold(
         topBar = {
-            HomeHeader(
+            WayspotHeader(
                 onNotificationsClick = onNotificationsClick,
                 modifier = Modifier.padding(16.dp)
             )
         },
         bottomBar = {
-            HomeBottomBar(
+            WayspotBottomBar(
                 currentRoute = currentRoute,
                 onNavItemClick = onNavItemClick
             )
@@ -68,7 +68,7 @@ fun HomeContent(
                             .fillMaxSize()
                             .padding(horizontal = 16.dp)
                     ) {
-                        HomeSearch(
+                        WayspotSearch(
                             searchText = searchText,
                             onSearchChange = onSearchChange
                         )

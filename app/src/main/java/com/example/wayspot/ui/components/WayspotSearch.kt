@@ -1,13 +1,12 @@
-package com.example.wayspot.ui.screens.home.components
+package com.example.wayspot.ui.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.wayspot.ui.components.WaySpotSearchBar
 import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
-fun HomeSearch(
+fun WayspotSearch(
     searchText: String,
     onSearchChange: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -21,9 +20,9 @@ fun HomeSearch(
 
 @Preview(showBackground = true)
 @Composable
-private fun HomeSearchPreview() {
+private fun WayspotSearchPreview() {
     WayspotTheme {
-        HomeSearch(
+        WayspotSearch(
             searchText = "",
             onSearchChange = {}
         )

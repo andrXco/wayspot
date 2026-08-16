@@ -1,4 +1,4 @@
-package com.example.wayspot.ui.screens.home.components
+package com.example.wayspot.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -17,7 +17,7 @@ import com.example.wayspot.R
 import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
-fun HomeHeader(
+fun WayspotHeader(
     onNotificationsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -43,8 +43,8 @@ fun HomeHeader(
 
 @Preview(showBackground = true)
 @Composable
-private fun HomeHeaderPreview() {
+private fun WayspotHeaderPreview() {
     WayspotTheme {
-        HomeHeader(onNotificationsClick = {})
+        WayspotHeader(onNotificationsClick = {})
     }
 }
