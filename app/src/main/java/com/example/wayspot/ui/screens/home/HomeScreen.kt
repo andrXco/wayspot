@@ -79,12 +79,9 @@ fun HomeContent(
                     }
                 }
                 Routes.EXPLORE -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = androidx.compose.ui.Alignment.Center
-                    ) {
-                        androidx.compose.material3.Text(text = "Explorar contenido")
-                    }
+                    com.example.wayspot.ui.screens.explore.ExploreScreen(
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
                 Routes.PROFILE -> {
                     Box(

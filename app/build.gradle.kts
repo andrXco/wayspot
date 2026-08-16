@@ -45,7 +45,11 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation("androidx.compose.material:material-icons-extended")
+
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.12.0")
+
     implementation(libs.coil.compose)
+    implementation(libs.places)
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

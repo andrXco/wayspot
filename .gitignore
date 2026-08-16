@@ -211,3 +211,4 @@ coverage/
 reports/
 .cache/
 local.properties
+implementation_plan.artifact.md

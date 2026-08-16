@@ -1,0 +1,144 @@
+package com.example.wayspot.ui.screens.explore.components
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import com.example.wayspot.R
+import com.example.wayspot.model.Places
+import com.example.wayspot.ui.theme.EstrellaAmarilla
+
+@Composable
+fun ExplorerPopularCard(
+    place: Places,
+    onSaveClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    ElevatedCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(4.dp),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = Color.White
+        ),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
+    ) {
+        Column {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(140.dp)
+                    .padding(8.dp)
+                    .clip(RoundedCornerShape(20.dp))
+            ) {
+                AsyncImage(
+                    model = place.imagen ?: R.drawable.post_card_machu_pichu,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(R.drawable.branding_logo_claro_wayspot)
+                )
+
+                // Badge de Categoría
+                Surface(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .align(Alignment.TopStart),
+                    color = Color(0xFF3F7EE8), // Azul del diseño
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = place.categoria,
+                        color = Color.White,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+
+                // Botón Guardar
+                IconButton(
+                    onClick = onSaveClick,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .size(32.dp)
+                        .background(Color.White, CircleShape)
+                        .align(Alignment.TopEnd)
+                ) {
+                    Icon(
+                        imageVector = if (place.isSaved) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
+                        contentDescription = "Guardar",
+                        modifier = Modifier.size(18.dp),
+                        tint = if (place.isSaved) Color(0xFF3F7EE8) else Color.Gray
+                    )
+                }
+            }
+
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
+            ) {
+                Text(
+                    text = place.titulo,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    maxLines = 1
+                )
+                
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(vertical = 2.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.LocationOn,
+                        contentDescription = null,
+                        tint = Color(0xFF3F7EE8),
+                        modifier = Modifier.size(12.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = place.ubicacion,
+                        fontSize = 11.sp,
+                        color = Color.Gray,
+                        maxLines = 1
+                    )
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Star,
+                        contentDescription = null,
+                        tint = EstrellaAmarilla,
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = place.rating.toString(),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        }
+    }
+}
