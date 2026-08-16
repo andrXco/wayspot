@@ -2,10 +2,14 @@ package com.example.wayspot.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
-
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val VerdeBosque = Color(0xFF1F5D50)
+val VerdeSalvia = Color(0xFF7FA98F)
+val VerdeClaro = Color(0xFFBBD7B0)
+val Terracota = Color(0xFFE07A5F)
+val ArenaDorado = Color(0xFFE9C46A)
+val Carbon = Color(0xFF202522)
+val Gris = Color(0xFF707773)
+val GrisClaro = Color(0xFFDDE3DF)
+val BlancoCalido = Color(0xFFF7F8F5)
+val Blanco = Color(0xFFFFFFFF)
+val EstrellaAmarilla = Color(0xFFFFC107)

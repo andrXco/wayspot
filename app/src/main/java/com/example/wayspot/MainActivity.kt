@@ -8,12 +8,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import com.example.wayspot.ui.BodyScreen
-import com.example.wayspot.ui.HomeScreen
-import com.example.wayspot.ui.LoginScreen
-import com.example.wayspot.ui.SignUpScreen
+import com.example.wayspot.navigation.AppNavigation
 import com.example.wayspot.ui.theme.WayspotTheme
 
 class MainActivity : ComponentActivity() {
@@ -22,31 +18,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             WayspotTheme {
-                // Empezamos en la pantalla "splash" que renderizará tu BodyScreen
-                var pantallaActual by remember { mutableStateOf("splash") }
-
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        when (pantallaActual) {
-                            "splash" -> {
-                                BodyScreen(onComenzarClick = { pantallaActual = "login" })
-                            }
-                            "login" -> {
-                                LoginScreen(
-                                    onLoginClick = { pantallaActual = "home" }, // Tras loguearse, va al feed
-                                    onSignUpClick = { pantallaActual = "signup" }
-                                )
-                            }
-                            "signup" -> {
-                                SignUpScreen(
-                                    onSignUpClick = { pantallaActual = "login" },
-                                    onBackToLoginClick = { pantallaActual = "login" }
-                                )
-                            }
-                            "home" -> {
-                                HomeScreen() // Renderiza la nueva pantalla del Home Feed
-                            }
-                        }
+                        AppNavigation()
                     }
                 }
             }

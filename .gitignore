@@ -210,3 +210,4 @@ docker-compose.override.yml
 coverage/
 reports/
 .cache/
+local.properties
