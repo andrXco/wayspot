@@ -23,7 +23,9 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.wayspot.R
 import com.example.wayspot.model.Places
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.wayspot.ui.theme.EstrellaAmarilla
+import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun ExplorerPopularCard(
@@ -31,13 +33,15 @@ fun ExplorerPopularCard(
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val primaryColor = MaterialTheme.colorScheme.primary
+    
     ElevatedCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(4.dp),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
     ) {
@@ -62,12 +66,12 @@ fun ExplorerPopularCard(
                     modifier = Modifier
                         .padding(8.dp)
                         .align(Alignment.TopStart),
-                    color = Color(0xFF3F7EE8), // Azul del diseño
+                    color = primaryColor, // Usando color primario de la paleta
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
                         text = place.categoria,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
@@ -80,14 +84,14 @@ fun ExplorerPopularCard(
                     modifier = Modifier
                         .padding(8.dp)
                         .size(32.dp)
-                        .background(Color.White, CircleShape)
+                        .background(MaterialTheme.colorScheme.surface, CircleShape)
                         .align(Alignment.TopEnd)
                 ) {
                     Icon(
                         imageVector = if (place.isSaved) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
                         contentDescription = "Guardar",
                         modifier = Modifier.size(18.dp),
-                        tint = if (place.isSaved) Color(0xFF3F7EE8) else Color.Gray
+                        tint = if (place.isSaved) primaryColor else MaterialTheme.colorScheme.outline
                     )
                 }
             }
@@ -100,6 +104,7 @@ fun ExplorerPopularCard(
                     text = place.titulo,
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1
                 )
                 
@@ -110,14 +115,14 @@ fun ExplorerPopularCard(
                     Icon(
                         imageVector = Icons.Filled.LocationOn,
                         contentDescription = null,
-                        tint = Color(0xFF3F7EE8),
+                        tint = primaryColor,
                         modifier = Modifier.size(12.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = place.ubicacion,
                         fontSize = 11.sp,
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1
                     )
                 }
@@ -135,10 +140,22 @@ fun ExplorerPopularCard(
                     Text(
                         text = place.rating.toString(),
                         fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ExplorerPopularCardPreview() {
+    WayspotTheme {
+        ExplorerPopularCard(
+            place = com.example.wayspot.ui.preview.PreviewDataPopular.samplePlaces1,
+            onSaveClick = {}
+        )
     }
 }

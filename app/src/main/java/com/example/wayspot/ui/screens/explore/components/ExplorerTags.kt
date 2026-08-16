@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.wayspot.ui.theme.WayspotTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,19 +40,30 @@ fun ExplorerTags(
                 },
                 shape = RoundedCornerShape(20.dp),
                 colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = Color(0xFF3F7EE8),
-                    selectedLabelColor = Color.White,
-                    containerColor = Color.White,
-                    labelColor = Color.Gray
+                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    labelColor = MaterialTheme.colorScheme.onSurfaceVariant
                 ),
                 border = FilterChipDefaults.filterChipBorder(
                     enabled = true,
                     selected = selectedCategory == category,
-                    borderColor = Color.LightGray,
+                    borderColor = MaterialTheme.colorScheme.outlineVariant,
                     selectedBorderColor = Color.Transparent,
                     borderWidth = 1.dp
                 )
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ExplorerTagsPreview() {
+    WayspotTheme {
+        ExplorerTags(
+            selectedCategory = "Playas",
+            onCategoryClick = {}
+        )
     }
 }

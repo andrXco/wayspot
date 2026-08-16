@@ -87,7 +87,7 @@ fun ExplorerContent(
                 Text(
                     text = "Ver todos",
                     fontSize = 14.sp,
-                    color = Color(0xFF3F7EE8),
+                    color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.clickable { /* Acción Ver todos */ }
                 )
             }
