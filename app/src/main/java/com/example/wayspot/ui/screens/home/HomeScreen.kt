@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.navigation.Routes
@@ -17,16 +18,20 @@ import com.example.wayspot.ui.screens.home.components.PostCard
 import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
-    var currentTab by remember { mutableStateOf(Routes.HOME) }
-    
+fun HomeScreen(
+    onPlaceClick: (com.example.wayspot.model.Places) -> Unit,
+    currentRoute: String,
+    onNavItemClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     HomeContent(
         posts = PreviewData.listPosts,
         searchText = "",
-        currentRoute = currentTab,
+        currentRoute = currentRoute,
         onSearchChange = { /* Lógica de búsqueda */ },
         onNotificationsClick = { /* Lógica de notificaciones */ },
-        onNavItemClick = { currentTab = it },
+        onNavItemClick = onNavItemClick,
+        onPlaceClick = onPlaceClick,
         modifier = modifier
     )
 }
@@ -39,6 +44,7 @@ fun HomeContent(
     onSearchChange: (String) -> Unit,
     onNotificationsClick: () -> Unit,
     onNavItemClick: (String) -> Unit,
+    onPlaceClick: (com.example.wayspot.model.Places) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -75,12 +81,16 @@ fun HomeContent(
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        PostList(posts = posts)
+                        PostList(
+                            posts = posts,
+                            onPlaceClick = onPlaceClick
+                        )
                     }
                 }
                 Routes.EXPLORE -> {
                     com.example.wayspot.ui.screens.explore.ExploreScreen(
-                        modifier = Modifier.fillMaxSize()
+                        onPlaceClick = onPlaceClick,
+                        m = Modifier.fillMaxSize()
                     )
                 }
                 Routes.PROFILE -> {
@@ -97,13 +107,28 @@ fun HomeContent(
 }
 
 @Composable
-private fun PostList(posts: List<com.example.wayspot.model.Post>, modifier: Modifier = Modifier) {
+private fun PostList(
+    posts: List<com.example.wayspot.model.Post>,
+    onPlaceClick: (com.example.wayspot.model.Places) -> Unit,
+    modifier: Modifier = Modifier
+) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier.fillMaxWidth()
     ) {
         items(posts) { post ->
-            PostCard(post = post)
+            PostCard(
+                post = post,
+                onClick = {
+                    // Buscar el lugar correspondiente por placeId
+                    val place = com.example.wayspot.ui.preview.PreviewDataPopular.listPlaces.find { 
+                        it.id == post.placeId
+                    }
+                    if (place != null) {
+                        onPlaceClick(place)
+                    }
+                }
+            )
         }
     }
 }
@@ -118,7 +143,8 @@ private fun HomeScreenPreview() {
             currentRoute = Routes.HOME,
             onSearchChange = {},
             onNotificationsClick = {},
-            onNavItemClick = {}
+            onNavItemClick = {},
+            onPlaceClick = {}
         )
     }
 }

@@ -8,6 +8,7 @@ data class Post(
     val titulo: String,
     val ubicacion: String,
     val descripcion: String,
+    val placeId: String? = null,
     val rating: Int = 5,
     val imagen: Any? = null
 )

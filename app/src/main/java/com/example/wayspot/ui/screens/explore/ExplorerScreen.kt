@@ -7,12 +7,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.model.Places
+import com.example.wayspot.R
 import com.example.wayspot.ui.components.WayspotSearch
 import com.example.wayspot.ui.preview.PreviewDataPopular
 import com.example.wayspot.ui.screens.explore.components.ExplorerPopularCard
@@ -21,19 +22,21 @@ import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun ExploreScreen(
-    modifier: Modifier = Modifier
+    onPlaceClick: (Places) -> Unit,
+    m: Modifier = Modifier
 ) {
     var searchText by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf("Playas") }
+    var selectedCategoryRes by remember { mutableIntStateOf(R.string.category_beaches) }
     val places = PreviewDataPopular.listPlaces
 
     ExplorerContent(
         places = places,
         searchText = searchText,
-        selectedCategory = selectedCategory,
+        selectedCategoryRes = selectedCategoryRes,
         onSearchChange = { searchText = it },
-        onCategorySelect = { selectedCategory = it },
-        modifier = modifier
+        onCategorySelect = { selectedCategoryRes = it },
+        onPlaceClick = onPlaceClick,
+        m = m
     )
 }
 
@@ -41,13 +44,14 @@ fun ExploreScreen(
 fun ExplorerContent(
     places: List<Places>,
     searchText: String,
-    selectedCategory: String,
+    selectedCategoryRes: Int,
     onSearchChange: (String) -> Unit,
-    onCategorySelect: (String) -> Unit,
-    modifier: Modifier = Modifier
+    onCategorySelect: (Int) -> Unit,
+    onPlaceClick: (Places) -> Unit,
+    m: Modifier = Modifier
 ) {
     LazyColumn(
-        modifier = modifier.fillMaxSize(),
+        modifier = m.fillMaxSize(),
         contentPadding = PaddingValues(bottom = 16.dp)
     ) {
         // Buscador
@@ -63,9 +67,9 @@ fun ExplorerContent(
         // Filtros de Categorías
         item {
             ExplorerTags(
-                selectedCategory = selectedCategory,
+                selectedCategoryRes = selectedCategoryRes,
                 onCategoryClick = onCategorySelect,
-                modifier = Modifier.fillMaxWidth()
+                m = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(24.dp))
         }
@@ -80,12 +84,12 @@ fun ExplorerContent(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Destinos populares",
+                    text = stringResource(R.string.popular_destinations_title),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "Ver todos",
+                    text = stringResource(R.string.see_all),
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.clickable { /* Acción Ver todos */ }
@@ -108,7 +112,8 @@ fun ExplorerContent(
                     ExplorerPopularCard(
                         place = place,
                         onSaveClick = { /* Acción Guardar */ },
-                        modifier = Modifier.weight(1f)
+                        onClick = { onPlaceClick(place) },
+                        m = Modifier.weight(1f)
                     )
                 }
                 if (rowItems.size == 1) {
@@ -124,6 +129,6 @@ fun ExplorerContent(
 @Composable
 private fun ExploreScreenPreview() {
     WayspotTheme {
-        ExploreScreen()
+        ExploreScreen(onPlaceClick = {})
     }
 }

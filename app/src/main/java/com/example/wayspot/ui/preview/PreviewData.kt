@@ -13,6 +13,7 @@ object PreviewData {
         titulo = "Machu Picchu",
         ubicacion = "Cusco, Perú",
         descripcion = "Una experiencia que te cambia la vida. Ver el amanecer sobre las ruinas con la neblina entre las montañas es algo que no olvidarás jamás. Recomiendo subir temprano.",
+        placeId = "machu_picchu",
         imagen = R.drawable.post_card_machu_pichu
     )
 
@@ -24,6 +25,7 @@ object PreviewData {
         titulo = "Parque Güell",
         ubicacion = "Barcelona, España",
         descripcion = "El diseño de Gaudí es simplemente surrealista. Las vistas de la ciudad desde la terraza son espectaculares. Compra entradas con anticipación.",
+        placeId = "parque_guell",
         imagen = "https://images.unsplash.com/photo-1583422422116-392a74afe882?q=80&w=1000&auto=format&fit=crop"
     )
 

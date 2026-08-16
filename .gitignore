@@ -212,3 +212,4 @@ reports/
 .cache/
 local.properties
 implementation_plan.artifact.md
+golden_rules.artifact.md

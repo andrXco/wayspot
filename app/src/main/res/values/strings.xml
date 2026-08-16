@@ -36,4 +36,84 @@
     <string name="nav_explore">Explorar</string>
     <string name="nav_profile">Perfil</string>
     <string name="profile_content_description">Perfil de usuario</string>
+
+    <!-- Place Detail Strings -->
+    <string name="back_button_content_description">Volver</string>
+    <string name="bookmark_content_description">Guardar</string>
+    <string name="share_content_description">Compartir</string>
+    <string name="reviews_count">%1$s reseñas</string>
+    <string name="description_title">Descripción</string>
+    <string name="button_write_review">Escribir reseña</string>
+    <string name="recent_reviews_title">Reseñas recientes</string>
+    <string name="see_all">Ver todas</string>
+    <string name="time_label">2-3 horas</string>
+    <string name="price_label">Gratuito</string>
+    <string name="altitude_label">3.152 m</string>
+    <string name="time_content_description">Tiempo estimado</string>
+    <string name="price_content_description">Precio</string>
+    <string name="altitude_content_description">Altitud</string>
+    <string name="sample_place_description">El Cerro Monserrate es el símbolo más emblemático de Bogotá. Ubicado a 3.152 metros sobre el nivel del mar, ofrece una vista panorámica de la ciudad. En su cima se encuentra la iglesia del Señor Caído, un importante sitio de peregrinación religiosa visitado por miles de personas cada año.</string>
+    <string name="sample_user_review">Una experiencia espiritual y visual única. El cerro ofrece las mejores vistas de Bogotá, especialmente al atardecer.</string>
+    <string name="user_name_sample">Valentina Cruz</string>
+    <string name="review_date_sample">Hace 3 días</string>
+    <string name="place_category_and_country">%1$s · %2$s</string>
+    <string name="rating_value">%1$.1f</string>
+    <string name="review_avatar_initials">VC</string>
+    <string name="popular_destinations_title">Destinos populares</string>
+    <string name="category_beaches">Playas</string>
+    <string name="category_mountains">Montañas</string>
+    <string name="category_museums">Museos</string>
+    <string name="category_parks">Parques</string>
+    <string name="category_cities">Ciudades</string>
+    <string name="category_art">Arte</string>
+
+    <string name="place_category_heritage">Patrimonio</string>
+    <string name="place_category_beach">Playa</string>
+    <string name="place_category_museum">Museo</string>
+    <string name="place_category_mountain">Montaña</string>
+    <string name="place_category_park">Parque</string>
+    <string name="place_category_city">Ciudad</string>
+
+    <string name="place_machu_picchu_title">Machu Picchu</string>
+    <string name="place_machu_picchu_location">Cusco, Perú</string>
+    <string name="place_machu_picchu_duration">3–4 horas</string>
+    <string name="place_machu_picchu_price">Desde S/ 152</string>
+    <string name="place_machu_picchu_altitude">2.430 m</string>
+    <string name="place_machu_picchu_description">Ciudadela inca del siglo XV situada entre montañas y bosques nublados. Sus terrazas, templos y senderos muestran una de las expresiones más destacadas del patrimonio andino.</string>
+    <string name="place_machu_picchu_review">Una visita inolvidable. Llegar temprano permitió disfrutar el paisaje con calma y recorrer los principales sectores.</string>
+
+    <string name="place_maldives_title">Playa Maldivas</string>
+    <string name="place_maldives_location">Malé, Maldivas</string>
+    <string name="place_maldives_duration">Todo el día</string>
+    <string name="place_maldives_price">Acceso libre</string>
+    <string name="place_maldives_altitude">0 m</string>
+    <string name="place_maldives_description">Una costa de arena clara y aguas cristalinas, ideal para nadar, practicar snorkel o descansar frente al océano Índico.</string>
+
+    <string name="place_louvre_title">Museo del Louvre</string>
+    <string name="place_louvre_location">París, Francia</string>
+    <string name="place_louvre_duration">3–5 horas</string>
+    <string name="place_louvre_price">Desde €22</string>
+    <string name="place_louvre_altitude">35 m</string>
+    <string name="place_louvre_description">Uno de los museos más visitados del mundo, con colecciones que recorren miles de años de arte, historia y patrimonio cultural.</string>
+
+    <string name="place_swiss_alps_title">Alpes Suizos</string>
+    <string name="place_swiss_alps_location">Interlaken, Suiza</string>
+    <string name="place_swiss_alps_duration">4–6 horas</string>
+    <string name="place_swiss_alps_price">Desde CHF 45</string>
+    <string name="place_swiss_alps_altitude">2.061 m</string>
+    <string name="place_swiss_alps_description">Una región montañosa con senderos, lagos y miradores que conectan pueblos alpinos con panorámicas de cumbres nevadas.</string>
+
+    <string name="place_central_park_title">Central Park</string>
+    <string name="place_central_park_location">Nueva York, EE. UU.</string>
+    <string name="place_central_park_duration">2–3 horas</string>
+    <string name="place_central_park_price">Gratuito</string>
+    <string name="place_central_park_altitude">30 m</string>
+    <string name="place_central_park_description">Un gran parque urbano con senderos, praderas y espacios culturales que ofrece una pausa natural en el centro de Manhattan.</string>
+
+    <string name="place_eiffel_tower_title">Torre Eiffel</string>
+    <string name="place_eiffel_tower_location">París, Francia</string>
+    <string name="place_eiffel_tower_duration">1–2 horas</string>
+    <string name="place_eiffel_tower_price">Desde €23</string>
+    <string name="place_eiffel_tower_altitude">330 m</string>
+    <string name="place_eiffel_tower_description">El icono de París ofrece vistas de la ciudad desde sus distintos niveles y una experiencia arquitectónica emblemática junto al Sena.</string>
 </resources>

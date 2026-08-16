@@ -1,6 +1,7 @@
 package com.example.wayspot.ui.screens.explore.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,9 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,14 +32,16 @@ import com.example.wayspot.ui.theme.WayspotTheme
 fun ExplorerPopularCard(
     place: Places,
     onSaveClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onClick: () -> Unit,
+    m: Modifier = Modifier
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
     
     ElevatedCard(
-        modifier = modifier
+        modifier = m
             .fillMaxWidth()
-            .padding(4.dp),
+            .padding(4.dp)
+            .clickable { onClick() },
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -70,7 +73,7 @@ fun ExplorerPopularCard(
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
-                        text = place.categoria,
+                        text = stringResource(place.categoriaRes),
                         color = MaterialTheme.colorScheme.onPrimary,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
@@ -89,7 +92,7 @@ fun ExplorerPopularCard(
                 ) {
                     Icon(
                         imageVector = if (place.isSaved) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
-                        contentDescription = "Guardar",
+                        contentDescription = stringResource(R.string.bookmark_content_description),
                         modifier = Modifier.size(18.dp),
                         tint = if (place.isSaved) primaryColor else MaterialTheme.colorScheme.outline
                     )
@@ -101,7 +104,7 @@ fun ExplorerPopularCard(
                     .padding(horizontal = 12.dp, vertical = 8.dp)
             ) {
                 Text(
-                    text = place.titulo,
+                    text = stringResource(place.tituloRes),
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -120,7 +123,7 @@ fun ExplorerPopularCard(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = place.ubicacion,
+                        text = stringResource(place.ubicacionRes),
                         fontSize = 11.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1
@@ -155,7 +158,8 @@ fun ExplorerPopularCardPreview() {
     WayspotTheme {
         ExplorerPopularCard(
             place = com.example.wayspot.ui.preview.PreviewDataPopular.samplePlaces1,
-            onSaveClick = {}
+            onSaveClick = {},
+            onClick = {}
         )
     }
 }

@@ -7,4 +7,5 @@ object Routes {
     const val HOME = "home"
     const val EXPLORE = "explore"
     const val PROFILE = "profile"
+    const val PLACE_DETAIL = "place_detail"
 }
