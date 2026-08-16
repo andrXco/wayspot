@@ -5,7 +5,6 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 
 @Preview(name = "Phone", device = Devices.PHONE, showBackground = true)
-@Preview(name = "Large font", device = Devices.PHONE, fontScale = 1.3f, showBackground = true)
 @Preview(
     name = "Dark",
     device = Devices.PHONE,

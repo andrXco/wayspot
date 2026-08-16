@@ -1,6 +1,7 @@
 package com.example.wayspot.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -11,8 +12,14 @@ import com.example.wayspot.R
 
 @Composable
 fun LogoApp(modifier: Modifier = Modifier) {
+    val logoResource = if (isSystemInDarkTheme()) {
+        R.drawable.branding_logo_oscuro_wayspot
+    } else {
+        R.drawable.branding_logo_claro_wayspot
+    }
+
     Image(
-        painter = painterResource(R.drawable.branding_logo_wayspot),
+        painter = painterResource(logoResource),
         contentDescription = stringResource(R.string.logo_content_description),
         modifier = modifier.height(120.dp)
     )

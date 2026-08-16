@@ -1,6 +1,7 @@
 package com.example.wayspot.ui.screens.explore
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -9,13 +10,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.model.Places
 import com.example.wayspot.R
 import com.example.wayspot.ui.components.WayspotSearch
 import com.example.wayspot.ui.preview.PreviewDataPopular
+import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.explore.components.ExplorerPopularCard
 import com.example.wayspot.ui.screens.explore.components.ExplorerTags
 import com.example.wayspot.ui.theme.WayspotTheme
@@ -51,7 +52,9 @@ fun ExplorerContent(
     m: Modifier = Modifier
 ) {
     LazyColumn(
-        modifier = m.fillMaxSize(),
+        modifier = m
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
         contentPadding = PaddingValues(bottom = 16.dp)
     ) {
         // Buscador
@@ -125,7 +128,7 @@ fun ExplorerContent(
     }
 }
 
-@Preview(showBackground = true)
+@WayspotMultiPreview
 @Composable
 private fun ExploreScreenPreview() {
     WayspotTheme {
