@@ -40,6 +40,8 @@ fun LoginScreen(
     )
 }
 
+
+//state hoisting
 @Composable
 fun LoginContent(
     usuario: String,
