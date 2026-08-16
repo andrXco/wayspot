@@ -32,4 +32,8 @@
     <string name="search_placeholder">Busca un lugar o ciudad...</string>
     <string name="search_content_description">Buscar</string>
     <string name="star_content_description">Estrella</string>
+    <string name="nav_home">Inicio</string>
+    <string name="nav_explore">Explorar</string>
+    <string name="nav_profile">Perfil</string>
+    <string name="profile_content_description">Perfil de usuario</string>
 </resources>

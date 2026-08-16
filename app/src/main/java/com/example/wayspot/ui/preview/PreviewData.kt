@@ -27,28 +27,6 @@ object PreviewData {
         imagen = "https://images.unsplash.com/photo-1583422422116-392a74afe882?q=80&w=1000&auto=format&fit=crop"
     )
 
-    val samplePost3 = Post(
-        nombre = "Elena Torres",
-        usuario = "@elena_t",
-        tiempo = "Hace 1 día",
-        categoria = "Moderna",
-        titulo = "Skyline Shinjuku",
-        ubicacion = "Tokio, Japón",
-        descripcion = "Las luces de neón y la energía de esta ciudad son incomparables. El mirador del Gobierno Metropolitano ofrece una vista gratuita increíble.",
-        imagen = "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=1000&auto=format&fit=crop"
-    )
-
-    val samplePost4 = Post(
-        nombre = "Juan Pérez",
-        usuario = "@juan_p",
-        tiempo = "Hace 3 días",
-        categoria = "Historia",
-        titulo = "Coliseo Romano",
-        ubicacion = "Roma, Italia",
-        descripcion = "Sentir la historia bajo tus pies es algo indescriptible. Caminar por los alrededores al atardecer es mágico.",
-        imagen = "https://images.unsplash.com/photo-1552832230-c0197dd311b5?q=80&w=1000&auto=format&fit=crop"
-    )
-
     val listPosts = listOf(samplePost1, samplePost2)
 
     val sampleReview = Review(
