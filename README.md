@@ -64,8 +64,8 @@ Los colores de WaySpot combinan naturaleza, calidez y contraste para crear una e
 ## Documentación
 
 * [Requisitos funcionales](./doc/Requisitos%20Funcionales.pdf)
-* [Diagrama de base de datos](./Diagramas/Diagrama%20de%20BD.png)
-* [Diagrama de clases](./Diagramas/Diagrama%20de%20clases%20-%20WaySpot.jpeg)
+* [Diagrama de base de datos](doc/diagrams/Diagrama%20de%20BD.png)
+* [Diagrama de clases](doc/diagrams/Diagrama%20de%20clases%20-%20WaySpot.jpeg)
 
 ---
 
