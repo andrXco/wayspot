@@ -213,3 +213,12 @@ reports/
 local.properties
 implementation_plan.artifact.md
 golden_rules.artifact.md
+
+# =========================
+# Agents & Customizations
+# =========================
+.agents/
+AGENTS.md
+AGENTE.md
+
+
