@@ -29,6 +29,7 @@ import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.explore.ExploreScreen
 import com.example.wayspot.ui.screens.home.components.PostCard
 import com.example.wayspot.ui.theme.WayspotTheme
+import com.example.wayspot.ui.screens.profile.ProfileScreen
 
 @Composable
 fun HomeScreen(
@@ -84,7 +85,7 @@ fun HomeContent(
             }
 
             Routes.PROFILE -> {
-                ProfileContent(
+                ProfileScreen(
                     modifier = Modifier.fillMaxSize()
                 )
             }
@@ -148,19 +149,6 @@ private fun PostList(
     }
 }
 
-@Composable
-private fun ProfileContent(
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "Perfil de usuario"
-        )
-    }
-}
 
 @WayspotMultiPreview
 @Composable
