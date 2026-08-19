@@ -90,16 +90,34 @@ object PreviewData {
 
     val listReviews = listOf(
         Review(
-            usuario = "Valentina García",
+            usuario = "@valentina_viaja",
             comentario = "Una experiencia increíble. La vista y el recorrido valen completamente la pena.",
             rating = 5,
-            fecha = "12 ago 2026"
+            fecha = "12/08/2026"
         ),
         Review(
-            usuario = "Valentina García",
+            usuario = "@valentina_viaja",
             comentario = "Un lugar que definitivamente volvería a visitar.",
             rating = 4,
-            fecha = "3 jul 2026"
+            fecha = "03/07/2026"
+        ),
+        Review(
+            usuario = "@valentina_viaja",
+            comentario = "Muy bonito y tranquilo, ideal para pasar la tarde.",
+            rating = 5,
+            fecha = "28/06/2026"
+        ),
+        Review(
+            usuario = "@valentina_viaja",
+            comentario = "La experiencia fue buena, aunque había bastante gente.",
+            rating = 4,
+            fecha = "15/06/2026"
+        ),
+        Review(
+            usuario = "@valentina_viaja",
+            comentario = "La vista fue lo mejor de toda la visita.",
+            rating = 5,
+            fecha = "02/06/2026"
         )
     )
 }

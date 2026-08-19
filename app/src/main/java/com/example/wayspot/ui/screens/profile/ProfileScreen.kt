@@ -17,6 +17,7 @@ import com.example.wayspot.ui.screens.profile.components.ProfileReviewItem
 import com.example.wayspot.ui.screens.profile.components.ProfileStats
 import com.example.wayspot.ui.theme.WayspotTheme
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxWidth
 
 @Composable
 fun ProfileScreen(
@@ -86,7 +87,7 @@ private fun ProfileActions(
     ) {
         androidx.compose.material3.OutlinedButton(
             onClick = onEditProfileClick,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxWidth()
         ) {
             androidx.compose.material3.Text(
                 text = "Editar perfil"
