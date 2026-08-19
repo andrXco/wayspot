@@ -3,6 +3,7 @@ package com.example.wayspot.ui.preview
 import com.example.wayspot.R
 import com.example.wayspot.model.Post
 import com.example.wayspot.model.Review
+import com.example.wayspot.model.NotificationInfo
 
 object PreviewData {
     val samplePost1 = Post(
@@ -36,5 +37,38 @@ object PreviewData {
         comentario = "Increíble lugar, volvería mil veces.",
         rating = 5,
         fecha = "12/08/2026"
+    )
+
+    val notifications = listOf(
+        NotificationInfo(
+            id = 1,
+            username = "Laura",
+            message = "comenzó a seguirte",
+            time = "Hace 5 min"
+        ),
+        NotificationInfo(
+            id = 2,
+            username = "Andrés",
+            message = "le dio me gusta a tu reseña",
+            time = "Hace 20 min"
+        ),
+        NotificationInfo(
+            id = 3,
+            username = "Camila",
+            message = "comentó tu reseña de Monserrate",
+            time = "Hace 1 h"
+        ),
+        NotificationInfo(
+            id = 4,
+            username = "Sofía",
+            message = "publicó una nueva reseña",
+            time = "Hace 3 h"
+        ),
+        NotificationInfo(
+            id = 5,
+            username = "Daniel",
+            message = "comenzó a seguirte",
+            time = "Ayer"
+        )
     )
 }

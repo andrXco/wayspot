@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.navigation.Routes
 import com.example.wayspot.ui.preview.PreviewData
@@ -22,14 +21,21 @@ fun HomeScreen(
     onPlaceClick: (com.example.wayspot.model.Places) -> Unit,
     currentRoute: String,
     onNavItemClick: (String) -> Unit,
+    onNotificationsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var searchText by remember {
+        mutableStateOf("")
+    }
+
     HomeContent(
         posts = PreviewData.listPosts,
-        searchText = "",
+        searchText = searchText,
         currentRoute = currentRoute,
-        onSearchChange = { /* Lógica de búsqueda */ },
-        onNotificationsClick = { /* Lógica de notificaciones */ },
+        onSearchChange = {
+            searchText = it
+        },
+        onNotificationsClick = onNotificationsClick,
         onNavItemClick = onNavItemClick,
         onPlaceClick = onPlaceClick,
         modifier = modifier
@@ -62,12 +68,14 @@ fun HomeContent(
         },
         modifier = modifier
     ) { paddingValues ->
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
             when (currentRoute) {
+
                 Routes.HOME -> {
                     Column(
                         modifier = Modifier
@@ -79,7 +87,9 @@ fun HomeContent(
                             onSearchChange = onSearchChange
                         )
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(
+                            modifier = Modifier.height(16.dp)
+                        )
 
                         PostList(
                             posts = posts,
@@ -87,18 +97,22 @@ fun HomeContent(
                         )
                     }
                 }
+
                 Routes.EXPLORE -> {
                     com.example.wayspot.ui.screens.explore.ExploreScreen(
                         onPlaceClick = onPlaceClick,
                         m = Modifier.fillMaxSize()
                     )
                 }
+
                 Routes.PROFILE -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = androidx.compose.ui.Alignment.Center
                     ) {
-                        androidx.compose.material3.Text(text = "Perfil de usuario")
+                        androidx.compose.material3.Text(
+                            text = "Perfil de usuario"
+                        )
                     }
                 }
             }
@@ -117,13 +131,18 @@ private fun PostList(
         modifier = modifier.fillMaxWidth()
     ) {
         items(posts) { post ->
+
             PostCard(
                 post = post,
                 onClick = {
-                    // Buscar el lugar correspondiente por placeId
-                    val place = com.example.wayspot.ui.preview.PreviewDataPopular.listPlaces.find { 
-                        it.id == post.placeId
-                    }
+
+                    val place =
+                        com.example.wayspot.ui.preview.PreviewDataPopular
+                            .listPlaces
+                            .find {
+                                it.id == post.placeId
+                            }
+
                     if (place != null) {
                         onPlaceClick(place)
                     }
@@ -137,13 +156,10 @@ private fun PostList(
 @Composable
 private fun HomeScreenPreview() {
     WayspotTheme {
-        HomeContent(
-            posts = PreviewData.listPosts,
-            searchText = "",
+        HomeScreen(
             currentRoute = Routes.HOME,
-            onSearchChange = {},
-            onNotificationsClick = {},
             onNavItemClick = {},
+            onNotificationsClick = {},
             onPlaceClick = {}
         )
     }
