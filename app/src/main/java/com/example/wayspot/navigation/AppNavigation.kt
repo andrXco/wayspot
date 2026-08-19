@@ -19,7 +19,6 @@ import com.example.wayspot.ui.screens.splash.SplashScreen
 fun AppNavigation(
     modifier: Modifier = Modifier
 ) {
-
     var currentRoute by remember {
         mutableStateOf(Routes.SPLASH)
     }
@@ -69,7 +68,6 @@ private fun AppContent(
     onPlaceClick: (Places) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     when (currentRoute) {
 
         Routes.SPLASH -> {
