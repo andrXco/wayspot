@@ -17,8 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.wayspot.model.NotificationInfo
+import com.example.wayspot.ui.preview.PreviewData
+import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
@@ -77,18 +78,12 @@ private fun NotificationAvatar(
     }
 }
 
-@Preview(showBackground = true)
+@WayspotMultiPreview
 @Composable
-private fun NotificationPreview() {
+private fun NotificationItemPreview() {
     WayspotTheme {
         NotificationItem(
-            notification = NotificationInfo(
-                id = 1,
-                username = "John Doe",
-                message = "liked your photo",
-                time = "2 minutes ago"
-            ),
-            modifier = Modifier.padding(16.dp)
+            notification = PreviewData.notifications.first()
         )
     }
 }

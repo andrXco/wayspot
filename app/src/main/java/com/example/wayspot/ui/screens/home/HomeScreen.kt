@@ -15,6 +15,7 @@ import com.example.wayspot.ui.components.WayspotHeader
 import com.example.wayspot.ui.components.WayspotSearch
 import com.example.wayspot.ui.screens.home.components.PostCard
 import com.example.wayspot.ui.theme.WayspotTheme
+import com.example.wayspot.ui.screens.profile.ProfileScreen
 
 @Composable
 fun HomeScreen(
@@ -106,14 +107,9 @@ fun HomeContent(
                 }
 
                 Routes.PROFILE -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = androidx.compose.ui.Alignment.Center
-                    ) {
-                        androidx.compose.material3.Text(
-                            text = "Perfil de usuario"
-                        )
-                    }
+                    ProfileScreen(
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
             }
         }

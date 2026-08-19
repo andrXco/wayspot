@@ -5,6 +5,7 @@ import com.example.wayspot.model.Post
 import com.example.wayspot.model.Review
 import com.example.wayspot.model.NotificationInfo
 
+
 object PreviewData {
     val samplePost1 = Post(
         nombre = "María González",
@@ -69,6 +70,36 @@ object PreviewData {
             username = "Daniel",
             message = "comenzó a seguirte",
             time = "Ayer"
+        )
+    )
+
+    val reviews = listOf(
+        Review(
+            usuario = "Valentina García",
+            comentario = "Una experiencia increíble. La vista y el recorrido valen completamente la pena.",
+            rating = 5,
+            fecha = "12 ago 2026"
+        ),
+        Review(
+            usuario = "Valentina García",
+            comentario = "Un lugar que definitivamente volvería a visitar.",
+            rating = 4,
+            fecha = "3 jul 2026"
+        )
+    )
+
+    val listReviews = listOf(
+        Review(
+            usuario = "Valentina García",
+            comentario = "Una experiencia increíble. La vista y el recorrido valen completamente la pena.",
+            rating = 5,
+            fecha = "12 ago 2026"
+        ),
+        Review(
+            usuario = "Valentina García",
+            comentario = "Un lugar que definitivamente volvería a visitar.",
+            rating = 4,
+            fecha = "3 jul 2026"
         )
     )
 }
