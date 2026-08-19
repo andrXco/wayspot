@@ -1,7 +1,7 @@
 package com.example.wayspot.ui.screens.notifications
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,6 +23,7 @@ import com.example.wayspot.ui.preview.PreviewData
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.notifications.components.NotificationItem
 import com.example.wayspot.ui.theme.WayspotTheme
+import com.example.wayspot.ui.screens.notifications.components.NotificationsTitle
 
 @Composable
 fun NotificationsScreen(
@@ -70,14 +71,15 @@ private fun NotificationsHeader(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .padding(bottom = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
+        contentAlignment = Alignment.Center
     ) {
         IconButton(
-            onClick = onBackClick
+            onClick = onBackClick,
+            modifier = Modifier.align(Alignment.CenterStart)
         ) {
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
@@ -85,13 +87,10 @@ private fun NotificationsHeader(
             )
         }
 
-        Text(
-            text = "Notificaciones",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
-        )
+        NotificationsTitle()
     }
 }
+
 
 @WayspotMultiPreview
 @Composable

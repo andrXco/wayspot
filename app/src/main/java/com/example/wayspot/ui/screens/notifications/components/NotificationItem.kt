@@ -1,6 +1,5 @@
 package com.example.wayspot.ui.screens.notifications.components
 
-import android.app.Notification
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,9 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.wayspot.model.NotificationInfo
-import com.example.wayspot.navigation.Routes
-import com.example.wayspot.ui.screens.home.HomeScreen
 import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
@@ -79,14 +77,18 @@ private fun NotificationAvatar(
     }
 }
 
+@Preview(showBackground = true)
 @Composable
 private fun NotificationPreview() {
     WayspotTheme {
-        HomeScreen(
-            currentRoute = Routes.HOME,
-            onNavItemClick = {},
-            onNotificationsClick = {},
-            onPlaceClick = {}
+        NotificationItem(
+            notification = NotificationInfo(
+                id = 1,
+                username = "John Doe",
+                message = "liked your photo",
+                time = "2 minutes ago"
+            ),
+            modifier = Modifier.padding(16.dp)
         )
     }
 }
