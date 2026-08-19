@@ -3,7 +3,6 @@ package com.example.wayspot.ui.screens.home
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -54,26 +53,19 @@ fun HomeContent(
     onPlaceClick: (com.example.wayspot.model.Places) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Scaffold(
-        topBar = {
-            WayspotHeader(
-                onNotificationsClick = onNotificationsClick,
-                modifier = Modifier.padding(16.dp)
-            )
-        },
-        bottomBar = {
-            WayspotBottomBar(
-                currentRoute = currentRoute,
-                onNavItemClick = onNavItemClick
-            )
-        },
-        modifier = modifier
-    ) { paddingValues ->
+    Column(
+        modifier = modifier.fillMaxSize()
+    ) {
+
+        WayspotHeader(
+            onNotificationsClick = onNotificationsClick,
+            modifier = Modifier.padding(16.dp)
+        )
 
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+                .weight(1f)
+                .fillMaxWidth()
         ) {
             when (currentRoute) {
 
@@ -107,12 +99,17 @@ fun HomeContent(
                 }
 
                 Routes.PROFILE -> {
-                    ProfileScreen(
+                    com.example.wayspot.ui.screens.profile.ProfileScreen(
                         modifier = Modifier.fillMaxSize()
                     )
                 }
             }
         }
+
+        WayspotBottomBar(
+            currentRoute = currentRoute,
+            onNavItemClick = onNavItemClick
+        )
     }
 }
 

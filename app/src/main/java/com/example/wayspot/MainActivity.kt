@@ -13,13 +13,20 @@ import com.example.wayspot.navigation.AppNavigation
 import com.example.wayspot.ui.theme.WayspotTheme
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             WayspotTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Box(modifier = Modifier.padding(innerPadding)) {
+                Scaffold(
+                    modifier = Modifier.fillMaxSize()
+                ) { innerPadding ->
+
+                    Box(
+                        modifier = Modifier.padding(innerPadding)
+                    ) {
                         AppNavigation()
                     }
                 }
