@@ -36,7 +36,6 @@ fun AppNavigation() {
         Routes.HOME -> {
             HomeScreen(
                 currentRoute = homeRoute,
-                onNavItemClick = { homeRoute = it },
                 onPlaceClick = { place ->
                     selectedPlace = place
                     currentRoute = Routes.PLACE_DETAIL
