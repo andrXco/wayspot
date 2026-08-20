@@ -4,9 +4,24 @@ import com.example.wayspot.R
 import com.example.wayspot.model.Post
 import com.example.wayspot.model.Review
 import com.example.wayspot.model.NotificationInfo
+import com.example.wayspot.model.UserProfile
+import com.example.wayspot.model.UserStats
 
 
 object PreviewData {
+    val userProfile = UserProfile(
+        name = "Valentina García",
+        username = "@valentina_viaja",
+        bio = "Viajera apasionada · 23 países visitados · Compartiendo el mundo un lugar a la vez",
+        initials = "VG",
+        isVerified = true,
+        stats = UserStats(
+            places = 47,
+            reviews = 38,
+            followers = "1.2k"
+        )
+    )
+
     val samplePost1 = Post(
         nombre = "María González",
         usuario = "@maria_g",
@@ -91,33 +106,21 @@ object PreviewData {
     val listReviews = listOf(
         Review(
             usuario = "@valentina_viaja",
-            comentario = "Una experiencia increíble. La vista y el recorrido valen completamente la pena.",
+            placeTitle = "Cerro Monserrate",
+            location = "Bogotá, Colombia",
+            imageRes = R.drawable.post_card_machu_pichu,
+            comentario = "Una experiencia espiritual única. La vista desde la cima al atardecer es simplemente...",
             rating = 5,
-            fecha = "12/08/2026"
+            fecha = "12 ago 2026"
         ),
         Review(
             usuario = "@valentina_viaja",
-            comentario = "Un lugar que definitivamente volvería a visitar.",
-            rating = 4,
-            fecha = "03/07/2026"
-        ),
-        Review(
-            usuario = "@valentina_viaja",
-            comentario = "Muy bonito y tranquilo, ideal para pasar la tarde.",
+            placeTitle = "Machu Picchu",
+            location = "Cusco, Perú",
+            imageRes = R.drawable.post_card_machu_pichu,
+            comentario = "Una maravilla del mundo que supera todas las expectativas. El amanecer es...",
             rating = 5,
-            fecha = "28/06/2026"
-        ),
-        Review(
-            usuario = "@valentina_viaja",
-            comentario = "La experiencia fue buena, aunque había bastante gente.",
-            rating = 4,
-            fecha = "15/06/2026"
-        ),
-        Review(
-            usuario = "@valentina_viaja",
-            comentario = "La vista fue lo mejor de toda la visita.",
-            rating = 5,
-            fecha = "02/06/2026"
+            fecha = "3 jul 2026"
         )
     )
 }

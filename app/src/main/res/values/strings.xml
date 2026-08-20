@@ -62,6 +62,10 @@
     <string name="barcelona_espa_a">Barcelona, España</string>
     <string name="el_dise_o_de_gaud_es_simplemente_surrealista_las_vistas_de_la_ciudad_desde_la_terraza_son_espectaculares_compra_entradas_con_anticipaci_n_hay">El diseño de Gaudí es simplemente surrealista. Las vistas de la ciudad desde la terraza son espectaculares. Compra entradas con anticipación, hay...</string>
     <string name="notifications_content_description">Notificaciones</string>
+    <string name="notifications_title">Notificaciones</string>
+    <string name="notifications_empty_title">Sin notificaciones</string>
+    <string name="notifications_empty_description">Te avisaremos cuando tengas nuevas interacciones, seguidores o reseñas.</string>
+    <string name="notifications_empty_icon_content_description">Icono de notificaciones vacío</string>
     <string name="search_placeholder">Busca un lugar o ciudad...</string>
     <string name="search_content_description">Buscar</string>
     <string name="star_content_description">Estrella</string>
@@ -69,6 +73,24 @@
     <string name="nav_explore">Explorar</string>
     <string name="nav_profile">Perfil</string>
     <string name="profile_content_description">Perfil de usuario</string>
+
+    <!-- Profile Screen Strings -->
+    <string name="profile_label_places">Lugares</string>
+    <string name="profile_label_reviews">Reseñas</string>
+    <string name="profile_label_followers">Seguidores</string>
+    <string name="profile_button_edit">Editar perfil</string>
+    <string name="profile_tab_my_reviews">Mis reseñas</string>
+    <string name="profile_tab_saved">Guardados</string>
+    <string name="profile_content_description_verified">Usuario verificado</string>
+    <string name="profile_content_description_avatar">Foto de perfil</string>
+    <string name="profile_edit_icon_content_description">Icono editar</string>
+    <string name="profile_verified_badge_content_description">Usuario verificado</string>
+    <string name="profile_sample_name">Valentina García</string>
+    <string name="profile_sample_username">\@valentina_viaja</string>
+    <string name="profile_sample_bio">Viajera apasionada · 23 países visitados · Compartiendo el mundo un lugar a la vez</string>
+    <string name="profile_saved_empty_title">Sin elementos guardados</string>
+    <string name="profile_saved_empty_description">Los lugares y publicaciones que guardes aparecerán aquí para fácil acceso.</string>
+    <string name="profile_saved_empty_icon_content_description">Icono de guardados vacío</string>
 
     <!-- Place Detail Strings -->
     <string name="back_button_content_description">Volver</string>
