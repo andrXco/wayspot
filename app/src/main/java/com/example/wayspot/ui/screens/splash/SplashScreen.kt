@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -37,7 +38,13 @@ fun SplashScreen(
     modifier: Modifier = Modifier
 ) {
     val isDarkTheme = isSystemInDarkTheme()
-    val foregroundColor = if (isDarkTheme) BlancoCalido else Carbon
+
+    val foregroundColor = if (isDarkTheme) {
+        BlancoCalido
+    } else {
+        Carbon
+    }
+
     val backgroundOverlay = Brush.verticalGradient(
         colors = if (isDarkTheme) {
             listOf(
@@ -53,6 +60,25 @@ fun SplashScreen(
         }
     )
 
+    SplashContent(
+        isDarkTheme = isDarkTheme,
+        foregroundColor = foregroundColor,
+        backgroundOverlay = backgroundOverlay,
+        onLoginClick = onLoginClick,
+        onSignUpClick = onSignUpClick,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun SplashContent(
+    isDarkTheme: Boolean,
+    foregroundColor: Color,
+    backgroundOverlay: Brush,
+    onLoginClick: () -> Unit,
+    onSignUpClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier = modifier.fillMaxSize()
     ) {
@@ -114,7 +140,10 @@ fun SplashScreen(
                     .padding(top = 18.dp)
                     .width(56.dp)
                     .height(4.dp)
-                    .background(ArenaDorado, MaterialTheme.shapes.small)
+                    .background(
+                        ArenaDorado,
+                        MaterialTheme.shapes.small
+                    )
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -140,7 +169,10 @@ fun SplashScreen(
                     .fillMaxWidth()
                     .height(54.dp),
                 shape = MaterialTheme.shapes.medium,
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                border = BorderStroke(
+                    1.dp,
+                    MaterialTheme.colorScheme.primary
+                ),
                 colors = ButtonDefaults.outlinedButtonColors(
                     contentColor = MaterialTheme.colorScheme.primary
                 )
