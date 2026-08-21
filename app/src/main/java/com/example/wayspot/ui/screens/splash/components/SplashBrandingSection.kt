@@ -23,6 +23,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
+import com.example.wayspot.ui.preview.WayspotMultiPreview
+import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun SplashBrandingSection(
@@ -76,6 +78,18 @@ fun SplashBrandingSection(
                     color = accentColor,
                     shape = MaterialTheme.shapes.small
                 )
+        )
+    }
+}
+
+@WayspotMultiPreview
+@Composable
+private fun SplashBrandingSectionPreview() {
+    WayspotTheme {
+        SplashBrandingSection(
+            isDarkTheme = false,
+            foregroundColor = MaterialTheme.colorScheme.onBackground,
+            accentColor = MaterialTheme.colorScheme.primary
         )
     }
 }

@@ -19,6 +19,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
+import com.example.wayspot.ui.preview.WayspotMultiPreview
+import com.example.wayspot.ui.theme.WayspotTheme
+
 
 @Composable
 fun SplashActionsSection(
@@ -72,6 +75,19 @@ fun SplashActionsSection(
             lineHeight = 15.sp,
             color = foregroundColor.copy(alpha = 0.68f),
             textAlign = TextAlign.Center
+        )
+    }
+
+}
+
+@WayspotMultiPreview
+@Composable
+private fun SplashActionsSectionPreview() {
+    WayspotTheme {
+        SplashActionsSection(
+            onLoginClick = {},
+            onSignUpClick = {},
+            foregroundColor = MaterialTheme.colorScheme.onBackground
         )
     }
 }
