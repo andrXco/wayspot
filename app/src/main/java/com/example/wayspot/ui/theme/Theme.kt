@@ -87,7 +87,7 @@ fun WayspotTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = WayspotTypography,
         content = content
     )
 }
