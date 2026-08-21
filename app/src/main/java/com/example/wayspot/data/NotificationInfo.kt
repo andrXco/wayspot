@@ -1,4 +1,4 @@
-package com.example.wayspot.model
+package com.example.wayspot.data
 
 data class NotificationInfo(
     val id: Int,

@@ -21,8 +21,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
 import com.example.wayspot.R
-import com.example.wayspot.model.Post
-import com.example.wayspot.ui.preview.PreviewData
+import com.example.wayspot.data.Post
+import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.ui.theme.EstrellaAmarilla
 import com.example.wayspot.ui.theme.WayspotTheme
 

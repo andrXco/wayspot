@@ -33,8 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.wayspot.R
-import com.example.wayspot.model.Places
-import com.example.wayspot.ui.preview.PreviewDataPopular
+import com.example.wayspot.data.model.Places
+import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.ui.theme.Blanco
 import com.example.wayspot.ui.theme.Carbon
 import com.example.wayspot.ui.theme.WayspotTheme

@@ -1,7 +1,7 @@
 package com.example.wayspot.navigation
 
 import androidx.compose.runtime.*
-import com.example.wayspot.model.Places
+import com.example.wayspot.data.model.Places
 import com.example.wayspot.ui.screens.auth.login.LoginScreen
 import com.example.wayspot.ui.screens.auth.signup.SignUpScreen
 import com.example.wayspot.ui.screens.home.HomeScreen

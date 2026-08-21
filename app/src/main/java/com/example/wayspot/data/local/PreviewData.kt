@@ -1,12 +1,11 @@
-package com.example.wayspot.ui.preview
+package com.example.wayspot.data.local
 
 import com.example.wayspot.R
-import com.example.wayspot.model.Post
-import com.example.wayspot.model.Review
-import com.example.wayspot.model.NotificationInfo
-import com.example.wayspot.model.UserProfile
-import com.example.wayspot.model.UserStats
-
+import com.example.wayspot.data.NotificationInfo
+import com.example.wayspot.data.Post
+import com.example.wayspot.data.Review
+import com.example.wayspot.data.model.UserProfile
+import com.example.wayspot.data.model.UserStats
 
 object PreviewData {
     val userProfile = UserProfile(

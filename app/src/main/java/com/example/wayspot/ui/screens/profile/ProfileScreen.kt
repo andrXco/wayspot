@@ -32,9 +32,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
-import com.example.wayspot.model.Review
-import com.example.wayspot.model.UserProfile
-import com.example.wayspot.ui.preview.PreviewData
+import com.example.wayspot.data.Review
+import com.example.wayspot.data.model.UserProfile
+import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.profile.components.ProfileEditButton
 import com.example.wayspot.ui.screens.profile.components.ProfileHeader

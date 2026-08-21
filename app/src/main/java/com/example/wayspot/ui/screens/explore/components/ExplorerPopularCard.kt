@@ -23,8 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.wayspot.R
-import com.example.wayspot.model.Places
+import com.example.wayspot.data.model.Places
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.ui.theme.EstrellaAmarilla
 import com.example.wayspot.ui.theme.WayspotTheme
 
@@ -157,7 +158,7 @@ fun ExplorerPopularCard(
 fun ExplorerPopularCardPreview() {
     WayspotTheme {
         ExplorerPopularCard(
-            place = com.example.wayspot.ui.preview.PreviewDataPopular.samplePlaces1,
+            place = PreviewDataPopular.samplePlaces1,
             onSaveClick = {},
             onClick = {}
         )
