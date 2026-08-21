@@ -39,11 +39,12 @@ fun ProfileHeader(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(horizontal = 24.dp, vertical = 20.dp),
+            .padding(
+                horizontal = 24.dp,
+                vertical = 20.dp
+            ),
         horizontalAlignment = Alignment.Start
     ) {
-        // Avatar with Verified Badge
         Box(
             contentAlignment = Alignment.BottomEnd,
             modifier = Modifier.padding(bottom = 16.dp)
@@ -52,10 +53,14 @@ fun ProfileHeader(
                 modifier = Modifier
                     .size(96.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .background(
+                        MaterialTheme.colorScheme.primaryContainer
+                    )
                     .border(
                         width = 2.dp,
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                        color = MaterialTheme.colorScheme.onPrimary.copy(
+                            alpha = 0.3f
+                        ),
                         shape = CircleShape
                     ),
                 contentAlignment = Alignment.Center
@@ -74,12 +79,18 @@ fun ProfileHeader(
                         .size(26.dp)
                         .clip(CircleShape)
                         .background(EstrellaAmarilla)
-                        .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape),
+                        .border(
+                            width = 2.dp,
+                            color = MaterialTheme.colorScheme.primary,
+                            shape = CircleShape
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
-                        contentDescription = stringResource(R.string.profile_verified_badge_content_description),
+                        contentDescription = stringResource(
+                            R.string.profile_verified_badge_content_description
+                        ),
                         modifier = Modifier.size(18.dp),
                         tint = Carbon
                     )
@@ -87,28 +98,33 @@ fun ProfileHeader(
             }
         }
 
-        // Name, Username and Bio
         Text(
             text = user.name,
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onPrimary
         )
 
         Text(
             text = user.username,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.primary,
+            color = MaterialTheme.colorScheme.onPrimary.copy(
+                alpha = 0.85f
+            ),
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(top = 2.dp)
         )
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(
+            modifier = Modifier.height(10.dp)
+        )
 
         Text(
             text = user.bio,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = MaterialTheme.colorScheme.onPrimary.copy(
+                alpha = 0.8f
+            ),
             lineHeight = 20.sp
         )
     }
@@ -118,9 +134,14 @@ fun ProfileHeader(
 @Composable
 private fun ProfileHeaderPreview() {
     WayspotTheme {
-        ProfileHeader(
-            user = PreviewData.userProfile
-        )
+        Box(
+            modifier = Modifier.background(
+                MaterialTheme.colorScheme.primary
+            )
+        ) {
+            ProfileHeader(
+                user = PreviewData.userProfile
+            )
+        }
     }
 }
-
