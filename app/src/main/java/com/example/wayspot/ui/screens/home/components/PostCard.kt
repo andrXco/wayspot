@@ -1,6 +1,7 @@
 package com.example.wayspot.ui.screens.home.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
@@ -20,20 +21,22 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
 import com.example.wayspot.R
-import com.example.wayspot.model.Post
-import com.example.wayspot.ui.preview.PreviewData
+import com.example.wayspot.data.Post
+import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.ui.theme.EstrellaAmarilla
 import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun PostCard(
     post: Post,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(220.dp),
+            .height(220.dp)
+            .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = MaterialTheme.shapes.medium
     ) {
@@ -165,6 +168,6 @@ fun PostCard(
 @Composable
 private fun PostCardPreview() {
     WayspotTheme {
-        PostCard(post = PreviewData.samplePost1)
+        PostCard(post = PreviewData.samplePost1, onClick = {})
     }
 }

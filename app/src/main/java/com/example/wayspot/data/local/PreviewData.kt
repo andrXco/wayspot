@@ -1,0 +1,125 @@
+package com.example.wayspot.data.local
+
+import com.example.wayspot.R
+import com.example.wayspot.data.NotificationInfo
+import com.example.wayspot.data.Post
+import com.example.wayspot.data.Review
+import com.example.wayspot.data.model.UserProfile
+import com.example.wayspot.data.model.UserStats
+
+object PreviewData {
+    val userProfile = UserProfile(
+        name = "Valentina García",
+        username = "@valentina_viaja",
+        bio = "Viajera apasionada · 23 países visitados · Compartiendo el mundo un lugar a la vez",
+        initials = "VG",
+        isVerified = true,
+        stats = UserStats(
+            places = 47,
+            reviews = 38,
+            followers = "1.2k"
+        )
+    )
+
+    val samplePost1 = Post(
+        nombre = "María González",
+        usuario = "@maria_g",
+        tiempo = "Hace 2 horas",
+        categoria = "Patrimonio",
+        titulo = "Machu Picchu",
+        ubicacion = "Cusco, Perú",
+        descripcion = "Una experiencia que te cambia la vida. Ver el amanecer sobre las ruinas con la neblina entre las montañas es algo que no olvidarás jamás. Recomiendo subir temprano.",
+        placeId = "machu_picchu",
+        imagen = R.drawable.post_card_machu_pichu
+    )
+
+    val samplePost2 = Post(
+        nombre = "Carlos Ramírez",
+        usuario = "@carlos_r",
+        tiempo = "Hace 5 horas",
+        categoria = "Arte",
+        titulo = "Parque Güell",
+        ubicacion = "Barcelona, España",
+        descripcion = "El diseño de Gaudí es simplemente surrealista. Las vistas de la ciudad desde la terraza son espectaculares. Compra entradas con anticipación.",
+        placeId = "parque_guell",
+        imagen = "https://images.unsplash.com/photo-1583422422116-392a74afe882?q=80&w=1000&auto=format&fit=crop"
+    )
+
+    val listPosts = listOf(samplePost1, samplePost2)
+
+    val sampleReview = Review(
+        usuario = "@viajero99",
+        comentario = "Increíble lugar, volvería mil veces.",
+        rating = 5,
+        fecha = "12/08/2026"
+    )
+
+    val notifications = listOf(
+        NotificationInfo(
+            id = 1,
+            username = "Laura",
+            message = "comenzó a seguirte",
+            time = "Hace 5 min"
+        ),
+        NotificationInfo(
+            id = 2,
+            username = "Andrés",
+            message = "le dio me gusta a tu reseña",
+            time = "Hace 20 min"
+        ),
+        NotificationInfo(
+            id = 3,
+            username = "Camila",
+            message = "comentó tu reseña de Monserrate",
+            time = "Hace 1 h"
+        ),
+        NotificationInfo(
+            id = 4,
+            username = "Sofía",
+            message = "publicó una nueva reseña",
+            time = "Hace 3 h"
+        ),
+        NotificationInfo(
+            id = 5,
+            username = "Daniel",
+            message = "comenzó a seguirte",
+            time = "Ayer"
+        )
+    )
+
+    val reviews = listOf(
+        Review(
+            usuario = "Valentina García",
+            comentario = "Una experiencia increíble. La vista y el recorrido valen completamente la pena.",
+            rating = 5,
+            fecha = "12 ago 2026"
+        ),
+        Review(
+            usuario = "Valentina García",
+            comentario = "Un lugar que definitivamente volvería a visitar.",
+            rating = 4,
+            fecha = "3 jul 2026"
+        )
+    )
+
+    val listReviews = listOf(
+        Review(
+            usuario = "@valentina_viaja",
+            placeTitle = "Cerro Monserrate",
+            location = "Bogotá, Colombia",
+            imageRes = R.drawable.post_card_machu_pichu,
+            comentario = "Una experiencia espiritual única. La vista desde la cima al atardecer es simplemente...",
+            rating = 5,
+            fecha = "12 ago 2026"
+        ),
+        Review(
+            usuario = "@valentina_viaja",
+            placeTitle = "Machu Picchu",
+            location = "Cusco, Perú",
+            imageRes = R.drawable.post_card_machu_pichu,
+            comentario = "Una maravilla del mundo que supera todas las expectativas. El amanecer es...",
+            rating = 5,
+            fecha = "3 jul 2026"
+        )
+    )
+}

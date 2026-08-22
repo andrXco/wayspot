@@ -1,14 +1,11 @@
-package com.example.wayspot.ui.screens.home.components
+package com.example.wayspot.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,7 +17,7 @@ import com.example.wayspot.R
 import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
-fun HomeHeader(
+fun WayspotHeader(
     onNotificationsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -46,8 +43,8 @@ fun HomeHeader(
 
 @Preview(showBackground = true)
 @Composable
-private fun HomeHeaderPreview() {
+private fun WayspotHeaderPreview() {
     WayspotTheme {
-        HomeHeader(onNotificationsClick = {})
+        WayspotHeader(onNotificationsClick = {})
     }
 }

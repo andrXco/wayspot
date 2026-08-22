@@ -49,6 +49,30 @@ WaySpot es una red social de turismo que permite descubrir, calificar y comparti
 
 ---
 
+## Identidad visual
+
+### Paleta de colores
+
+Los colores de WaySpot combinan naturaleza, calidez y contraste para crear una experiencia cercana y fácil de reconocer.
+
+![Paleta de colores de WaySpot](./doc/paleta-wayspot.png)
+
+### Iconos de la app
+
+| Versión clara | Versión oscura |
+|:---:|:---:|
+| ![Icono claro de WaySpot](./doc/icono-claro-wayspot.png) | ![Icono oscuro de WaySpot](./doc/icono-oscuro-wayspot.png) |
+
+---
+
+## Documentación
+
+* [Requisitos funcionales](./doc/Requisitos%20Funcionales.pdf)
+* [Diagrama de base de datos](doc/diagrams/Diagrama%20de%20BD.png)
+* [Diagrama de clases](doc/diagrams/Diagrama%20de%20clases%20-%20WaySpot.jpeg)
+
+---
+
 <div align="center">
 
 ### WaySpot
@@ -56,24 +80,4 @@ WaySpot es una red social de turismo que permite descubrir, calificar y comparti
 **Descubre · Comparte · Explora**
 
 </div>
-
----
-## Paleta de Colores — WaySpot
-
-| Color | Código hexadecimal |
-|---|---|
-| Verde bosque | `#1F5D50` |
-| Verde salvia | `#7FA98F` |
-| Verde claro | `#BBD7B0` |
-| Terracota / Coral | `#E07A5F` |
-| Arena / Dorado | `#E9C46A` |
-| Carbón | `#202522` |
-| Gris | `#707773` |
-| Gris claro | `#DDE3DF` |
-| Blanco cálido | `#F7F8F5` |
-| Blanco | `#FFFFFF` |
-
-## Iconos de la app — WaySpot
-<img width="300" height="325" alt="Branding_Icono_Oscuro_WaySpot" src="https://github.com/user-attachments/assets/dae3d43e-c711-4fdc-b0b7-35519f6b09bf" />
-<img width="300" height="325" alt="Branding_Icono_Claro_WaySpot" src="https://github.com/user-attachments/assets/fbdee757-4ae3-4cb3-9240-6221b85e6a79" />
 
