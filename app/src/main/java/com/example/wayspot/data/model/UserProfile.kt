@@ -1,4 +1,4 @@
-package com.example.wayspot.model
+package com.example.wayspot.data.model
 
 data class UserProfile(
     val name: String,

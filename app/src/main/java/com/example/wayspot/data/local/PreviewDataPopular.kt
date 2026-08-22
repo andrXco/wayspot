@@ -1,9 +1,9 @@
-package com.example.wayspot.ui.preview
+package com.example.wayspot.data.local
 
 import com.example.wayspot.R
-import com.example.wayspot.model.PlaceDetail
-import com.example.wayspot.model.PlaceReview
-import com.example.wayspot.model.Places
+import com.example.wayspot.data.model.PlaceDetail
+import com.example.wayspot.data.model.PlaceReview
+import com.example.wayspot.data.model.Places
 
 object PreviewDataPopular {
 
@@ -119,7 +119,7 @@ object PreviewDataPopular {
     )
 
     val listPlaces = listOf(
-        samplePlaces1, samplePlaces2, samplePlaces3, 
+        samplePlaces1, samplePlaces2, samplePlaces3,
         samplePlaces4, samplePlaces5, samplePlaces6
     )
 }

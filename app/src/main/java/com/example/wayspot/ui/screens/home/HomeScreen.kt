@@ -6,19 +6,21 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.wayspot.data.Post
+import com.example.wayspot.data.local.PreviewDataPopular
+import com.example.wayspot.data.model.Places
 import com.example.wayspot.navigation.Routes
-import com.example.wayspot.ui.preview.PreviewData
+import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.components.WayspotBottomBar
 import com.example.wayspot.ui.components.WayspotHeader
 import com.example.wayspot.ui.components.WayspotSearch
 import com.example.wayspot.ui.screens.home.components.PostCard
 import com.example.wayspot.ui.theme.WayspotTheme
-import com.example.wayspot.ui.screens.profile.ProfileScreen
 
 @Composable
 fun HomeScreen(
-    onPlaceClick: (com.example.wayspot.model.Places) -> Unit,
+    onPlaceClick: (Places) -> Unit,
     currentRoute: String,
     onNavItemClick: (String) -> Unit,
     onNotificationsClick: () -> Unit,
@@ -44,23 +46,25 @@ fun HomeScreen(
 
 @Composable
 fun HomeContent(
-    posts: List<com.example.wayspot.model.Post>,
+    posts: List<Post>,
     searchText: String,
     currentRoute: String,
     onSearchChange: (String) -> Unit,
     onNotificationsClick: () -> Unit,
     onNavItemClick: (String) -> Unit,
-    onPlaceClick: (com.example.wayspot.model.Places) -> Unit,
+    onPlaceClick: (Places) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier.fillMaxSize()
     ) {
 
-        WayspotHeader(
-            onNotificationsClick = onNotificationsClick,
-            modifier = Modifier.padding(16.dp)
-        )
+        if (currentRoute != Routes.PROFILE) {
+            WayspotHeader(
+                onNotificationsClick = onNotificationsClick,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
 
         Box(
             modifier = Modifier
@@ -115,8 +119,8 @@ fun HomeContent(
 
 @Composable
 private fun PostList(
-    posts: List<com.example.wayspot.model.Post>,
-    onPlaceClick: (com.example.wayspot.model.Places) -> Unit,
+    posts: List<Post>,
+    onPlaceClick: (Places) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -130,7 +134,7 @@ private fun PostList(
                 onClick = {
 
                     val place =
-                        com.example.wayspot.ui.preview.PreviewDataPopular
+                        PreviewDataPopular
                             .listPlaces
                             .find {
                                 it.id == post.placeId

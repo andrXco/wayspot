@@ -28,8 +28,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.wayspot.model.NotificationInfo
-import com.example.wayspot.ui.preview.PreviewData
+import com.example.wayspot.data.NotificationInfo
+import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.theme.WayspotTheme
 
@@ -134,4 +134,4 @@ private fun NotificationItemPreview() {
             notification = PreviewData.notifications.first()
         )
     }
-}
+}

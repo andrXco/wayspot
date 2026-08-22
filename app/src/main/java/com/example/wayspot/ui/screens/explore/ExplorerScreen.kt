@@ -12,10 +12,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.wayspot.model.Places
+import com.example.wayspot.data.model.Places
 import com.example.wayspot.R
 import com.example.wayspot.ui.components.WayspotSearch
-import com.example.wayspot.ui.preview.PreviewDataPopular
+import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.explore.components.ExplorerPopularCard
 import com.example.wayspot.ui.screens.explore.components.ExplorerTags
