@@ -1,7 +1,8 @@
 package com.example.wayspot.ui.screens.profile.components
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -36,20 +37,18 @@ fun ProfileStats(
 ) {
     Card(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp),
-        shape = RoundedCornerShape(16.dp),
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.onSurface
+            containerColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.14f),
+            contentColor = MaterialTheme.colorScheme.onPrimary
         ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 16.dp)
+                .padding(vertical = 12.dp)
                 .height(IntrinsicSize.Min),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
@@ -64,7 +63,7 @@ fun ProfileStats(
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(1.dp),
-                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.22f)
             )
 
             ProfileStat(
@@ -77,7 +76,7 @@ fun ProfileStats(
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(1.dp),
-                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.22f)
             )
 
             ProfileStat(
@@ -104,7 +103,7 @@ private fun ProfileStat(
             style = MaterialTheme.typography.titleLarge,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.onPrimary
         )
 
         Text(
@@ -112,7 +111,7 @@ private fun ProfileStat(
             style = MaterialTheme.typography.bodySmall,
             fontSize = 12.sp,
             fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.78f)
         )
     }
 }
@@ -121,9 +120,15 @@ private fun ProfileStat(
 @Composable
 private fun ProfileStatsPreview() {
     WayspotTheme {
-        ProfileStats(
-            stats = PreviewData.userProfile.stats
-        )
+        Box(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.primary)
+                .padding(12.dp)
+        ) {
+            ProfileStats(
+                stats = PreviewData.userProfile.stats
+            )
+        }
     }
 }
 

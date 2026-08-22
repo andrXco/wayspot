@@ -59,10 +59,12 @@ fun HomeContent(
         modifier = modifier.fillMaxSize()
     ) {
 
-        WayspotHeader(
-            onNotificationsClick = onNotificationsClick,
-            modifier = Modifier.padding(16.dp)
-        )
+        if (currentRoute != Routes.PROFILE) {
+            WayspotHeader(
+                onNotificationsClick = onNotificationsClick,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
 
         Box(
             modifier = Modifier

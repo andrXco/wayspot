@@ -4,14 +4,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,8 +29,6 @@ import com.example.wayspot.R
 import com.example.wayspot.data.model.UserProfile
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.ui.preview.WayspotMultiPreview
-import com.example.wayspot.ui.theme.Carbon
-import com.example.wayspot.ui.theme.EstrellaAmarilla
 import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
@@ -40,92 +40,100 @@ fun ProfileHeader(
         modifier = modifier
             .fillMaxWidth()
             .padding(
-                horizontal = 24.dp,
-                vertical = 20.dp
+                horizontal = 16.dp,
+                vertical = 12.dp
             ),
         horizontalAlignment = Alignment.Start
     ) {
-        Box(
-            contentAlignment = Alignment.BottomEnd,
-            modifier = Modifier.padding(bottom = 16.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
-                modifier = Modifier
-                    .size(96.dp)
-                    .clip(CircleShape)
-                    .background(
-                        MaterialTheme.colorScheme.primaryContainer
-                    )
-                    .border(
-                        width = 2.dp,
-                        color = MaterialTheme.colorScheme.onPrimary.copy(
-                            alpha = 0.3f
-                        ),
-                        shape = CircleShape
-                    ),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.BottomEnd
             ) {
-                Text(
-                    text = user.initials,
-                    style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
-
-            if (user.isVerified) {
                 Box(
                     modifier = Modifier
-                        .size(26.dp)
+                        .size(88.dp)
                         .clip(CircleShape)
-                        .background(EstrellaAmarilla)
+                        .background(MaterialTheme.colorScheme.primaryContainer)
                         .border(
                             width = 2.dp,
-                            color = MaterialTheme.colorScheme.primary,
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.45f),
                             shape = CircleShape
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.CheckCircle,
-                        contentDescription = stringResource(
-                            R.string.profile_verified_badge_content_description
-                        ),
-                        modifier = Modifier.size(18.dp),
-                        tint = Carbon
+                    Text(
+                        text = user.initials,
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
+
+                if (user.isVerified) {
+                    Box(
+                        modifier = Modifier
+                            .size(22.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.tertiaryContainer)
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                shape = CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = stringResource(
+                                R.string.profile_verified_badge_content_description
+                            ),
+                            modifier = Modifier.size(14.dp),
+                            tint = MaterialTheme.colorScheme.onTertiaryContainer
+                        )
+                    }
+                }
+            }
+
+            Spacer(
+                modifier = Modifier.width(16.dp)
+            )
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = user.name,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+
+                Text(
+                    text = user.username,
+                    modifier = Modifier.padding(top = 4.dp),
+                    style = MaterialTheme.typography.bodySmall,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.78f)
+                )
             }
         }
 
-        Text(
-            text = user.name,
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onPrimary
-        )
-
-        Text(
-            text = user.username,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onPrimary.copy(
-                alpha = 0.85f
-            ),
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(top = 2.dp)
-        )
-
         Spacer(
-            modifier = Modifier.height(10.dp)
+            modifier = Modifier.height(16.dp)
         )
 
         Text(
             text = user.bio,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onPrimary.copy(
-                alpha = 0.8f
-            ),
-            lineHeight = 20.sp
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
+            lineHeight = 21.sp
         )
     }
 }

@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,7 +36,6 @@ import com.example.wayspot.ui.screens.profile.components.ProfileHeader
 import com.example.wayspot.ui.screens.profile.components.ProfileReviewItem
 import com.example.wayspot.ui.screens.profile.components.ProfileStats
 import com.example.wayspot.ui.screens.profile.components.ProfileTabs
-import androidx.compose.ui.graphics.Brush
 
 @Composable
 fun ProfileContent(
@@ -65,7 +65,7 @@ fun ProfileContent(
                         )
                     )
                     .padding(
-                        top = 20.dp,
+                        top = 12.dp,
                         bottom = 16.dp
                     )
             ) {
@@ -79,7 +79,7 @@ fun ProfileContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
-                            horizontal = 16.dp,
+                            horizontal = 12.dp,
                             vertical = 12.dp
                         )
                 )
