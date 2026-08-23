@@ -29,7 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
-import com.example.wayspot.data.NotificationInfo
+import com.example.wayspot.data.model.Notification
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.notifications.components.NotificationItem
@@ -50,7 +50,7 @@ fun NotificationsScreen(
 
 @Composable
 fun NotificationsContent(
-    notifications: List<NotificationInfo>,
+    notifications: List<Notification>,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {

@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.wayspot.R
-import com.example.wayspot.data.model.Places
+import com.example.wayspot.data.model.Place
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.ui.theme.EstrellaAmarilla
@@ -31,7 +31,7 @@ import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun ExplorerPopularCard(
-    place: Places,
+    place: Place,
     onSaveClick: () -> Unit,
     onClick: () -> Unit,
     m: Modifier = Modifier

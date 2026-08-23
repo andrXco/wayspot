@@ -3,7 +3,7 @@ package com.example.wayspot.data.local
 import com.example.wayspot.R
 import com.example.wayspot.data.model.PlaceDetail
 import com.example.wayspot.data.model.PlaceReview
-import com.example.wayspot.data.model.Places
+import com.example.wayspot.data.model.Place
 
 object PreviewDataPopular {
 
@@ -23,7 +23,7 @@ object PreviewDataPopular {
         )
     )
 
-    val samplePlaces1 = Places(
+    val samplePlaces1 = Place(
         id = "machu_picchu",
         tituloRes = R.string.place_machu_picchu_title,
         categoriaRes = R.string.place_category_heritage,
@@ -33,7 +33,7 @@ object PreviewDataPopular {
         detail = machuPicchuDetail
     )
 
-    val samplePlaces2 = Places(
+    val samplePlaces2 = Place(
         id = "maldives_beach",
         tituloRes = R.string.place_maldives_title,
         categoriaRes = R.string.place_category_beach,
@@ -50,7 +50,7 @@ object PreviewDataPopular {
         )
     )
 
-    val samplePlaces3 = Places(
+    val samplePlaces3 = Place(
         id = "louvre",
         tituloRes = R.string.place_louvre_title,
         categoriaRes = R.string.place_category_museum,
@@ -67,7 +67,7 @@ object PreviewDataPopular {
         )
     )
 
-    val samplePlaces4 = Places(
+    val samplePlaces4 = Place(
         id = "swiss_alps",
         tituloRes = R.string.place_swiss_alps_title,
         categoriaRes = R.string.place_category_mountain,
@@ -84,7 +84,7 @@ object PreviewDataPopular {
         )
     )
 
-    val samplePlaces5 = Places(
+    val samplePlaces5 = Place(
         id = "central_park",
         tituloRes = R.string.place_central_park_title,
         categoriaRes = R.string.place_category_park,
@@ -101,7 +101,7 @@ object PreviewDataPopular {
         )
     )
 
-    val samplePlaces6 = Places(
+    val samplePlaces6 = Place(
         id = "eiffel_tower",
         tituloRes = R.string.place_eiffel_tower_title,
         categoriaRes = R.string.place_category_city,

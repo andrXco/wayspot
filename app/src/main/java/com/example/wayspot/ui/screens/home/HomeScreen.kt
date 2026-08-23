@@ -6,9 +6,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.wayspot.data.Post
+import com.example.wayspot.data.model.Post
 import com.example.wayspot.data.local.PreviewDataPopular
-import com.example.wayspot.data.model.Places
+import com.example.wayspot.data.model.Place
 import com.example.wayspot.navigation.Routes
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.ui.preview.WayspotMultiPreview
@@ -20,7 +20,7 @@ import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun HomeScreen(
-    onPlaceClick: (Places) -> Unit,
+    onPlaceClick: (Place) -> Unit,
     currentRoute: String,
     onNavItemClick: (String) -> Unit,
     onNotificationsClick: () -> Unit,
@@ -52,7 +52,7 @@ fun HomeContent(
     onSearchChange: (String) -> Unit,
     onNotificationsClick: () -> Unit,
     onNavItemClick: (String) -> Unit,
-    onPlaceClick: (Places) -> Unit,
+    onPlaceClick: (Place) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -120,7 +120,7 @@ fun HomeContent(
 @Composable
 private fun PostList(
     posts: List<Post>,
-    onPlaceClick: (Places) -> Unit,
+    onPlaceClick: (Place) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(

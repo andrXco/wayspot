@@ -22,13 +22,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
-import com.example.wayspot.data.model.Places
+import com.example.wayspot.data.model.Place
 import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun PlaceDetailBody(
-    place: Places,
+    place: Place,
     onShareClick: () -> Unit,
     onWriteReviewClick: () -> Unit,
     onSeeAllReviewsClick: () -> Unit,

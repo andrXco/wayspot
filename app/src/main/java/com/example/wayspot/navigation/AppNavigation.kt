@@ -9,10 +9,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import com.example.wayspot.data.model.Places
+import com.example.wayspot.data.model.Place
+import com.example.wayspot.data.model.ReviewDraft
 import com.example.wayspot.ui.screens.auth.login.LoginScreen
 import com.example.wayspot.ui.screens.auth.signup.SignUpScreen
 import com.example.wayspot.ui.screens.home.HomeScreen
+import com.example.wayspot.ui.screens.newreview.NewReviewScreen
 import com.example.wayspot.ui.screens.notifications.NotificationsScreen
 import com.example.wayspot.ui.screens.placedetail.PlaceDetailScreen
 import com.example.wayspot.ui.screens.splash.SplashScreen
@@ -31,7 +33,15 @@ fun AppNavigation(
     }
 
     var selectedPlace by remember {
-        mutableStateOf<Places?>(null)
+        mutableStateOf<Place?>(null)
+    }
+
+    var reviewDrafts by remember {
+        mutableStateOf<Map<String, ReviewDraft>>(emptyMap())
+    }
+
+    var publishedReviews by remember {
+        mutableStateOf<List<ReviewDraft>>(emptyList())
     }
 
     val profileDrawsBehindStatusBar =
@@ -124,6 +134,31 @@ fun AppNavigation(
                         place = place,
                         onBackClick = {
                             currentRoute = Routes.HOME
+                        },
+                        onWriteReviewClick = {
+                            currentRoute = Routes.NEW_REVIEW
+                        }
+                    )
+                }
+            }
+
+            Routes.NEW_REVIEW -> {
+                selectedPlace?.let { place ->
+                    NewReviewScreen(
+                        place = place,
+                        onBackClick = {
+                            currentRoute = Routes.PLACE_DETAIL
+                        },
+                        initialDraft = reviewDrafts[place.id],
+                        onSaveDraft = { reviewDraft ->
+                            reviewDrafts = reviewDrafts +
+                                (reviewDraft.placeId to reviewDraft)
+                            currentRoute = Routes.PLACE_DETAIL
+                        },
+                        onPublishReview = { review ->
+                            publishedReviews = publishedReviews + review
+                            reviewDrafts = reviewDrafts - review.placeId
+                            currentRoute = Routes.PLACE_DETAIL
                         }
                     )
                 }

@@ -12,7 +12,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.wayspot.data.model.Places
+import com.example.wayspot.data.model.Place
 import com.example.wayspot.R
 import com.example.wayspot.ui.components.WayspotSearch
 import com.example.wayspot.data.local.PreviewDataPopular
@@ -23,7 +23,7 @@ import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun ExploreScreen(
-    onPlaceClick: (Places) -> Unit,
+    onPlaceClick: (Place) -> Unit,
     m: Modifier = Modifier
 ) {
     var searchText by remember { mutableStateOf("") }
@@ -43,12 +43,12 @@ fun ExploreScreen(
 
 @Composable
 fun ExplorerContent(
-    places: List<Places>,
+    places: List<Place>,
     searchText: String,
     selectedCategoryRes: Int,
     onSearchChange: (String) -> Unit,
     onCategorySelect: (Int) -> Unit,
-    onPlaceClick: (Places) -> Unit,
+    onPlaceClick: (Place) -> Unit,
     m: Modifier = Modifier
 ) {
     LazyColumn(

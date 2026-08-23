@@ -171,4 +171,29 @@
     <string name="place_eiffel_tower_price">Desde €23</string>
     <string name="place_eiffel_tower_altitude">330 m</string>
     <string name="place_eiffel_tower_description">El icono de París ofrece vistas de la ciudad desde sus distintos niveles y una experiencia arquitectónica emblemática junto al Sena.</string>
+
+    <!-- New Review Screen Strings -->
+    <string name="new_review_title">Nueva reseña</string>
+    <string name="new_review_draft">Borrador</string>
+    <string name="new_review_experience_question">¿Cómo fue tu experiencia?</string>
+    <string name="new_review_rating_1">Mala</string>
+    <string name="new_review_rating_2">Regular</string>
+    <string name="new_review_rating_3">Buena</string>
+    <string name="new_review_rating_4">Muy buena</string>
+    <string name="new_review_rating_5">Excelente</string>
+    <string name="new_review_title_label">Título de la reseña</string>
+    <string name="new_review_title_placeholder">Ej: Una vista que vale la pena...</string>
+    <string name="new_review_description_label">Describe tu experiencia</string>
+    <string name="new_review_description_placeholder">Cuéntanos qué fue lo que más te gustó, qué te sorprendió y si lo recomendarías a otros viajeros...</string>
+    <string name="new_review_character_counter">%1$d / %2$d</string>
+    <string name="new_review_add_photos_optional">Añadir fotos (opcional)</string>
+    <string name="new_review_add_photo">Añadir foto</string>
+    <string name="new_review_photos_limit">Puedes añadir hasta %1$d fotos</string>
+    <string name="new_review_publish">Publicar reseña</string>
+    <string name="new_review_place_image_content_description">Imagen de %1$s</string>
+    <string name="new_review_select_rating_content_description">Seleccionar calificación de %1$d estrellas</string>
+    <string name="new_review_current_rating_content_description">Calificación actual: %1$d de %2$d estrellas</string>
+    <string name="new_review_selected_photo_content_description">Foto seleccionada %1$d</string>
+    <string name="new_review_remove_photo_content_description">Eliminar foto %1$d</string>
+    <string name="new_review_save_draft_content_description">Guardar borrador</string>
 </resources>

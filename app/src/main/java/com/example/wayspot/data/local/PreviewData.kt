@@ -1,13 +1,23 @@
 package com.example.wayspot.data.local
 
 import com.example.wayspot.R
-import com.example.wayspot.data.NotificationInfo
-import com.example.wayspot.data.Post
-import com.example.wayspot.data.Review
+import com.example.wayspot.data.model.Notification
+import com.example.wayspot.data.model.Post
+import com.example.wayspot.data.model.Review
+import com.example.wayspot.data.model.ReviewDraft
+import com.example.wayspot.data.model.ReviewRules
 import com.example.wayspot.data.model.UserProfile
 import com.example.wayspot.data.model.UserStats
 
 object PreviewData {
+    val newReviewDraft = ReviewDraft(
+        placeId = PreviewDataPopular.samplePlaces1.id,
+        rating = ReviewRules.DEFAULT_RATING,
+        title = "",
+        description = "",
+        photoUris = emptyList()
+    )
+
     val userProfile = UserProfile(
         name = "Valentina García",
         username = "@valentina_viaja",
@@ -55,31 +65,31 @@ object PreviewData {
     )
 
     val notifications = listOf(
-        NotificationInfo(
+        Notification(
             id = 1,
             username = "Laura",
             message = "comenzó a seguirte",
             time = "Hace 5 min"
         ),
-        NotificationInfo(
+        Notification(
             id = 2,
             username = "Andrés",
             message = "le dio me gusta a tu reseña",
             time = "Hace 20 min"
         ),
-        NotificationInfo(
+        Notification(
             id = 3,
             username = "Camila",
             message = "comentó tu reseña de Monserrate",
             time = "Hace 1 h"
         ),
-        NotificationInfo(
+        Notification(
             id = 4,
             username = "Sofía",
             message = "publicó una nueva reseña",
             time = "Hace 3 h"
         ),
-        NotificationInfo(
+        Notification(
             id = 5,
             username = "Daniel",
             message = "comenzó a seguirte",

@@ -8,5 +8,6 @@ object Routes {
     const val EXPLORE = "explore"
     const val PROFILE = "profile"
     const val PLACE_DETAIL = "place_detail"
+    const val NEW_REVIEW = "new_review"
     const val NOTIFICATIONS = "notifications"
 }

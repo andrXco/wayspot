@@ -28,14 +28,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
-import com.example.wayspot.data.model.Places
+import com.example.wayspot.data.model.Place
 import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.ui.theme.EstrellaAmarilla
 import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 internal fun PlaceMetadata(
-    place: Places,
+    place: Place,
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -50,7 +50,7 @@ internal fun PlaceMetadata(
 }
 
 @Composable
-private fun PlaceLocationAndRating(place: Places, modifier: Modifier = Modifier) {
+private fun PlaceLocationAndRating(place: Place, modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
         PlaceLocation(locationRes = place.ubicacionRes)
         Spacer(modifier = Modifier.height(8.dp))
