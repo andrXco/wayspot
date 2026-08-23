@@ -3,6 +3,7 @@ package com.example.wayspot.data.local
 import com.example.wayspot.R
 import com.example.wayspot.data.model.Notification
 import com.example.wayspot.data.model.Post
+import com.example.wayspot.data.model.ProfileNotificationPreferences
 import com.example.wayspot.data.model.Review
 import com.example.wayspot.data.model.ReviewDraft
 import com.example.wayspot.data.model.ReviewRules
@@ -20,8 +21,15 @@ object PreviewData {
 
     val userProfile = UserProfile(
         name = "Valentina García",
-        username = "@valentina_viaja",
+        username = "valentina_viaja",
         bio = "Viajera apasionada · 23 países visitados · Compartiendo el mundo un lugar a la vez",
+        email = "valentina@correo.com",
+        location = "Bogotá, Colombia",
+        notificationPreferences = ProfileNotificationPreferences(
+            newFollowers = true,
+            reviewComments = true,
+            likesReceived = false
+        ),
         initials = "VG",
         isVerified = true,
         stats = UserStats(

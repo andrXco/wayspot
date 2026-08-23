@@ -9,11 +9,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.model.Place
 import com.example.wayspot.data.model.ReviewDraft
 import com.example.wayspot.ui.screens.auth.login.LoginScreen
 import com.example.wayspot.ui.screens.auth.signup.SignUpScreen
 import com.example.wayspot.ui.screens.home.HomeScreen
+import com.example.wayspot.ui.screens.editprofile.EditProfileScreen
 import com.example.wayspot.ui.screens.newreview.NewReviewScreen
 import com.example.wayspot.ui.screens.notifications.NotificationsScreen
 import com.example.wayspot.ui.screens.placedetail.PlaceDetailScreen
@@ -30,6 +32,10 @@ fun AppNavigation(
 
     var homeRoute by remember {
         mutableStateOf(Routes.HOME)
+    }
+
+    var userProfile by remember {
+        mutableStateOf(PreviewData.userProfile)
     }
 
     var selectedPlace by remember {
@@ -112,6 +118,7 @@ fun AppNavigation(
             Routes.HOME -> {
                 HomeScreen(
                     currentRoute = homeRoute,
+                    userProfile = userProfile,
 
                     onNavItemClick = {
                         homeRoute = it
@@ -119,6 +126,10 @@ fun AppNavigation(
 
                     onNotificationsClick = {
                         currentRoute = Routes.NOTIFICATIONS
+                    },
+
+                    onEditProfileClick = {
+                        currentRoute = Routes.EDIT_PROFILE
                     },
 
                     onPlaceClick = { place ->
@@ -168,6 +179,29 @@ fun AppNavigation(
                 NotificationsScreen(
                     onBackClick = {
                         currentRoute = Routes.HOME
+                    }
+                )
+            }
+
+            Routes.EDIT_PROFILE -> {
+                EditProfileScreen(
+                    profile = userProfile,
+                    onBackClick = {
+                        homeRoute = Routes.PROFILE
+                        currentRoute = Routes.HOME
+                    },
+                    onSaveClick = { updatedProfile ->
+                        userProfile = updatedProfile
+                        homeRoute = Routes.PROFILE
+                        currentRoute = Routes.HOME
+                    },
+                    onDeleteAccountConfirmed = {
+                        userProfile = PreviewData.userProfile
+                        selectedPlace = null
+                        reviewDrafts = emptyMap()
+                        publishedReviews = emptyList()
+                        homeRoute = Routes.HOME
+                        currentRoute = Routes.LOGIN
                     }
                 )
             }

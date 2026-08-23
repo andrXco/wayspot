@@ -87,10 +87,42 @@
     <string name="profile_verified_badge_content_description">Usuario verificado</string>
     <string name="profile_sample_name">Valentina García</string>
     <string name="profile_sample_username">\@valentina_viaja</string>
+    <string name="profile_username_format">\@%1$s</string>
     <string name="profile_sample_bio">Viajera apasionada · 23 países visitados · Compartiendo el mundo un lugar a la vez</string>
     <string name="profile_saved_empty_title">Sin elementos guardados</string>
     <string name="profile_saved_empty_description">Los lugares y publicaciones que guardes aparecerán aquí para fácil acceso.</string>
     <string name="profile_saved_empty_icon_content_description">Icono de guardados vacío</string>
+
+    <!-- Edit Profile Screen Strings -->
+    <string name="edit_profile_title">Editar perfil</string>
+    <string name="edit_profile_change_photo">Cambiar foto de perfil</string>
+    <string name="edit_profile_username_label">Nombre de usuario</string>
+    <string name="edit_profile_username_support">Solo letras, números y guiones bajos</string>
+    <string name="edit_profile_email_label">Correo electrónico</string>
+    <string name="edit_profile_bio_label">Biografía</string>
+    <string name="edit_profile_character_count">%1$d/%2$d caracteres</string>
+    <string name="edit_profile_location_label">Ciudad o país</string>
+    <string name="edit_profile_notifications_title">Notificaciones</string>
+    <string name="edit_profile_new_followers">Nuevos seguidores</string>
+    <string name="edit_profile_review_comments">Comentarios en reseñas</string>
+    <string name="edit_profile_likes_received">Likes recibidos</string>
+    <string name="edit_profile_danger_title">Zona de peligro</string>
+    <string name="edit_profile_danger_description">Esta versión local no está conectada a un servidor. Puedes borrar los cambios del perfil y cerrar la sesión, pero no eliminar una cuenta real.</string>
+    <string name="edit_profile_delete_confirmation">Se restaurará el perfil de demostración y se descartarán tus borradores y cambios locales. Esta acción no se puede deshacer.</string>
+    <string name="edit_profile_delete_account">Borrar datos locales</string>
+    <string name="edit_profile_cancel">Cancelar</string>
+    <string name="edit_profile_save_changes">Guardar cambios</string>
+    <string name="edit_profile_avatar_content_description">Foto de perfil de %1$s</string>
+    <string name="edit_profile_change_photo_content_description">Cambiar foto de perfil</string>
+    <string name="edit_profile_username_icon_content_description">Nombre de usuario</string>
+    <string name="edit_profile_email_icon_content_description">Correo electrónico</string>
+    <string name="edit_profile_location_icon_content_description">Ubicación</string>
+    <string name="edit_profile_new_followers_switch_content_description">Activar o desactivar notificaciones de nuevos seguidores</string>
+    <string name="edit_profile_review_comments_switch_content_description">Activar o desactivar notificaciones de comentarios en reseñas</string>
+    <string name="edit_profile_likes_received_switch_content_description">Activar o desactivar notificaciones de likes recibidos</string>
+    <string name="edit_profile_warning_content_description">Advertencia de borrado de datos locales</string>
+    <string name="edit_profile_delete_account_content_description">Borrar mis datos locales y cerrar sesión</string>
+    <string name="edit_profile_save_changes_content_description">Guardar cambios del perfil</string>
 
     <!-- Place Detail Strings -->
     <string name="back_button_content_description">Volver</string>

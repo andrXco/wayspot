@@ -7,12 +7,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.example.wayspot.data.local.PreviewData
+import com.example.wayspot.data.model.UserProfile
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.profile.components.ProfileContent
 import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun ProfileScreen(
+    userProfile: UserProfile,
     modifier: Modifier = Modifier,
     onEditProfileClick: () -> Unit = {}
 ) {
@@ -21,7 +23,7 @@ fun ProfileScreen(
     }
 
     ProfileContent(
-        user = PreviewData.userProfile,
+        user = userProfile,
         reviews = PreviewData.listReviews,
         selectedTabIndex = selectedTabIndex,
         onTabSelected = {
@@ -36,7 +38,7 @@ fun ProfileScreen(
 @Composable
 private fun ProfileScreenPreview() {
     WayspotTheme {
-        ProfileScreen()
+        ProfileScreen(userProfile = PreviewData.userProfile)
     }
 }
 

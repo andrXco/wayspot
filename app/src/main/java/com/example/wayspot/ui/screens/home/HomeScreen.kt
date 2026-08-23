@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 import com.example.wayspot.data.model.Post
 import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.data.model.Place
+import com.example.wayspot.data.model.UserProfile
 import com.example.wayspot.navigation.Routes
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.ui.preview.WayspotMultiPreview
@@ -24,6 +25,8 @@ fun HomeScreen(
     currentRoute: String,
     onNavItemClick: (String) -> Unit,
     onNotificationsClick: () -> Unit,
+    userProfile: UserProfile,
+    onEditProfileClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var searchText by remember {
@@ -34,12 +37,14 @@ fun HomeScreen(
         posts = PreviewData.listPosts,
         searchText = searchText,
         currentRoute = currentRoute,
+        userProfile = userProfile,
         onSearchChange = {
             searchText = it
         },
         onNotificationsClick = onNotificationsClick,
         onNavItemClick = onNavItemClick,
         onPlaceClick = onPlaceClick,
+        onEditProfileClick = onEditProfileClick,
         modifier = modifier
     )
 }
@@ -49,10 +54,12 @@ fun HomeContent(
     posts: List<Post>,
     searchText: String,
     currentRoute: String,
+    userProfile: UserProfile,
     onSearchChange: (String) -> Unit,
     onNotificationsClick: () -> Unit,
     onNavItemClick: (String) -> Unit,
     onPlaceClick: (Place) -> Unit,
+    onEditProfileClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -104,6 +111,8 @@ fun HomeContent(
 
                 Routes.PROFILE -> {
                     com.example.wayspot.ui.screens.profile.ProfileScreen(
+                        userProfile = userProfile,
+                        onEditProfileClick = onEditProfileClick,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
@@ -157,7 +166,9 @@ private fun HomeScreenPreview() {
             currentRoute = Routes.HOME,
             onNavItemClick = {},
             onNotificationsClick = {},
-            onPlaceClick = {}
+            onPlaceClick = {},
+            userProfile = PreviewData.userProfile,
+            onEditProfileClick = {}
         )
     }
 }
