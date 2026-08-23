@@ -1,4 +1,4 @@
-package com.example.wayspot.ui.screens.profile
+package com.example.wayspot.ui.screens.profile.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -67,8 +67,8 @@ fun ProfileContent(
                     )
                     .statusBarsPadding()
                     .padding(
-                        top = 12.dp,
-                        bottom = 16.dp
+                        top = 24.dp,
+                        bottom = 20.dp
                     )
             ) {
                 ProfileHeader(

@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.ui.preview.WayspotMultiPreview
+import com.example.wayspot.ui.screens.profile.components.ProfileContent
 import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
