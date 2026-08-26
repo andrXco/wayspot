@@ -9,6 +9,8 @@ import androidx.compose.ui.unit.dp
 import com.example.wayspot.data.model.Post
 import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.data.model.Place
+import com.example.wayspot.data.model.SavedPlace
+import com.example.wayspot.data.model.SavedPlaceList
 import com.example.wayspot.data.model.UserProfile
 import com.example.wayspot.navigation.Routes
 import com.example.wayspot.data.local.PreviewData
@@ -17,6 +19,7 @@ import com.example.wayspot.ui.components.WayspotBottomBar
 import com.example.wayspot.ui.components.WayspotHeader
 import com.example.wayspot.ui.components.WayspotSearch
 import com.example.wayspot.ui.screens.home.components.PostCard
+import com.example.wayspot.ui.screens.savedplaces.SavedPlacesScreen
 import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
@@ -27,6 +30,10 @@ fun HomeScreen(
     onNotificationsClick: () -> Unit,
     userProfile: UserProfile,
     onEditProfileClick: () -> Unit,
+    savedPlaces: List<SavedPlace>,
+    onSavedPlacesClick: () -> Unit,
+    onRemoveSavedPlace: (String, SavedPlaceList) -> Unit,
+    onToggleSavedPlace: (Place) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var searchText by remember {
@@ -38,6 +45,7 @@ fun HomeScreen(
         searchText = searchText,
         currentRoute = currentRoute,
         userProfile = userProfile,
+        savedPlaces = savedPlaces,
         onSearchChange = {
             searchText = it
         },
@@ -45,6 +53,9 @@ fun HomeScreen(
         onNavItemClick = onNavItemClick,
         onPlaceClick = onPlaceClick,
         onEditProfileClick = onEditProfileClick,
+        onSavedPlacesClick = onSavedPlacesClick,
+        onRemoveSavedPlace = onRemoveSavedPlace,
+        onToggleSavedPlace = onToggleSavedPlace,
         modifier = modifier
     )
 }
@@ -55,18 +66,22 @@ fun HomeContent(
     searchText: String,
     currentRoute: String,
     userProfile: UserProfile,
+    savedPlaces: List<SavedPlace>,
     onSearchChange: (String) -> Unit,
     onNotificationsClick: () -> Unit,
     onNavItemClick: (String) -> Unit,
     onPlaceClick: (Place) -> Unit,
     onEditProfileClick: () -> Unit,
+    onSavedPlacesClick: () -> Unit,
+    onRemoveSavedPlace: (String, SavedPlaceList) -> Unit,
+    onToggleSavedPlace: (Place) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier.fillMaxSize()
     ) {
 
-        if (currentRoute != Routes.PROFILE) {
+        if (currentRoute != Routes.PROFILE && currentRoute != Routes.SAVED_PLACES) {
             WayspotHeader(
                 onNotificationsClick = onNotificationsClick,
                 modifier = Modifier.padding(16.dp)
@@ -105,7 +120,9 @@ fun HomeContent(
                 Routes.EXPLORE -> {
                     com.example.wayspot.ui.screens.explore.ExploreScreen(
                         onPlaceClick = onPlaceClick,
-                        m = Modifier.fillMaxSize()
+                        savedPlaces = savedPlaces,
+                        onSaveClick = onToggleSavedPlace,
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
 
@@ -113,16 +130,29 @@ fun HomeContent(
                     com.example.wayspot.ui.screens.profile.ProfileScreen(
                         userProfile = userProfile,
                         onEditProfileClick = onEditProfileClick,
+                        onSavedPlacesClick = onSavedPlacesClick,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+
+                Routes.SAVED_PLACES -> {
+                    SavedPlacesScreen(
+                        savedPlaces = savedPlaces,
+                        onBackClick = { onNavItemClick(Routes.PROFILE) },
+                        onPlaceClick = onPlaceClick,
+                        onRemoveFromList = onRemoveSavedPlace,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
             }
         }
 
-        WayspotBottomBar(
-            currentRoute = currentRoute,
-            onNavItemClick = onNavItemClick
-        )
+        if (currentRoute != Routes.SAVED_PLACES) {
+            WayspotBottomBar(
+                currentRoute = currentRoute,
+                onNavItemClick = onNavItemClick
+            )
+        }
     }
 }
 
@@ -168,7 +198,11 @@ private fun HomeScreenPreview() {
             onNotificationsClick = {},
             onPlaceClick = {},
             userProfile = PreviewData.userProfile,
-            onEditProfileClick = {}
+            onEditProfileClick = {},
+            savedPlaces = PreviewData.savedPlaces,
+            onSavedPlacesClick = {},
+            onRemoveSavedPlace = { _, _ -> },
+            onToggleSavedPlace = {}
         )
     }
 }

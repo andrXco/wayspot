@@ -9,7 +9,6 @@ data class Place(
     @param:StringRes val ubicacionRes: Int,
     val rating: Double = 5.0,
     val imagen: Any? = null,
-    val isSaved: Boolean = false,
     val detail: PlaceDetail
 )
 

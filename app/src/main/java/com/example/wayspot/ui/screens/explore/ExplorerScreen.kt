@@ -13,8 +13,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.data.model.Place
+import com.example.wayspot.data.model.SavedPlace
 import com.example.wayspot.R
 import com.example.wayspot.ui.components.WayspotSearch
+import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.explore.components.ExplorerPopularCard
@@ -24,7 +26,9 @@ import com.example.wayspot.ui.theme.WayspotTheme
 @Composable
 fun ExploreScreen(
     onPlaceClick: (Place) -> Unit,
-    m: Modifier = Modifier
+    savedPlaces: List<SavedPlace>,
+    onSaveClick: (Place) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     var searchText by remember { mutableStateOf("") }
     var selectedCategoryRes by remember { mutableIntStateOf(R.string.category_beaches) }
@@ -37,7 +41,9 @@ fun ExploreScreen(
         onSearchChange = { searchText = it },
         onCategorySelect = { selectedCategoryRes = it },
         onPlaceClick = onPlaceClick,
-        m = m
+        savedPlaceIds = savedPlaces.mapTo(mutableSetOf()) { it.place.id },
+        onSaveClick = onSaveClick,
+        modifier = modifier
     )
 }
 
@@ -49,10 +55,12 @@ fun ExplorerContent(
     onSearchChange: (String) -> Unit,
     onCategorySelect: (Int) -> Unit,
     onPlaceClick: (Place) -> Unit,
-    m: Modifier = Modifier
+    savedPlaceIds: Set<String>,
+    onSaveClick: (Place) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        modifier = m
+        modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
         contentPadding = PaddingValues(bottom = 16.dp)
@@ -103,7 +111,10 @@ fun ExplorerContent(
 
         // Cuadrícula de Destinos (agrupados de 2 en 2)
         val rows = places.chunked(2)
-        items(rows.size) { rowIndex ->
+        items(
+            count = rows.size,
+            key = { rowIndex -> rows[rowIndex].joinToString(separator = "|") { it.id } }
+        ) { rowIndex ->
             val rowItems = rows[rowIndex]
             Row(
                 modifier = Modifier
@@ -114,9 +125,10 @@ fun ExplorerContent(
                 rowItems.forEach { place ->
                     ExplorerPopularCard(
                         place = place,
-                        onSaveClick = { /* Acción Guardar */ },
+                        isSaved = place.id in savedPlaceIds,
+                        onSaveClick = { onSaveClick(place) },
                         onClick = { onPlaceClick(place) },
-                        m = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f)
                     )
                 }
                 if (rowItems.size == 1) {
@@ -132,6 +144,10 @@ fun ExplorerContent(
 @Composable
 private fun ExploreScreenPreview() {
     WayspotTheme {
-        ExploreScreen(onPlaceClick = {})
+        ExploreScreen(
+            onPlaceClick = {},
+            savedPlaces = PreviewData.savedPlaces,
+            onSaveClick = {}
+        )
     }
 }

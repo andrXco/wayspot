@@ -118,8 +118,77 @@ object PreviewDataPopular {
         )
     )
 
+    val playaBlanca = Place(
+        id = "playa_blanca",
+        tituloRes = R.string.place_playa_blanca_title,
+        categoriaRes = R.string.place_category_beach,
+        ubicacionRes = R.string.place_playa_blanca_location,
+        rating = 4.7,
+        imagen = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000&auto=format&fit=crop",
+        detail = PlaceDetail(
+            durationRes = R.string.place_playa_blanca_duration,
+            priceRes = R.string.place_playa_blanca_price,
+            altitudeRes = R.string.place_playa_blanca_altitude,
+            descriptionRes = R.string.place_playa_blanca_description,
+            reviewCount = 738,
+            recentReviews = emptyList()
+        )
+    )
+
+    val parqueTayrona = Place(
+        id = "parque_tayrona",
+        tituloRes = R.string.place_parque_tayrona_title,
+        categoriaRes = R.string.place_category_nature,
+        ubicacionRes = R.string.place_parque_tayrona_location,
+        rating = 4.8,
+        imagen = "https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?q=80&w=1000&auto=format&fit=crop",
+        detail = PlaceDetail(
+            durationRes = R.string.place_parque_tayrona_duration,
+            priceRes = R.string.place_parque_tayrona_price,
+            altitudeRes = R.string.place_parque_tayrona_altitude,
+            descriptionRes = R.string.place_parque_tayrona_description,
+            reviewCount = 1164,
+            recentReviews = emptyList()
+        )
+    )
+
+    val piedraDelPenol = Place(
+        id = "piedra_del_penol",
+        tituloRes = R.string.place_piedra_del_penol_title,
+        categoriaRes = R.string.place_category_mountain,
+        ubicacionRes = R.string.place_piedra_del_penol_location,
+        rating = 4.8,
+        imagen = "https://images.unsplash.com/photo-1596395819057-e37f55a8516b?q=80&w=1000&auto=format&fit=crop",
+        detail = PlaceDetail(
+            durationRes = R.string.place_piedra_del_penol_duration,
+            priceRes = R.string.place_piedra_del_penol_price,
+            altitudeRes = R.string.place_piedra_del_penol_altitude,
+            descriptionRes = R.string.place_piedra_del_penol_description,
+            reviewCount = 965,
+            recentReviews = emptyList()
+        )
+    )
+
+    val canoCristales = Place(
+        id = "cano_cristales",
+        tituloRes = R.string.place_cano_cristales_title,
+        categoriaRes = R.string.place_category_nature,
+        ubicacionRes = R.string.place_cano_cristales_location,
+        rating = 4.9,
+        imagen = "https://images.unsplash.com/photo-1526392060635-9d6019884377?q=80&w=1000&auto=format&fit=crop",
+        detail = PlaceDetail(
+            durationRes = R.string.place_cano_cristales_duration,
+            priceRes = R.string.place_cano_cristales_price,
+            altitudeRes = R.string.place_cano_cristales_altitude,
+            descriptionRes = R.string.place_cano_cristales_description,
+            reviewCount = 624,
+            recentReviews = emptyList()
+        )
+    )
+
     val listPlaces = listOf(
         samplePlaces1, samplePlaces2, samplePlaces3,
-        samplePlaces4, samplePlaces5, samplePlaces6
+        samplePlaces4, samplePlaces5, samplePlaces6,
+        playaBlanca, parqueTayrona, piedraDelPenol, canoCristales
     )
 }

@@ -93,6 +93,23 @@
     <string name="profile_saved_empty_description">Los lugares y publicaciones que guardes aparecerán aquí para fácil acceso.</string>
     <string name="profile_saved_empty_icon_content_description">Icono de guardados vacío</string>
 
+    <!-- Saved Places Screen Strings -->
+    <string name="saved_places_title">Mis Lugares Guardados</string>
+    <string name="saved_places_destination_count">%1$d destinos</string>
+    <string name="saved_places_search_placeholder">Buscar en mis guardados…</string>
+    <string name="saved_places_search_content_description">Buscar destinos guardados</string>
+    <string name="saved_places_list_want_to_visit">Quiero visitar</string>
+    <string name="saved_places_list_favorites">Favoritos</string>
+    <string name="saved_places_list_visited">Visitados</string>
+    <string name="saved_places_list_count">(%1$d)</string>
+    <string name="saved_places_view_details">Ver detalles</string>
+    <string name="saved_places_remove_content_description">Quitar %1$s de esta lista</string>
+    <string name="saved_places_image_content_description">Imagen de %1$s</string>
+    <string name="saved_places_location_content_description">Ubicación: %1$s</string>
+    <string name="saved_places_rating_content_description">Calificación: %1$.1f de 5</string>
+    <string name="saved_places_empty_title">No hay destinos guardados</string>
+    <string name="saved_places_empty_description">Guarda destinos en esta lista para encontrarlos aquí.</string>
+
     <!-- Edit Profile Screen Strings -->
     <string name="edit_profile_title">Editar perfil</string>
     <string name="edit_profile_change_photo">Cambiar foto de perfil</string>
@@ -127,6 +144,7 @@
     <!-- Place Detail Strings -->
     <string name="back_button_content_description">Volver</string>
     <string name="bookmark_content_description">Guardar</string>
+    <string name="remove_bookmark_content_description">Quitar de guardados</string>
     <string name="share_content_description">Compartir</string>
     <string name="reviews_count">%1$s reseñas</string>
     <string name="description_title">Descripción</string>
@@ -160,6 +178,7 @@
     <string name="place_category_mountain">Montaña</string>
     <string name="place_category_park">Parque</string>
     <string name="place_category_city">Ciudad</string>
+    <string name="place_category_nature">Naturaleza</string>
 
     <string name="place_machu_picchu_title">Machu Picchu</string>
     <string name="place_machu_picchu_location">Cusco, Perú</string>
@@ -203,6 +222,34 @@
     <string name="place_eiffel_tower_price">Desde €23</string>
     <string name="place_eiffel_tower_altitude">330 m</string>
     <string name="place_eiffel_tower_description">El icono de París ofrece vistas de la ciudad desde sus distintos niveles y una experiencia arquitectónica emblemática junto al Sena.</string>
+
+    <string name="place_playa_blanca_title">Playa Blanca</string>
+    <string name="place_playa_blanca_location">Bolívar, Colombia</string>
+    <string name="place_playa_blanca_duration">Medio día</string>
+    <string name="place_playa_blanca_price">Acceso con costo</string>
+    <string name="place_playa_blanca_altitude">0 m</string>
+    <string name="place_playa_blanca_description">Una playa de arena clara y aguas cálidas en la isla de Barú, ideal para nadar, descansar y disfrutar el paisaje del Caribe colombiano.</string>
+
+    <string name="place_parque_tayrona_title">Parque Tayrona</string>
+    <string name="place_parque_tayrona_location">Magdalena, Colombia</string>
+    <string name="place_parque_tayrona_duration">Todo el día</string>
+    <string name="place_parque_tayrona_price">Entrada con costo</string>
+    <string name="place_parque_tayrona_altitude">0–900 m</string>
+    <string name="place_parque_tayrona_description">Un parque natural donde la Sierra Nevada se encuentra con el mar Caribe, con senderos entre bosque tropical, playas y vestigios arqueológicos.</string>
+
+    <string name="place_piedra_del_penol_title">Piedra del Peñol</string>
+    <string name="place_piedra_del_penol_location">Antioquia, Colombia</string>
+    <string name="place_piedra_del_penol_duration">2–3 horas</string>
+    <string name="place_piedra_del_penol_price">Ascenso con costo</string>
+    <string name="place_piedra_del_penol_altitude">2.135 m</string>
+    <string name="place_piedra_del_penol_description">Un monolito de gran altura con una escalinata hasta el mirador, desde donde se observan las islas y embalses que rodean Guatapé.</string>
+
+    <string name="place_cano_cristales_title">Caño Cristales</string>
+    <string name="place_cano_cristales_location">Meta, Colombia</string>
+    <string name="place_cano_cristales_duration">Todo el día</string>
+    <string name="place_cano_cristales_price">Visita guiada</string>
+    <string name="place_cano_cristales_altitude">200 m</string>
+    <string name="place_cano_cristales_description">Un río reconocido por los colores estacionales de sus plantas acuáticas, rodeado por formaciones rocosas, cascadas y ecosistemas de la Serranía de la Macarena.</string>
 
     <!-- New Review Screen Strings -->
     <string name="new_review_title">Nueva reseña</string>

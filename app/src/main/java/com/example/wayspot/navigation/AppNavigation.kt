@@ -12,6 +12,7 @@ import androidx.core.view.WindowCompat
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.model.Place
 import com.example.wayspot.data.model.ReviewDraft
+import com.example.wayspot.data.model.SavedPlacesRules
 import com.example.wayspot.ui.screens.auth.login.LoginScreen
 import com.example.wayspot.ui.screens.auth.signup.SignUpScreen
 import com.example.wayspot.ui.screens.home.HomeScreen
@@ -36,6 +37,10 @@ fun AppNavigation(
 
     var userProfile by remember {
         mutableStateOf(PreviewData.userProfile)
+    }
+
+    var savedPlaces by remember {
+        mutableStateOf(PreviewData.savedPlaces)
     }
 
     var selectedPlace by remember {
@@ -119,6 +124,7 @@ fun AppNavigation(
                 HomeScreen(
                     currentRoute = homeRoute,
                     userProfile = userProfile,
+                    savedPlaces = savedPlaces,
 
                     onNavItemClick = {
                         homeRoute = it
@@ -130,6 +136,25 @@ fun AppNavigation(
 
                     onEditProfileClick = {
                         currentRoute = Routes.EDIT_PROFILE
+                    },
+
+                    onSavedPlacesClick = {
+                        homeRoute = Routes.SAVED_PLACES
+                    },
+
+                    onRemoveSavedPlace = { placeId, list ->
+                        savedPlaces = SavedPlacesRules.removeFromList(
+                            savedPlaces = savedPlaces,
+                            placeId = placeId,
+                            list = list
+                        )
+                    },
+
+                    onToggleSavedPlace = { place ->
+                        savedPlaces = SavedPlacesRules.toggleSaved(
+                            savedPlaces = savedPlaces,
+                            place = place
+                        )
                     },
 
                     onPlaceClick = { place ->
@@ -197,6 +222,7 @@ fun AppNavigation(
                     },
                     onDeleteAccountConfirmed = {
                         userProfile = PreviewData.userProfile
+                        savedPlaces = PreviewData.savedPlaces
                         selectedPlace = null
                         reviewDrafts = emptyMap()
                         publishedReviews = emptyList()

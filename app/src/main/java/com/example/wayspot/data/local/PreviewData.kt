@@ -7,10 +7,37 @@ import com.example.wayspot.data.model.ProfileNotificationPreferences
 import com.example.wayspot.data.model.Review
 import com.example.wayspot.data.model.ReviewDraft
 import com.example.wayspot.data.model.ReviewRules
+import com.example.wayspot.data.model.SavedPlace
+import com.example.wayspot.data.model.SavedPlaceList
 import com.example.wayspot.data.model.UserProfile
 import com.example.wayspot.data.model.UserStats
 
 object PreviewData {
+    val savedPlaces = listOf(
+        SavedPlace(
+            place = PreviewDataPopular.playaBlanca,
+            lists = setOf(
+                SavedPlaceList.WANT_TO_VISIT,
+                SavedPlaceList.FAVORITES
+            )
+        ),
+        SavedPlace(
+            place = PreviewDataPopular.parqueTayrona,
+            lists = setOf(
+                SavedPlaceList.WANT_TO_VISIT,
+                SavedPlaceList.VISITED
+            )
+        ),
+        SavedPlace(
+            place = PreviewDataPopular.piedraDelPenol,
+            lists = setOf(SavedPlaceList.FAVORITES)
+        ),
+        SavedPlace(
+            place = PreviewDataPopular.canoCristales,
+            lists = setOf(SavedPlaceList.VISITED)
+        )
+    )
+
     val newReviewDraft = ReviewDraft(
         placeId = PreviewDataPopular.samplePlaces1.id,
         rating = ReviewRules.DEFAULT_RATING,
