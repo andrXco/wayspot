@@ -36,16 +36,25 @@ import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun NewReviewScreen(
-    place: Place,
+    placeId: String,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     initialDraft: ReviewDraft? = null,
     onSaveDraft: (ReviewDraft) -> Unit = {},
     onPublishReview: (ReviewDraft) -> Unit = {}
 ) {
+    val place = PreviewDataPopular.listPlaces.find {
+        it.id == placeId
+    }
+
+    if (place == null) {
+        return
+    }
+
     val validInitialDraft = ReviewRules.normalizeDraft(
-        draft = initialDraft?.takeIf { draft -> draft.placeId == place.id }
-            ?: ReviewRules.emptyDraft(place.id),
+        draft = initialDraft?.takeIf { draft ->
+            draft.placeId == place.id
+        } ?: ReviewRules.emptyDraft(place.id),
         placeId = place.id
     )
 

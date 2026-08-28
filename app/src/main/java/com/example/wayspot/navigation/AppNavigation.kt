@@ -146,21 +146,15 @@ fun AppNavigation(
 
             val placeId = backStackEntry.arguments?.getString("placeId")
 
-            val place = PreviewDataPopular.listPlaces.find {
-                it.id == placeId
-            }
-
-            if (place != null) {
+            if (placeId != null) {
                 PlaceDetailScreen(
-                    place = place,
-
+                    placeId = placeId,
                     onBackClick = {
                         navController.navigate(Screen.Home.route)
                     },
-
                     onWriteReviewClick = {
                         navController.navigate(
-                            Screen.NewReview.createRoute(place.id)
+                            Screen.NewReview.createRoute(placeId)
                         )
                     }
                 )
@@ -242,17 +236,12 @@ fun AppNavigation(
 
             val placeId = backStackEntry.arguments?.getString("placeId")
 
-            val place = PreviewDataPopular.listPlaces.find {
-                it.id == placeId
-            }
-
-            if (place != null) {
+            if (placeId != null) {
                 NewReviewScreen(
-                    place = place,
-
+                    placeId = placeId,
                     onBackClick = {
                         navController.navigate(
-                            Screen.PlaceDetail.createRoute(place.id)
+                            Screen.PlaceDetail.createRoute(placeId)
                         )
                     }
                 )
