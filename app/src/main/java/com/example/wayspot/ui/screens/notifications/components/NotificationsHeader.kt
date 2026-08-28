@@ -1,11 +1,8 @@
 package com.example.wayspot.ui.screens.notifications.components
 
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
@@ -28,11 +25,10 @@ fun NotificationsHeader(
             .fillMaxWidth()
             .padding(
                 horizontal = 8.dp,
-                vertical = 12.dp
+                vertical = 10.dp
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
-
         IconButton(
             onClick = onBackClick
         ) {
@@ -42,10 +38,6 @@ fun NotificationsHeader(
                 tint = MaterialTheme.colorScheme.onSurface
             )
         }
-
-        Spacer(
-            modifier = Modifier.width(4.dp)
-        )
 
         Text(
             text = "Notificaciones",

@@ -20,6 +20,8 @@ sealed class Screen(val route: String) {
 
     object Notifications : Screen("notifications")
 
+    object ForgotPassword : Screen("forgot_password")
+
     object PlaceDetail : Screen("place_detail/{placeId}") {
         fun createRoute(placeId: String): String {
             return "place_detail/$placeId"

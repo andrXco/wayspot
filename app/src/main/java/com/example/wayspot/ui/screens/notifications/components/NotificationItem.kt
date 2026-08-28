@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -78,9 +81,54 @@ fun NotificationItem(
                 style = MaterialTheme.typography.bodySmall
             )
 
+            if (notification.username == "Andrés Torres") {
+
+                Row(
+                    modifier = Modifier.padding(top = 3.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Text(
+                        text = "Parque Tayrona ·",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Spacer(
+                        modifier = Modifier.width(4.dp)
+                    )
+
+                    Icon(
+                        imageVector = Icons.Filled.Star,
+                        contentDescription = null,
+                        modifier = Modifier.size(13.dp),
+                        tint = MaterialTheme.colorScheme.tertiary
+                    )
+
+                    Spacer(
+                        modifier = Modifier.width(3.dp)
+                    )
+
+                    Text(
+                        text = "4.8",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+            } else {
+
+                Text(
+                    text = notification.detail,
+                    modifier = Modifier.padding(top = 3.dp),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
             Text(
                 text = notification.time,
-                modifier = Modifier.padding(top = 4.dp),
+                modifier = Modifier.padding(top = 3.dp),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -101,13 +149,21 @@ private fun NotificationAvatar(
         }
         .joinToString("")
 
+    val avatarColor = when (username) {
+        "Carlos Medina" -> MaterialTheme.colorScheme.primary
+        "Laura Sánchez" -> MaterialTheme.colorScheme.tertiary
+        "Andrés Torres" -> MaterialTheme.colorScheme.secondary
+        "Sofía Herrera" -> MaterialTheme.colorScheme.error
+        "WaySpot" -> MaterialTheme.colorScheme.primaryContainer
+        "Playa Blanca" -> MaterialTheme.colorScheme.tertiaryContainer
+        else -> MaterialTheme.colorScheme.primary
+    }
+
     Box(
         modifier = modifier
             .size(40.dp)
             .clip(CircleShape)
-            .background(
-                MaterialTheme.colorScheme.primary
-            ),
+            .background(avatarColor),
         contentAlignment = Alignment.Center
     ) {
         Text(

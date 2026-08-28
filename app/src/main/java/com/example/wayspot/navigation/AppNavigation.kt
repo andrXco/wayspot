@@ -25,6 +25,7 @@ import com.example.wayspot.ui.screens.placedetail.PlaceDetailScreen
 import com.example.wayspot.ui.screens.profile.ProfileScreen
 import com.example.wayspot.ui.screens.savedplaces.SavedPlacesScreen
 import com.example.wayspot.ui.screens.splash.SplashScreen
+import com.example.wayspot.ui.screens.auth.forgotpassword.ForgotPasswordScreen
 
 @Composable
 fun AppNavigation(
@@ -45,6 +46,16 @@ fun AppNavigation(
         startDestination = Screen.Splash.route,
         modifier = modifier
     ) {
+
+        composable(Screen.ForgotPassword.route) {
+            ForgotPasswordScreen(
+                onSendClick = {
+                },
+                onBackToLoginClick = {
+                    navController.navigate(Screen.Login.route)
+                }
+            )
+        }
 
         composable(Screen.SavedPlaces.route) {
             SavedPlacesScreen(
@@ -173,9 +184,11 @@ fun AppNavigation(
                 onLoginClick = {
                     navController.navigate(Screen.Home.route)
                 },
-
                 onSignUpClick = {
                     navController.navigate(Screen.SignUp.route)
+                },
+                onForgotPasswordClick = {
+                    navController.navigate(Screen.ForgotPassword.route)
                 }
             )
         }

@@ -51,7 +51,8 @@ fun NotificationsContent(
     ) {
 
         NotificationsHeader(
-            onBackClick = onBackClick
+            onBackClick = onBackClick,
+            modifier = Modifier.fillMaxWidth()
         )
 
         HorizontalDivider(
