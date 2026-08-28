@@ -1,23 +1,36 @@
 package com.example.wayspot.ui.screens.explore
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.wayspot.data.model.Place
-import com.example.wayspot.data.model.SavedPlace
 import com.example.wayspot.R
-import com.example.wayspot.ui.components.WayspotSearch
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.local.PreviewDataPopular
+import com.example.wayspot.data.model.Place
+import com.example.wayspot.data.model.SavedPlace
+import com.example.wayspot.ui.components.WayspotSearch
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.explore.components.ExplorerPopularCard
 import com.example.wayspot.ui.screens.explore.components.ExplorerTags
@@ -25,23 +38,35 @@ import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun ExploreScreen(
-    onPlaceClick: (Place) -> Unit,
+    onPlaceClick: (String) -> Unit,
     savedPlaces: List<SavedPlace>,
     onSaveClick: (Place) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var searchText by remember { mutableStateOf("") }
-    var selectedCategoryRes by remember { mutableIntStateOf(R.string.category_beaches) }
+    var searchText by remember {
+        mutableStateOf("")
+    }
+
+    var selectedCategoryRes by remember {
+        mutableIntStateOf(R.string.category_beaches)
+    }
+
     val places = PreviewDataPopular.listPlaces
 
     ExplorerContent(
         places = places,
         searchText = searchText,
         selectedCategoryRes = selectedCategoryRes,
-        onSearchChange = { searchText = it },
-        onCategorySelect = { selectedCategoryRes = it },
+        onSearchChange = {
+            searchText = it
+        },
+        onCategorySelect = {
+            selectedCategoryRes = it
+        },
         onPlaceClick = onPlaceClick,
-        savedPlaceIds = savedPlaces.mapTo(mutableSetOf()) { it.place.id },
+        savedPlaceIds = savedPlaces.mapTo(mutableSetOf()) {
+            it.place.id
+        },
         onSaveClick = onSaveClick,
         modifier = modifier
     )
@@ -54,7 +79,7 @@ fun ExplorerContent(
     selectedCategoryRes: Int,
     onSearchChange: (String) -> Unit,
     onCategorySelect: (Int) -> Unit,
-    onPlaceClick: (Place) -> Unit,
+    onPlaceClick: (String) -> Unit,
     savedPlaceIds: Set<String>,
     onSaveClick: (Place) -> Unit,
     modifier: Modifier = Modifier
@@ -63,29 +88,37 @@ fun ExplorerContent(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
-        contentPadding = PaddingValues(bottom = 16.dp)
+        contentPadding = PaddingValues(
+            bottom = 16.dp
+        )
     ) {
-        // Buscador
+
         item {
             WayspotSearch(
                 searchText = searchText,
                 onSearchChange = onSearchChange,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier.padding(
+                    horizontal = 16.dp
+                )
             )
-            Spacer(modifier = Modifier.height(16.dp))
+
+            Spacer(
+                modifier = Modifier.height(16.dp)
+            )
         }
 
-        // Filtros de Categorías
         item {
             ExplorerTags(
                 selectedCategoryRes = selectedCategoryRes,
                 onCategoryClick = onCategorySelect,
                 m = Modifier.fillMaxWidth()
             )
-            Spacer(modifier = Modifier.height(24.dp))
+
+            Spacer(
+                modifier = Modifier.height(24.dp)
+            )
         }
 
-        // Título de Sección
         item {
             Row(
                 modifier = Modifier
@@ -95,47 +128,79 @@ fun ExplorerContent(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = stringResource(R.string.popular_destinations_title),
+                    text = stringResource(
+                        R.string.popular_destinations_title
+                    ),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
+
                 Text(
-                    text = stringResource(R.string.see_all),
+                    text = stringResource(
+                        R.string.see_all
+                    ),
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.clickable { /* Acción Ver todos */ }
+                    modifier = Modifier.clickable {
+                    }
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
+
+            Spacer(
+                modifier = Modifier.height(16.dp)
+            )
         }
 
-        // Cuadrícula de Destinos (agrupados de 2 en 2)
         val rows = places.chunked(2)
+
         items(
             count = rows.size,
-            key = { rowIndex -> rows[rowIndex].joinToString(separator = "|") { it.id } }
+            key = { rowIndex ->
+                rows[rowIndex].joinToString(
+                    separator = "|"
+                ) {
+                    it.id
+                }
+            }
         ) { rowIndex ->
+
             val rowItems = rows[rowIndex]
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+
                 rowItems.forEach { place ->
+
                     ExplorerPopularCard(
                         place = place,
                         isSaved = place.id in savedPlaceIds,
-                        onSaveClick = { onSaveClick(place) },
-                        onClick = { onPlaceClick(place) },
+
+                        onSaveClick = {
+                            onSaveClick(place)
+                        },
+
+                        onClick = {
+                            onPlaceClick(place.id)
+                        },
+
                         modifier = Modifier.weight(1f)
                     )
                 }
+
                 if (rowItems.size == 1) {
-                    Spacer(modifier = Modifier.weight(1f))
+                    Spacer(
+                        modifier = Modifier.weight(1f)
+                    )
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))
+
+            Spacer(
+                modifier = Modifier.height(8.dp)
+            )
         }
     }
 }

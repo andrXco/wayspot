@@ -17,8 +17,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.data.local.PreviewData
-import com.example.wayspot.data.local.PreviewDataPopular
-import com.example.wayspot.data.model.Place
 import com.example.wayspot.data.model.Post
 import com.example.wayspot.ui.components.WayspotHeader
 import com.example.wayspot.ui.components.WayspotSearch
@@ -28,7 +26,7 @@ import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun HomeScreen(
-    onPlaceClick: (Place) -> Unit,
+    onPlaceClick: (String) -> Unit,
     onNotificationsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -54,7 +52,7 @@ fun HomeContent(
     searchText: String,
     onSearchChange: (String) -> Unit,
     onNotificationsClick: () -> Unit,
-    onPlaceClick: (Place) -> Unit,
+    onPlaceClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -86,7 +84,7 @@ fun HomeContent(
 @Composable
 private fun PostList(
     posts: List<Post>,
-    onPlaceClick: (Place) -> Unit,
+    onPlaceClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -97,12 +95,8 @@ private fun PostList(
             PostCard(
                 post = post,
                 onClick = {
-                    val place = PreviewDataPopular.listPlaces.find {
-                        it.id == post.placeId
-                    }
-
-                    if (place != null) {
-                        onPlaceClick(place)
+                    if (post.placeId != null) {
+                        onPlaceClick(post.placeId)
                     }
                 }
             )

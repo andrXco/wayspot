@@ -12,8 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -21,7 +21,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
 import com.example.wayspot.data.local.PreviewData
-import com.example.wayspot.data.model.Place
 import com.example.wayspot.data.model.SavedPlace
 import com.example.wayspot.data.model.SavedPlaceList
 import com.example.wayspot.data.model.SavedPlacesRules
@@ -37,15 +36,20 @@ import com.example.wayspot.ui.theme.WayspotTheme
 fun SavedPlacesScreen(
     savedPlaces: List<SavedPlace>,
     onBackClick: () -> Unit,
-    onPlaceClick: (Place) -> Unit,
+    onPlaceClick: (String) -> Unit,
     onRemoveFromList: (String, SavedPlaceList) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var searchQuery by rememberSaveable { mutableStateOf("") }
+    var searchQuery by rememberSaveable {
+        mutableStateOf("")
+    }
+
     var selectedList by rememberSaveable {
         mutableStateOf(SavedPlacesRules.defaultList)
     }
+
     val currentLocale = LocalConfiguration.current.locales[0]
+
     val localizedSearchTerms = savedPlaces.associate { savedPlace ->
         savedPlace.place.id to listOf(
             stringResource(savedPlace.place.tituloRes),
@@ -53,13 +57,17 @@ fun SavedPlacesScreen(
             stringResource(savedPlace.place.categoriaRes)
         )
     }
+
     val counts by remember(savedPlaces) {
         derivedStateOf {
             SavedPlaceList.entries.associateWith { list ->
-                savedPlaces.count { savedPlace -> list in savedPlace.lists }
+                savedPlaces.count { savedPlace ->
+                    list in savedPlace.lists
+                }
             }
         }
     }
+
     val filteredSavedPlaces by remember(
         savedPlaces,
         selectedList,
@@ -68,18 +76,21 @@ fun SavedPlacesScreen(
         currentLocale
     ) {
         derivedStateOf {
-            val normalizedQuery = searchQuery.trim().lowercase(currentLocale)
+            val normalizedQuery =
+                searchQuery.trim().lowercase(currentLocale)
 
             savedPlaces.filter { savedPlace ->
                 selectedList in savedPlace.lists &&
-                    (
-                        normalizedQuery.isEmpty() ||
-                            localizedSearchTerms
-                                .getValue(savedPlace.place.id)
-                                .any { value ->
-                                    value.lowercase(currentLocale).contains(normalizedQuery)
-                                }
-                    )
+                        (
+                                normalizedQuery.isEmpty() ||
+                                        localizedSearchTerms
+                                            .getValue(savedPlace.place.id)
+                                            .any { value ->
+                                                value
+                                                    .lowercase(currentLocale)
+                                                    .contains(normalizedQuery)
+                                            }
+                                )
             }
         }
     }
@@ -90,12 +101,19 @@ fun SavedPlacesScreen(
         selectedList = selectedList,
         counts = counts,
         searchQuery = searchQuery,
-        onSearchQueryChange = { searchQuery = it },
-        onListSelected = { selectedList = it },
+        onSearchQueryChange = {
+            searchQuery = it
+        },
+        onListSelected = {
+            selectedList = it
+        },
         onBackClick = onBackClick,
         onPlaceClick = onPlaceClick,
         onRemoveClick = { placeId ->
-            onRemoveFromList(placeId, selectedList)
+            onRemoveFromList(
+                placeId,
+                selectedList
+            )
         },
         modifier = modifier
     )
@@ -111,7 +129,7 @@ fun SavedPlacesContent(
     onSearchQueryChange: (String) -> Unit,
     onListSelected: (SavedPlaceList) -> Unit,
     onBackClick: () -> Unit,
-    onPlaceClick: (Place) -> Unit,
+    onPlaceClick: (String) -> Unit,
     onRemoveClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -119,7 +137,9 @@ fun SavedPlacesContent(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
-        contentPadding = PaddingValues(bottom = 24.dp)
+        contentPadding = PaddingValues(
+            bottom = 24.dp
+        )
     ) {
         item {
             SavedPlacesHeader(
@@ -135,8 +155,13 @@ fun SavedPlacesContent(
                 onValueChange = onSearchQueryChange,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 10.dp, vertical = 8.dp),
-                placeholder = stringResource(R.string.saved_places_search_placeholder)
+                    .padding(
+                        horizontal = 10.dp,
+                        vertical = 8.dp
+                    ),
+                placeholder = stringResource(
+                    R.string.saved_places_search_placeholder
+                )
             )
         }
 
@@ -158,15 +183,32 @@ fun SavedPlacesContent(
         } else {
             items(
                 items = savedPlaces,
-                key = { savedPlace -> savedPlace.place.id }
+                key = { savedPlace ->
+                    savedPlace.place.id
+                }
             ) { savedPlace ->
+
                 SavedPlaceCard(
                     savedPlace = savedPlace,
-                    onDetailsClick = { onPlaceClick(savedPlace.place) },
-                    onRemoveClick = { onRemoveClick(savedPlace.place.id) },
+
+                    onDetailsClick = {
+                        onPlaceClick(
+                            savedPlace.place.id
+                        )
+                    },
+
+                    onRemoveClick = {
+                        onRemoveClick(
+                            savedPlace.place.id
+                        )
+                    },
+
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp, vertical = 6.dp)
+                        .padding(
+                            horizontal = 8.dp,
+                            vertical = 6.dp
+                        )
                 )
             }
         }

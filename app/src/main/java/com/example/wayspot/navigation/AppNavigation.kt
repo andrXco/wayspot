@@ -65,9 +65,9 @@ fun AppNavigation(
                     navController.navigate(Screen.Profile.route)
                 },
 
-                onPlaceClick = { place ->
+                onPlaceClick = { placeId ->
                     navController.navigate(
-                        Screen.PlaceDetail.createRoute(place.id)
+                        Screen.PlaceDetail.createRoute(placeId)
                     )
                 },
 
@@ -118,9 +118,9 @@ fun AppNavigation(
 
         composable(Screen.Explore.route) {
             ExploreScreen(
-                onPlaceClick = { place ->
+                onPlaceClick = { placeId ->
                     navController.navigate(
-                        Screen.PlaceDetail.createRoute(place.id)
+                        Screen.PlaceDetail.createRoute(placeId)
                     )
                 },
 
@@ -201,9 +201,9 @@ fun AppNavigation(
                     navController.navigate(Screen.Notifications.route)
                 },
 
-                onPlaceClick = { place ->
+                onPlaceClick = { placeId ->
                     navController.navigate(
-                        Screen.PlaceDetail.createRoute(place.id)
+                        Screen.PlaceDetail.createRoute(placeId)
                     )
                 }
             )
