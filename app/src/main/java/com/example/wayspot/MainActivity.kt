@@ -15,7 +15,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.example.wayspot.navigation.AppNavigation
 import com.example.wayspot.ui.theme.WayspotTheme
-
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.wayspot.navigation.Routes
+import com.example.wayspot.ui.components.WayspotBottomBar
+import androidx.compose.runtime.getValue
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,11 +28,28 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             WayspotTheme {
+                val navController = rememberNavController()
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = navBackStackEntry?.destination?.route
+
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
-                    contentWindowInsets = WindowInsets.safeDrawing.only(
-                        WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
-                    )
+                    contentWindowInsets = WindowInsets.safeDrawing,
+
+                    bottomBar = {
+                        if (
+                            currentRoute == Routes.HOME ||
+                            currentRoute == Routes.EXPLORE ||
+                            currentRoute == Routes.PROFILE
+                        ) {
+                            WayspotBottomBar(
+                                currentRoute = currentRoute ?: Routes.HOME,
+                                onNavItemClick = { route ->
+                                    navController.navigate(route)
+                                }
+                            )
+                        }
+                    }
                 ) { innerPadding ->
 
                     Box(
@@ -36,7 +57,9 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .padding(innerPadding)
                     ) {
-                        AppNavigation()
+                        AppNavigation(
+                            navController = navController
+                        )
                     }
                 }
             }

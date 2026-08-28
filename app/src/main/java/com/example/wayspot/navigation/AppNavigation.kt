@@ -1,39 +1,36 @@
 package com.example.wayspot.navigation
 
-import android.app.Activity
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
-import com.example.wayspot.data.local.PreviewData
-import com.example.wayspot.data.model.Place
-import com.example.wayspot.data.model.ReviewDraft
-import com.example.wayspot.data.model.SavedPlacesRules
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import com.example.wayspot.ui.screens.splash.SplashScreen
 import com.example.wayspot.ui.screens.auth.login.LoginScreen
 import com.example.wayspot.ui.screens.auth.signup.SignUpScreen
+import com.example.wayspot.data.local.PreviewData
+import com.example.wayspot.data.model.SavedPlacesRules
 import com.example.wayspot.ui.screens.home.HomeScreen
-import com.example.wayspot.ui.screens.editprofile.EditProfileScreen
-import com.example.wayspot.ui.screens.newreview.NewReviewScreen
+import androidx.compose.runtime.setValue
 import com.example.wayspot.ui.screens.notifications.NotificationsScreen
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.ui.screens.placedetail.PlaceDetailScreen
-import com.example.wayspot.ui.screens.splash.SplashScreen
+import com.example.wayspot.ui.screens.newreview.NewReviewScreen
+import com.example.wayspot.ui.screens.explore.ExploreScreen
+import com.example.wayspot.ui.screens.profile.ProfileScreen
+import com.example.wayspot.ui.screens.editprofile.EditProfileScreen
+import com.example.wayspot.ui.screens.savedplaces.SavedPlacesScreen
 
 @Composable
 fun AppNavigation(
+    navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-
-    var currentRoute by remember {
-        mutableStateOf(Routes.SPLASH)
-    }
-
-    var homeRoute by remember {
-        mutableStateOf(Routes.HOME)
-    }
 
     var userProfile by remember {
         mutableStateOf(PreviewData.userProfile)
@@ -43,191 +40,183 @@ fun AppNavigation(
         mutableStateOf(PreviewData.savedPlaces)
     }
 
-    var selectedPlace by remember {
-        mutableStateOf<Place?>(null)
-    }
-
-    var reviewDrafts by remember {
-        mutableStateOf<Map<String, ReviewDraft>>(emptyMap())
-    }
-
-    var publishedReviews by remember {
-        mutableStateOf<List<ReviewDraft>>(emptyList())
-    }
-
-    val profileDrawsBehindStatusBar =
-        currentRoute == Routes.HOME && homeRoute == Routes.PROFILE
-    val useDarkStatusBarIcons = if (profileDrawsBehindStatusBar) {
-        isSystemInDarkTheme()
-    } else {
-        !isSystemInDarkTheme()
-    }
-    val view = LocalView.current
-
-    SideEffect {
-        if (!view.isInEditMode) {
-            val window = (view.context as? Activity)?.window
-            if (window != null) {
-                WindowCompat.getInsetsController(window, window.decorView)
-                    .isAppearanceLightStatusBars = useDarkStatusBarIcons
-            }
-        }
-    }
-
-    Box(
+    NavHost(
+        navController = navController,
+        startDestination = "splash",
         modifier = modifier
-            .fillMaxSize()
-            .then(
-                if (profileDrawsBehindStatusBar) {
-                    Modifier
-                } else {
-                    Modifier.statusBarsPadding()
+
+    ) {
+
+        composable("saved_places") {
+            SavedPlacesScreen(
+                savedPlaces = savedPlaces,
+
+                onBackClick = {
+                    navController.navigate("profile")
+                },
+
+                onPlaceClick = { place ->
+                    navController.navigate("place_detail/${place.id}")
+                },
+
+                onRemoveFromList = { placeId, list ->
+                    savedPlaces = SavedPlacesRules.removeFromList(
+                        savedPlaces = savedPlaces,
+                        placeId = placeId,
+                        list = list
+                    )
                 }
             )
-    ) {
-        when (currentRoute) {
+        }
 
-            Routes.SPLASH -> {
-                SplashScreen(
-                    onLoginClick = {
-                        currentRoute = Routes.LOGIN
-                    },
-                    onSignUpClick = {
-                        currentRoute = Routes.SIGNUP
-                    }
-                )
-            }
+        composable("edit_profile") {
+            EditProfileScreen(
+                profile = userProfile,
 
-            Routes.LOGIN -> {
-                LoginScreen(
-                    onLoginClick = {
-                        currentRoute = Routes.HOME
-                    },
-                    onSignUpClick = {
-                        currentRoute = Routes.SIGNUP
-                    }
-                )
-            }
+                onBackClick = {
+                    navController.navigate("profile")
+                },
 
-            Routes.SIGNUP -> {
-                SignUpScreen(
-                    onSignUpClick = {
-                        currentRoute = Routes.LOGIN
-                    },
-                    onBackToLoginClick = {
-                        currentRoute = Routes.LOGIN
-                    }
-                )
-            }
+                onSaveClick = { updatedProfile ->
+                    userProfile = updatedProfile
+                    navController.navigate("profile")
+                },
 
-            Routes.HOME -> {
-                HomeScreen(
-                    currentRoute = homeRoute,
-                    userProfile = userProfile,
-                    savedPlaces = savedPlaces,
+                onDeleteAccountConfirmed = {
+                    userProfile = PreviewData.userProfile
+                    savedPlaces = PreviewData.savedPlaces
+                    navController.navigate("login")
+                }
+            )
+        }
 
-                    onNavItemClick = {
-                        homeRoute = it
-                    },
+        composable("profile") {
+            ProfileScreen(
+                userProfile = userProfile,
+                onEditProfileClick = {
+                    navController.navigate("edit_profile")
+                },
+                onSavedPlacesClick = {
+                    navController.navigate("saved_places")
+                }
+            )
+        }
 
-                    onNotificationsClick = {
-                        currentRoute = Routes.NOTIFICATIONS
-                    },
-
-                    onEditProfileClick = {
-                        currentRoute = Routes.EDIT_PROFILE
-                    },
-
-                    onSavedPlacesClick = {
-                        homeRoute = Routes.SAVED_PLACES
-                    },
-
-                    onRemoveSavedPlace = { placeId, list ->
-                        savedPlaces = SavedPlacesRules.removeFromList(
-                            savedPlaces = savedPlaces,
-                            placeId = placeId,
-                            list = list
-                        )
-                    },
-
-                    onToggleSavedPlace = { place ->
-                        savedPlaces = SavedPlacesRules.toggleSaved(
-                            savedPlaces = savedPlaces,
-                            place = place
-                        )
-                    },
-
-                    onPlaceClick = { place ->
-                        selectedPlace = place
-                        currentRoute = Routes.PLACE_DETAIL
-                    }
-                )
-            }
-
-            Routes.PLACE_DETAIL -> {
-                selectedPlace?.let { place ->
-                    PlaceDetailScreen(
-                        place = place,
-                        onBackClick = {
-                            currentRoute = Routes.HOME
-                        },
-                        onWriteReviewClick = {
-                            currentRoute = Routes.NEW_REVIEW
-                        }
+        composable("explore") {
+            ExploreScreen(
+                onPlaceClick = { place ->
+                    navController.navigate("place_detail/${place.id}")
+                },
+                savedPlaces = savedPlaces,
+                onSaveClick = { place ->
+                    savedPlaces = SavedPlacesRules.toggleSaved(
+                        savedPlaces = savedPlaces,
+                        place = place
                     )
                 }
-            }
+            )
+        }
 
-            Routes.NEW_REVIEW -> {
-                selectedPlace?.let { place ->
-                    NewReviewScreen(
-                        place = place,
-                        onBackClick = {
-                            currentRoute = Routes.PLACE_DETAIL
-                        },
-                        initialDraft = reviewDrafts[place.id],
-                        onSaveDraft = { reviewDraft ->
-                            reviewDrafts = reviewDrafts +
-                                (reviewDraft.placeId to reviewDraft)
-                            currentRoute = Routes.PLACE_DETAIL
-                        },
-                        onPublishReview = { review ->
-                            publishedReviews = publishedReviews + review
-                            reviewDrafts = reviewDrafts - review.placeId
-                            currentRoute = Routes.PLACE_DETAIL
-                        }
-                    )
+        composable(
+            route = "place_detail/{placeId}",
+            arguments = listOf(
+                navArgument("placeId") {
+                    type = NavType.StringType
                 }
+            )
+        ) { backStackEntry ->
+
+            val placeId = backStackEntry.arguments?.getString("placeId")
+
+            val place = PreviewDataPopular.listPlaces.find {
+                it.id == placeId
             }
 
-            Routes.NOTIFICATIONS -> {
-                NotificationsScreen(
+            if (place != null) {
+                PlaceDetailScreen(
+                    place = place,
                     onBackClick = {
-                        currentRoute = Routes.HOME
+                        navController.navigate("home")
+                    },
+                    onWriteReviewClick = {
+                        navController.navigate("new_review/${place.id}")
                     }
                 )
             }
+        }
 
-            Routes.EDIT_PROFILE -> {
-                EditProfileScreen(
-                    profile = userProfile,
+        composable("splash") {
+            SplashScreen(
+                onLoginClick = {
+                    navController.navigate("login")
+                },
+                onSignUpClick = {
+                    navController.navigate("signup")
+                }
+            )
+        }
+
+        composable("login") {
+            LoginScreen(
+                onLoginClick = {
+                    navController.navigate("home")
+                },
+                onSignUpClick = {
+                    navController.navigate("signup")
+                }
+            )
+        }
+
+        composable("notifications") {
+            NotificationsScreen(
+                onBackClick = {
+                    navController.navigate("home")
+                }
+            )
+        }
+
+        composable("home") {
+            HomeScreen(
+                onNotificationsClick = {
+                    navController.navigate("notifications")
+                },
+                onPlaceClick = { place ->
+                    navController.navigate("place_detail/${place.id}")
+                }
+            )
+        }
+
+        composable("signup") {
+            SignUpScreen(
+                onSignUpClick = {
+                    navController.navigate("login")
+                },
+                onBackToLoginClick = {
+                    navController.navigate("login")
+                }
+            )
+        }
+
+        composable(
+            route = "new_review/{placeId}",
+            arguments = listOf(
+                navArgument("placeId") {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+
+            val placeId = backStackEntry.arguments?.getString("placeId")
+
+            val place = PreviewDataPopular.listPlaces.find {
+                it.id == placeId
+            }
+
+            if (place != null) {
+                NewReviewScreen(
+                    place = place,
                     onBackClick = {
-                        homeRoute = Routes.PROFILE
-                        currentRoute = Routes.HOME
-                    },
-                    onSaveClick = { updatedProfile ->
-                        userProfile = updatedProfile
-                        homeRoute = Routes.PROFILE
-                        currentRoute = Routes.HOME
-                    },
-                    onDeleteAccountConfirmed = {
-                        userProfile = PreviewData.userProfile
-                        savedPlaces = PreviewData.savedPlaces
-                        selectedPlace = null
-                        reviewDrafts = emptyMap()
-                        publishedReviews = emptyList()
-                        homeRoute = Routes.HOME
-                        currentRoute = Routes.LOGIN
+                        navController.navigate("place_detail/${place.id}")
                     }
                 )
             }

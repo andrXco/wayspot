@@ -1,4 +1,5 @@
 [versions]
+navigationCompose = "2.10.0"
 agp = "9.2.1"
 coreKtx = "1.19.0"
 junit = "4.13.2"
@@ -14,6 +15,7 @@ foundationLayout = "1.12.0"
 foundation = "1.12.0"
 
 [libraries]
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
