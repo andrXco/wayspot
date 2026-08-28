@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.wayspot.R
-import com.example.wayspot.navigation.Routes
+import com.example.wayspot.navigation.Screen
 import com.example.wayspot.ui.theme.WayspotTheme
 
 data class BottomNavItem(
@@ -28,9 +28,21 @@ fun WayspotBottomBar(
     modifier: Modifier = Modifier
 ) {
     val items = listOf(
-        BottomNavItem(Routes.EXPLORE, Icons.Default.Search, R.string.nav_explore),
-        BottomNavItem(Routes.HOME, Icons.Default.Home, R.string.nav_home),
-        BottomNavItem(Routes.PROFILE, Icons.Default.Person, R.string.nav_profile)
+        BottomNavItem(
+            Screen.Explore.route,
+            Icons.Default.Search,
+            R.string.nav_explore
+        ),
+        BottomNavItem(
+            Screen.Home.route,
+            Icons.Default.Home,
+            R.string.nav_home
+        ),
+        BottomNavItem(
+            Screen.Profile.route,
+            Icons.Default.Person,
+            R.string.nav_profile
+        )
     )
 
     NavigationBar(
@@ -38,28 +50,53 @@ fun WayspotBottomBar(
         containerColor = MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.onSurface
     ) {
-        // Ítem 1: Explorar (Izquierda)
+
         NavigationBarItem(
-            icon = { Icon(items[0].icon, contentDescription = null) },
-            label = { Text(stringResource(items[0].labelRes)) },
+            icon = {
+                Icon(
+                    items[0].icon,
+                    contentDescription = null
+                )
+            },
+            label = {
+                Text(stringResource(items[0].labelRes))
+            },
             selected = currentRoute == items[0].route,
-            onClick = { onNavItemClick(items[0].route) }
+            onClick = {
+                onNavItemClick(items[0].route)
+            }
         )
 
-        // Ítem 2: Inicio (Mitad)
         NavigationBarItem(
-            icon = { Icon(items[1].icon, contentDescription = null) },
-            label = { Text(stringResource(items[1].labelRes)) },
+            icon = {
+                Icon(
+                    items[1].icon,
+                    contentDescription = null
+                )
+            },
+            label = {
+                Text(stringResource(items[1].labelRes))
+            },
             selected = currentRoute == items[1].route,
-            onClick = { onNavItemClick(items[1].route) }
+            onClick = {
+                onNavItemClick(items[1].route)
+            }
         )
 
-        // Ítem 3: Perfil (Derecha)
         NavigationBarItem(
-            icon = { Icon(items[2].icon, contentDescription = null) },
-            label = { Text(stringResource(items[2].labelRes)) },
+            icon = {
+                Icon(
+                    items[2].icon,
+                    contentDescription = null
+                )
+            },
+            label = {
+                Text(stringResource(items[2].labelRes))
+            },
             selected = currentRoute == items[2].route,
-            onClick = { onNavItemClick(items[2].route) }
+            onClick = {
+                onNavItemClick(items[2].route)
+            }
         )
     }
 }
@@ -69,7 +106,7 @@ fun WayspotBottomBar(
 private fun WayspotBottomBarPreview() {
     WayspotTheme {
         WayspotBottomBar(
-            currentRoute = Routes.HOME,
+            currentRoute = Screen.Home.route,
             onNavItemClick = {}
         )
     }

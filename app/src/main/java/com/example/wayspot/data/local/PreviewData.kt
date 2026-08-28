@@ -87,7 +87,7 @@ object PreviewData {
         ubicacion = "Barcelona, España",
         descripcion = "El diseño de Gaudí es simplemente surrealista. Las vistas de la ciudad desde la terraza son espectaculares. Compra entradas con anticipación.",
         placeId = "parque_guell",
-        imagen = "https://images.unsplash.com/photo-1583422422116-392a74afe882?q=80&w=1000&auto=format&fit=crop"
+        imagen = "https://cdn-imgix.headout.com/microbrands-content-image/image/e8be31fae465f686757c60e3ebc8d62f-barcelona%20park%20g%C3%BCell.jpg"
     )
 
     val listPosts = listOf(samplePost1, samplePost2)

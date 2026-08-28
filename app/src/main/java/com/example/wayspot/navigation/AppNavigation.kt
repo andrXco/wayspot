@@ -4,27 +4,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.wayspot.ui.screens.splash.SplashScreen
+import androidx.navigation.navArgument
+import com.example.wayspot.data.local.PreviewData
+import com.example.wayspot.data.local.PreviewDataPopular
+import com.example.wayspot.data.model.SavedPlacesRules
 import com.example.wayspot.ui.screens.auth.login.LoginScreen
 import com.example.wayspot.ui.screens.auth.signup.SignUpScreen
-import com.example.wayspot.data.local.PreviewData
-import com.example.wayspot.data.model.SavedPlacesRules
-import com.example.wayspot.ui.screens.home.HomeScreen
-import androidx.compose.runtime.setValue
-import com.example.wayspot.ui.screens.notifications.NotificationsScreen
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
-import com.example.wayspot.data.local.PreviewDataPopular
-import com.example.wayspot.ui.screens.placedetail.PlaceDetailScreen
-import com.example.wayspot.ui.screens.newreview.NewReviewScreen
-import com.example.wayspot.ui.screens.explore.ExploreScreen
-import com.example.wayspot.ui.screens.profile.ProfileScreen
 import com.example.wayspot.ui.screens.editprofile.EditProfileScreen
+import com.example.wayspot.ui.screens.explore.ExploreScreen
+import com.example.wayspot.ui.screens.home.HomeScreen
+import com.example.wayspot.ui.screens.newreview.NewReviewScreen
+import com.example.wayspot.ui.screens.notifications.NotificationsScreen
+import com.example.wayspot.ui.screens.placedetail.PlaceDetailScreen
+import com.example.wayspot.ui.screens.profile.ProfileScreen
 import com.example.wayspot.ui.screens.savedplaces.SavedPlacesScreen
+import com.example.wayspot.ui.screens.splash.SplashScreen
 
 @Composable
 fun AppNavigation(
@@ -42,21 +42,22 @@ fun AppNavigation(
 
     NavHost(
         navController = navController,
-        startDestination = "splash",
+        startDestination = Screen.Splash.route,
         modifier = modifier
-
     ) {
 
-        composable("saved_places") {
+        composable(Screen.SavedPlaces.route) {
             SavedPlacesScreen(
                 savedPlaces = savedPlaces,
 
                 onBackClick = {
-                    navController.navigate("profile")
+                    navController.navigate(Screen.Profile.route)
                 },
 
                 onPlaceClick = { place ->
-                    navController.navigate("place_detail/${place.id}")
+                    navController.navigate(
+                        Screen.PlaceDetail.createRoute(place.id)
+                    )
                 },
 
                 onRemoveFromList = { placeId, list ->
@@ -69,45 +70,51 @@ fun AppNavigation(
             )
         }
 
-        composable("edit_profile") {
+        composable(Screen.EditProfile.route) {
             EditProfileScreen(
                 profile = userProfile,
 
                 onBackClick = {
-                    navController.navigate("profile")
+                    navController.navigate(Screen.Profile.route)
                 },
 
                 onSaveClick = { updatedProfile ->
                     userProfile = updatedProfile
-                    navController.navigate("profile")
+                    navController.navigate(Screen.Profile.route)
                 },
 
                 onDeleteAccountConfirmed = {
                     userProfile = PreviewData.userProfile
                     savedPlaces = PreviewData.savedPlaces
-                    navController.navigate("login")
+                    navController.navigate(Screen.Login.route)
                 }
             )
         }
 
-        composable("profile") {
+        composable(Screen.Profile.route) {
             ProfileScreen(
                 userProfile = userProfile,
+
                 onEditProfileClick = {
-                    navController.navigate("edit_profile")
+                    navController.navigate(Screen.EditProfile.route)
                 },
+
                 onSavedPlacesClick = {
-                    navController.navigate("saved_places")
+                    navController.navigate(Screen.SavedPlaces.route)
                 }
             )
         }
 
-        composable("explore") {
+        composable(Screen.Explore.route) {
             ExploreScreen(
                 onPlaceClick = { place ->
-                    navController.navigate("place_detail/${place.id}")
+                    navController.navigate(
+                        Screen.PlaceDetail.createRoute(place.id)
+                    )
                 },
+
                 savedPlaces = savedPlaces,
+
                 onSaveClick = { place ->
                     savedPlaces = SavedPlacesRules.toggleSaved(
                         savedPlaces = savedPlaces,
@@ -118,7 +125,7 @@ fun AppNavigation(
         }
 
         composable(
-            route = "place_detail/{placeId}",
+            route = Screen.PlaceDetail.route,
             arguments = listOf(
                 navArgument("placeId") {
                     type = NavType.StringType
@@ -135,70 +142,84 @@ fun AppNavigation(
             if (place != null) {
                 PlaceDetailScreen(
                     place = place,
+
                     onBackClick = {
-                        navController.navigate("home")
+                        navController.navigate(Screen.Home.route)
                     },
+
                     onWriteReviewClick = {
-                        navController.navigate("new_review/${place.id}")
+                        navController.navigate(
+                            Screen.NewReview.createRoute(place.id)
+                        )
                     }
                 )
             }
         }
 
-        composable("splash") {
+        composable(Screen.Splash.route) {
             SplashScreen(
                 onLoginClick = {
-                    navController.navigate("login")
+                    navController.navigate(Screen.Login.route)
                 },
+
                 onSignUpClick = {
-                    navController.navigate("signup")
+                    navController.navigate(Screen.SignUp.route)
                 }
             )
         }
 
-        composable("login") {
+        composable(Screen.Login.route) {
             LoginScreen(
                 onLoginClick = {
-                    navController.navigate("home")
+                    navController.navigate(Screen.Home.route)
                 },
+
                 onSignUpClick = {
-                    navController.navigate("signup")
+                    navController.navigate(Screen.SignUp.route)
                 }
             )
         }
 
-        composable("notifications") {
+        composable(Screen.Notifications.route) {
             NotificationsScreen(
                 onBackClick = {
-                    navController.navigate("home")
+                    navController.navigate(Screen.Home.route)
                 }
             )
         }
 
-        composable("home") {
+        composable(Screen.Home.route) {
             HomeScreen(
                 onNotificationsClick = {
-                    navController.navigate("notifications")
+                    navController.navigate(Screen.Notifications.route)
                 },
+
                 onPlaceClick = { place ->
-                    navController.navigate("place_detail/${place.id}")
+                    navController.navigate(
+                        Screen.PlaceDetail.createRoute(place.id)
+                    )
                 }
             )
         }
 
-        composable("signup") {
+        composable(Screen.SignUp.route) {
             SignUpScreen(
                 onSignUpClick = {
-                    navController.navigate("login")
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(0) {
+                            inclusive = true
+                        }
+                    }
                 },
+
                 onBackToLoginClick = {
-                    navController.navigate("login")
+                    navController.navigate(Screen.Login.route)
                 }
             )
         }
 
         composable(
-            route = "new_review/{placeId}",
+            route = Screen.NewReview.route,
             arguments = listOf(
                 navArgument("placeId") {
                     type = NavType.StringType
@@ -215,8 +236,11 @@ fun AppNavigation(
             if (place != null) {
                 NewReviewScreen(
                     place = place,
+
                     onBackClick = {
-                        navController.navigate("place_detail/${place.id}")
+                        navController.navigate(
+                            Screen.PlaceDetail.createRoute(place.id)
+                        )
                     }
                 )
             }

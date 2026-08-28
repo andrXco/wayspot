@@ -56,7 +56,7 @@ object PreviewDataPopular {
         categoriaRes = R.string.place_category_museum,
         ubicacionRes = R.string.place_louvre_location,
         rating = 4.7,
-        imagen = "https://images.unsplash.com/photo-1597923891185-303780189671?q=80&w=1000&auto=format&fit=crop",
+        imagen = "https://4.bp.blogspot.com/-WRjy3L5mWWw/VlWIxn8KkVI/AAAAAAAAACo/g50ctsdSRC8/s1600/museo-del-louvre_5801441.jpg",
         detail = PlaceDetail(
             durationRes = R.string.place_louvre_duration,
             priceRes = R.string.place_louvre_price,
@@ -73,7 +73,7 @@ object PreviewDataPopular {
         categoriaRes = R.string.place_category_mountain,
         ubicacionRes = R.string.place_swiss_alps_location,
         rating = 4.9,
-        imagen = "https://images.unsplash.com/photo-1531310197839-ccf54634509e?q=80&w=1000&auto=format&fit=crop",
+        imagen = "https://www.postposmo.com/wp-content/uploads/2020/10/alpes-suizos-18.jpg",
         detail = PlaceDetail(
             durationRes = R.string.place_swiss_alps_duration,
             priceRes = R.string.place_swiss_alps_price,
@@ -90,7 +90,7 @@ object PreviewDataPopular {
         categoriaRes = R.string.place_category_park,
         ubicacionRes = R.string.place_central_park_location,
         rating = 4.6,
-        imagen = "https://images.unsplash.com/photo-1526281216101-e55f00f0db7a?q=80&w=1000&auto=format&fit=crop",
+        imagen = "https://park.marmaranyc.com/hs-fs/hubfs/Explore%20Widget/Central%20Park.jpg?width=2000&height=1333&name=Central%20Park.jpg",
         detail = PlaceDetail(
             durationRes = R.string.place_central_park_duration,
             priceRes = R.string.place_central_park_price,
@@ -158,7 +158,7 @@ object PreviewDataPopular {
         categoriaRes = R.string.place_category_mountain,
         ubicacionRes = R.string.place_piedra_del_penol_location,
         rating = 4.8,
-        imagen = "https://images.unsplash.com/photo-1596395819057-e37f55a8516b?q=80&w=1000&auto=format&fit=crop",
+        imagen = "https://i.redd.it/y10vhdjst9901.jpg",
         detail = PlaceDetail(
             durationRes = R.string.place_piedra_del_penol_duration,
             priceRes = R.string.place_piedra_del_penol_price,
@@ -175,7 +175,7 @@ object PreviewDataPopular {
         categoriaRes = R.string.place_category_nature,
         ubicacionRes = R.string.place_cano_cristales_location,
         rating = 4.9,
-        imagen = "https://images.unsplash.com/photo-1526392060635-9d6019884377?q=80&w=1000&auto=format&fit=crop",
+        imagen = "https://i.pinimg.com/originals/8f/be/f6/8fbef6eca139d3513f7381c9416fea3e.jpg",
         detail = PlaceDetail(
             durationRes = R.string.place_cano_cristales_duration,
             priceRes = R.string.place_cano_cristales_price,
@@ -186,9 +186,34 @@ object PreviewDataPopular {
         )
     )
 
+    val parqueGuell = Place(
+        id = "parque_guell",
+        tituloRes = R.string.place_parque_guell_title,
+        categoriaRes = R.string.place_category_park,
+        ubicacionRes = R.string.place_parque_guell_location,
+        rating = 4.8,
+        imagen = "https://cdn-imgix.headout.com/microbrands-content-image/image/e8be31fae465f686757c60e3ebc8d62f-barcelona%20park%20g%C3%BCell.jpg",
+        detail = PlaceDetail(
+            durationRes = R.string.place_parque_guell_duration,
+            priceRes = R.string.place_parque_guell_price,
+            altitudeRes = R.string.place_parque_guell_altitude,
+            descriptionRes = R.string.place_parque_guell_description,
+            reviewCount = 1521,
+            recentReviews = emptyList()
+        )
+    )
+
     val listPlaces = listOf(
-        samplePlaces1, samplePlaces2, samplePlaces3,
-        samplePlaces4, samplePlaces5, samplePlaces6,
-        playaBlanca, parqueTayrona, piedraDelPenol, canoCristales
+        samplePlaces1,
+        samplePlaces2,
+        samplePlaces3,
+        samplePlaces4,
+        samplePlaces5,
+        samplePlaces6,
+        playaBlanca,
+        parqueTayrona,
+        piedraDelPenol,
+        canoCristales,
+        parqueGuell
     )
 }

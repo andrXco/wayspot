@@ -275,4 +275,10 @@
     <string name="new_review_selected_photo_content_description">Foto seleccionada %1$d</string>
     <string name="new_review_remove_photo_content_description">Eliminar foto %1$d</string>
     <string name="new_review_save_draft_content_description">Guardar borrador</string>
+    <string name="place_parque_guell_title">Parque Güell</string>
+    <string name="place_parque_guell_location">Barcelona, España</string>
+    <string name="place_parque_guell_duration">2 - 3 horas</string>
+    <string name="place_parque_guell_price">Desde €18</string>
+    <string name="place_parque_guell_altitude">182 m</string>
+    <string name="place_parque_guell_description">Parque Güell es uno de los lugares más emblemáticos de Barcelona, reconocido por la arquitectura de Antoni Gaudí, sus mosaicos coloridos y sus vistas de la ciudad.</string>
 </resources>
