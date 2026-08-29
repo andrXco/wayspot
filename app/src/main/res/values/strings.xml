@@ -165,6 +165,7 @@
     <string name="rating_value">%1$.1f</string>
     <string name="review_avatar_initials">VC</string>
     <string name="popular_destinations_title">Destinos populares</string>
+    <string name="category_all">Todos</string>
     <string name="category_beaches">Playas</string>
     <string name="category_mountains">Montañas</string>
     <string name="category_museums">Museos</string>

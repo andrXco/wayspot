@@ -15,7 +15,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -28,6 +27,8 @@ import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.local.PreviewDataPopular
+import com.example.wayspot.data.model.ExploreCategory
+import com.example.wayspot.data.model.ExploreCategoryRules
 import com.example.wayspot.data.model.Place
 import com.example.wayspot.data.model.SavedPlace
 import com.example.wayspot.ui.components.WayspotSearch
@@ -47,21 +48,26 @@ fun ExploreScreen(
         mutableStateOf("")
     }
 
-    var selectedCategoryRes by remember {
-        mutableIntStateOf(R.string.category_beaches)
+    var selectedCategory by remember {
+        mutableStateOf(ExploreCategoryRules.initialCategory)
     }
 
     val places = PreviewDataPopular.listPlaces
+    val filteredPlaces = ExploreCategoryRules.filterPlaces(
+        places = places,
+        selectedCategory = selectedCategory
+    )
 
     ExplorerContent(
-        places = places,
+        places = filteredPlaces,
         searchText = searchText,
-        selectedCategoryRes = selectedCategoryRes,
+        categories = ExploreCategoryRules.categories,
+        selectedCategory = selectedCategory,
         onSearchChange = {
             searchText = it
         },
         onCategorySelect = {
-            selectedCategoryRes = it
+            selectedCategory = it
         },
         onPlaceClick = onPlaceClick,
         savedPlaceIds = savedPlaces.mapTo(mutableSetOf()) {
@@ -76,9 +82,10 @@ fun ExploreScreen(
 fun ExplorerContent(
     places: List<Place>,
     searchText: String,
-    selectedCategoryRes: Int,
+    categories: List<ExploreCategory>,
+    selectedCategory: ExploreCategory,
     onSearchChange: (String) -> Unit,
-    onCategorySelect: (Int) -> Unit,
+    onCategorySelect: (ExploreCategory) -> Unit,
     onPlaceClick: (String) -> Unit,
     savedPlaceIds: Set<String>,
     onSaveClick: (Place) -> Unit,
@@ -109,9 +116,10 @@ fun ExplorerContent(
 
         item {
             ExplorerTags(
-                selectedCategoryRes = selectedCategoryRes,
+                categories = categories,
+                selectedCategory = selectedCategory,
                 onCategoryClick = onCategorySelect,
-                m = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(

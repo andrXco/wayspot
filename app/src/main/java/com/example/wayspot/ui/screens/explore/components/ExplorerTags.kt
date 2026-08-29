@@ -13,36 +13,32 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.wayspot.ui.theme.WayspotTheme
-import com.example.wayspot.R
+import com.example.wayspot.data.model.ExploreCategory
+import com.example.wayspot.data.model.ExploreCategoryRules
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExplorerTags(
-    selectedCategoryRes: Int,
-    onCategoryClick: (Int) -> Unit,
-    m: Modifier = Modifier
+    categories: List<ExploreCategory>,
+    selectedCategory: ExploreCategory,
+    onCategoryClick: (ExploreCategory) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val categories = listOf(
-        R.string.category_beaches,
-        R.string.category_mountains,
-        R.string.category_museums,
-        R.string.category_parks,
-        R.string.category_cities,
-        R.string.category_art
-    )
-
     LazyRow(
-        modifier = m,
+        modifier = modifier,
         contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(categories) { category ->
+        items(
+            items = categories,
+            key = { category -> category.labelRes }
+        ) { category ->
             FilterChip(
-                selected = selectedCategoryRes == category,
+                selected = selectedCategory == category,
                 onClick = { onCategoryClick(category) },
                 label = {
                     Text(
-                        text = stringResource(category),
+                        text = stringResource(category.labelRes),
                         fontSize = 14.sp
                     )
                 },
@@ -55,7 +51,7 @@ fun ExplorerTags(
                 ),
                 border = FilterChipDefaults.filterChipBorder(
                     enabled = true,
-                    selected = selectedCategoryRes == category,
+                    selected = selectedCategory == category,
                     borderColor = MaterialTheme.colorScheme.outlineVariant,
                     selectedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0f),
                     borderWidth = 1.dp
@@ -70,7 +66,8 @@ fun ExplorerTags(
 fun ExplorerTagsPreview() {
     WayspotTheme {
         ExplorerTags(
-            selectedCategoryRes = R.string.category_beaches,
+            categories = ExploreCategoryRules.categories,
+            selectedCategory = ExploreCategoryRules.initialCategory,
             onCategoryClick = {}
         )
     }
