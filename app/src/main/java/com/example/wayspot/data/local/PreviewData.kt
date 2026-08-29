@@ -1,17 +1,62 @@
 package com.example.wayspot.data.local
 
 import com.example.wayspot.R
-import com.example.wayspot.data.NotificationInfo
-import com.example.wayspot.data.Post
-import com.example.wayspot.data.Review
+import com.example.wayspot.data.model.Notification
+import com.example.wayspot.data.model.Post
+import com.example.wayspot.data.model.ProfileNotificationPreferences
+import com.example.wayspot.data.model.Review
+import com.example.wayspot.data.model.ReviewDraft
+import com.example.wayspot.data.model.ReviewRules
+import com.example.wayspot.data.model.SavedPlace
+import com.example.wayspot.data.model.SavedPlaceList
 import com.example.wayspot.data.model.UserProfile
 import com.example.wayspot.data.model.UserStats
 
 object PreviewData {
+    val savedPlaces = listOf(
+        SavedPlace(
+            place = PreviewDataPopular.playaBlanca,
+            lists = setOf(
+                SavedPlaceList.WANT_TO_VISIT,
+                SavedPlaceList.FAVORITES
+            )
+        ),
+        SavedPlace(
+            place = PreviewDataPopular.parqueTayrona,
+            lists = setOf(
+                SavedPlaceList.WANT_TO_VISIT,
+                SavedPlaceList.VISITED
+            )
+        ),
+        SavedPlace(
+            place = PreviewDataPopular.piedraDelPenol,
+            lists = setOf(SavedPlaceList.FAVORITES)
+        ),
+        SavedPlace(
+            place = PreviewDataPopular.canoCristales,
+            lists = setOf(SavedPlaceList.VISITED)
+        )
+    )
+
+    val newReviewDraft = ReviewDraft(
+        placeId = PreviewDataPopular.samplePlaces1.id,
+        rating = ReviewRules.DEFAULT_RATING,
+        title = "",
+        description = "",
+        photoUris = emptyList()
+    )
+
     val userProfile = UserProfile(
         name = "Valentina García",
-        username = "@valentina_viaja",
+        username = "valentina_viaja",
         bio = "Viajera apasionada · 23 países visitados · Compartiendo el mundo un lugar a la vez",
+        email = "valentina@correo.com",
+        location = "Bogotá, Colombia",
+        notificationPreferences = ProfileNotificationPreferences(
+            newFollowers = true,
+            reviewComments = true,
+            likesReceived = false
+        ),
         initials = "VG",
         isVerified = true,
         stats = UserStats(
@@ -42,7 +87,7 @@ object PreviewData {
         ubicacion = "Barcelona, España",
         descripcion = "El diseño de Gaudí es simplemente surrealista. Las vistas de la ciudad desde la terraza son espectaculares. Compra entradas con anticipación.",
         placeId = "parque_guell",
-        imagen = "https://images.unsplash.com/photo-1583422422116-392a74afe882?q=80&w=1000&auto=format&fit=crop"
+        imagen = "https://cdn-imgix.headout.com/microbrands-content-image/image/e8be31fae465f686757c60e3ebc8d62f-barcelona%20park%20g%C3%BCell.jpg"
     )
 
     val listPosts = listOf(samplePost1, samplePost2)
@@ -55,35 +100,47 @@ object PreviewData {
     )
 
     val notifications = listOf(
-        NotificationInfo(
+        Notification(
             id = 1,
-            username = "Laura",
-            message = "comenzó a seguirte",
+            username = "Carlos Medina",
+            message = "comenzó a seguirte.",
+            detail = "847 seguidores · 22 reseñas",
             time = "Hace 5 min"
         ),
-        NotificationInfo(
+        Notification(
             id = 2,
-            username = "Andrés",
-            message = "le dio me gusta a tu reseña",
-            time = "Hace 20 min"
+            username = "Laura Sánchez",
+            message = "comentó tu reseña de Monserrate.",
+            detail = "\"Totalmente de acuerdo! El atardecer es...\"",
+            time = "Hace 23 min"
         ),
-        NotificationInfo(
+        Notification(
             id = 3,
-            username = "Camila",
-            message = "comentó tu reseña de Monserrate",
+            username = "Andrés Torres",
+            message = "y 14 personas más les gustó tu reseña.",
+            detail = "Parque Tayrona · 4.8",
             time = "Hace 1 h"
         ),
-        NotificationInfo(
+        Notification(
             id = 4,
-            username = "Sofía",
-            message = "publicó una nueva reseña",
+            username = "Sofía Herrera",
+            message = "le gustó tu foto en Cartagena.",
+            detail = "Centro Histórico de Cartagena",
+            time = "Hace 5 h"
+        ),
+        Notification(
+            id = 5,
+            username = "WaySpot",
+            message = "te recomienda un nuevo destino.",
+            detail = "Ciudad Perdida, Sierra Nevada · Basado en tus visitas",
             time = "Hace 3 h"
         ),
-        NotificationInfo(
-            id = 5,
-            username = "Daniel",
-            message = "comenzó a seguirte",
-            time = "Ayer"
+        Notification(
+            id = 6,
+            username = "Playa Blanca",
+            message = "actualizó su información.",
+            detail = "Horarios de acceso modificados · Guardado en tu lista",
+            time = "Hace 1 día"
         )
     )
 

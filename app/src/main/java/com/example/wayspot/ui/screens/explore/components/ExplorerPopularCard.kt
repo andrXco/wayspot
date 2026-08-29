@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.wayspot.R
-import com.example.wayspot.data.model.Places
+import com.example.wayspot.data.model.Place
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.ui.theme.EstrellaAmarilla
@@ -31,15 +31,16 @@ import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun ExplorerPopularCard(
-    place: Places,
+    place: Place,
+    isSaved: Boolean,
     onSaveClick: () -> Unit,
     onClick: () -> Unit,
-    m: Modifier = Modifier
+    modifier: Modifier = Modifier
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
     
     ElevatedCard(
-        modifier = m
+        modifier = modifier
             .fillMaxWidth()
             .padding(4.dp)
             .clickable { onClick() },
@@ -92,10 +93,16 @@ fun ExplorerPopularCard(
                         .align(Alignment.TopEnd)
                 ) {
                     Icon(
-                        imageVector = if (place.isSaved) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
-                        contentDescription = stringResource(R.string.bookmark_content_description),
+                        imageVector = if (isSaved) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
+                        contentDescription = stringResource(
+                            if (isSaved) {
+                                R.string.remove_bookmark_content_description
+                            } else {
+                                R.string.bookmark_content_description
+                            }
+                        ),
                         modifier = Modifier.size(18.dp),
-                        tint = if (place.isSaved) primaryColor else MaterialTheme.colorScheme.outline
+                        tint = if (isSaved) primaryColor else MaterialTheme.colorScheme.outline
                     )
                 }
             }
@@ -159,6 +166,7 @@ fun ExplorerPopularCardPreview() {
     WayspotTheme {
         ExplorerPopularCard(
             place = PreviewDataPopular.samplePlaces1,
+            isSaved = false,
             onSaveClick = {},
             onClick = {}
         )

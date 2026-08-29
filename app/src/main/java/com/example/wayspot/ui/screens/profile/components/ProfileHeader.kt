@@ -26,8 +26,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
-import com.example.wayspot.data.model.UserProfile
 import com.example.wayspot.data.local.PreviewData
+import com.example.wayspot.data.model.UserProfile
+import com.example.wayspot.ui.components.ProfileAvatar
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.theme.WayspotTheme
 
@@ -52,25 +53,20 @@ fun ProfileHeader(
             Box(
                 contentAlignment = Alignment.BottomEnd
             ) {
-                Box(
+                ProfileAvatar(
+                    avatarUrl = user.avatarUrl,
+                    initials = user.initials,
+                    contentDescription = stringResource(
+                        R.string.profile_content_description_avatar
+                    ),
                     modifier = Modifier
                         .size(88.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primaryContainer)
                         .border(
                             width = 2.dp,
                             color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.45f),
                             shape = CircleShape
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = user.initials,
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
+                        )
+                )
 
                 if (user.isVerified) {
                     Box(
@@ -113,7 +109,10 @@ fun ProfileHeader(
                 )
 
                 Text(
-                    text = user.username,
+                    text = stringResource(
+                        R.string.profile_username_format,
+                        user.username
+                    ),
                     modifier = Modifier.padding(top = 4.dp),
                     style = MaterialTheme.typography.bodySmall,
                     fontSize = 14.sp,

@@ -7,8 +7,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.wayspot.data.model.Places
 import com.example.wayspot.data.local.PreviewDataPopular
+import com.example.wayspot.data.model.Place
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.placedetail.components.PlaceDetailBody
 import com.example.wayspot.ui.screens.placedetail.components.PlaceDetailHero
@@ -16,7 +16,7 @@ import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun PlaceDetailScreen(
-    place: Places,
+    placeId: String,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     onSaveClick: () -> Unit = {},
@@ -24,20 +24,26 @@ fun PlaceDetailScreen(
     onWriteReviewClick: () -> Unit = {},
     onSeeAllReviewsClick: () -> Unit = {}
 ) {
-    PlaceDetailContent(
-        place = place,
-        onBackClick = onBackClick,
-        onSaveClick = onSaveClick,
-        onShareClick = onShareClick,
-        onWriteReviewClick = onWriteReviewClick,
-        onSeeAllReviewsClick = onSeeAllReviewsClick,
-        modifier = modifier
-    )
+    val place = PreviewDataPopular.listPlaces.find {
+        it.id == placeId
+    }
+
+    if (place != null) {
+        PlaceDetailContent(
+            place = place,
+            onBackClick = onBackClick,
+            onSaveClick = onSaveClick,
+            onShareClick = onShareClick,
+            onWriteReviewClick = onWriteReviewClick,
+            onSeeAllReviewsClick = onSeeAllReviewsClick,
+            modifier = modifier
+        )
+    }
 }
 
 @Composable
 fun PlaceDetailContent(
-    place: Places,
+    place: Place,
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
     onShareClick: () -> Unit,
@@ -75,7 +81,7 @@ fun PlaceDetailContent(
 private fun PlaceDetailScreenPreview() {
     WayspotTheme {
         PlaceDetailScreen(
-            place = PreviewDataPopular.samplePlaces1,
+            placeId = PreviewDataPopular.samplePlaces1.id,
             onBackClick = {}
         )
     }

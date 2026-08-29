@@ -87,14 +87,64 @@
     <string name="profile_verified_badge_content_description">Usuario verificado</string>
     <string name="profile_sample_name">Valentina García</string>
     <string name="profile_sample_username">\@valentina_viaja</string>
+    <string name="profile_username_format">\@%1$s</string>
     <string name="profile_sample_bio">Viajera apasionada · 23 países visitados · Compartiendo el mundo un lugar a la vez</string>
     <string name="profile_saved_empty_title">Sin elementos guardados</string>
     <string name="profile_saved_empty_description">Los lugares y publicaciones que guardes aparecerán aquí para fácil acceso.</string>
     <string name="profile_saved_empty_icon_content_description">Icono de guardados vacío</string>
 
+    <!-- Saved Places Screen Strings -->
+    <string name="saved_places_title">Mis Lugares Guardados</string>
+    <string name="saved_places_destination_count">%1$d destinos</string>
+    <string name="saved_places_search_placeholder">Buscar en mis guardados…</string>
+    <string name="saved_places_search_content_description">Buscar destinos guardados</string>
+    <string name="saved_places_list_want_to_visit">Quiero visitar</string>
+    <string name="saved_places_list_favorites">Favoritos</string>
+    <string name="saved_places_list_visited">Visitados</string>
+    <string name="saved_places_list_count">(%1$d)</string>
+    <string name="saved_places_view_details">Ver detalles</string>
+    <string name="saved_places_remove_content_description">Quitar %1$s de esta lista</string>
+    <string name="saved_places_image_content_description">Imagen de %1$s</string>
+    <string name="saved_places_location_content_description">Ubicación: %1$s</string>
+    <string name="saved_places_rating_content_description">Calificación: %1$.1f de 5</string>
+    <string name="saved_places_empty_title">No hay destinos guardados</string>
+    <string name="saved_places_empty_description">Guarda destinos en esta lista para encontrarlos aquí.</string>
+
+    <!-- Edit Profile Screen Strings -->
+    <string name="edit_profile_title">Editar perfil</string>
+    <string name="edit_profile_change_photo">Cambiar foto de perfil</string>
+    <string name="edit_profile_username_label">Nombre de usuario</string>
+    <string name="edit_profile_username_support">Solo letras, números y guiones bajos</string>
+    <string name="edit_profile_email_label">Correo electrónico</string>
+    <string name="edit_profile_bio_label">Biografía</string>
+    <string name="edit_profile_character_count">%1$d/%2$d caracteres</string>
+    <string name="edit_profile_location_label">Ciudad o país</string>
+    <string name="edit_profile_notifications_title">Notificaciones</string>
+    <string name="edit_profile_new_followers">Nuevos seguidores</string>
+    <string name="edit_profile_review_comments">Comentarios en reseñas</string>
+    <string name="edit_profile_likes_received">Likes recibidos</string>
+    <string name="edit_profile_danger_title">Zona de peligro</string>
+    <string name="edit_profile_danger_description">Esta versión local no está conectada a un servidor. Puedes borrar los cambios del perfil y cerrar la sesión, pero no eliminar una cuenta real.</string>
+    <string name="edit_profile_delete_confirmation">Se restaurará el perfil de demostración y se descartarán tus borradores y cambios locales. Esta acción no se puede deshacer.</string>
+    <string name="edit_profile_delete_account">Borrar datos locales</string>
+    <string name="edit_profile_cancel">Cancelar</string>
+    <string name="edit_profile_save_changes">Guardar cambios</string>
+    <string name="edit_profile_avatar_content_description">Foto de perfil de %1$s</string>
+    <string name="edit_profile_change_photo_content_description">Cambiar foto de perfil</string>
+    <string name="edit_profile_username_icon_content_description">Nombre de usuario</string>
+    <string name="edit_profile_email_icon_content_description">Correo electrónico</string>
+    <string name="edit_profile_location_icon_content_description">Ubicación</string>
+    <string name="edit_profile_new_followers_switch_content_description">Activar o desactivar notificaciones de nuevos seguidores</string>
+    <string name="edit_profile_review_comments_switch_content_description">Activar o desactivar notificaciones de comentarios en reseñas</string>
+    <string name="edit_profile_likes_received_switch_content_description">Activar o desactivar notificaciones de likes recibidos</string>
+    <string name="edit_profile_warning_content_description">Advertencia de borrado de datos locales</string>
+    <string name="edit_profile_delete_account_content_description">Borrar mis datos locales y cerrar sesión</string>
+    <string name="edit_profile_save_changes_content_description">Guardar cambios del perfil</string>
+
     <!-- Place Detail Strings -->
     <string name="back_button_content_description">Volver</string>
     <string name="bookmark_content_description">Guardar</string>
+    <string name="remove_bookmark_content_description">Quitar de guardados</string>
     <string name="share_content_description">Compartir</string>
     <string name="reviews_count">%1$s reseñas</string>
     <string name="description_title">Descripción</string>
@@ -115,6 +165,7 @@
     <string name="rating_value">%1$.1f</string>
     <string name="review_avatar_initials">VC</string>
     <string name="popular_destinations_title">Destinos populares</string>
+    <string name="category_all">Todos</string>
     <string name="category_beaches">Playas</string>
     <string name="category_mountains">Montañas</string>
     <string name="category_museums">Museos</string>
@@ -128,6 +179,7 @@
     <string name="place_category_mountain">Montaña</string>
     <string name="place_category_park">Parque</string>
     <string name="place_category_city">Ciudad</string>
+    <string name="place_category_nature">Naturaleza</string>
 
     <string name="place_machu_picchu_title">Machu Picchu</string>
     <string name="place_machu_picchu_location">Cusco, Perú</string>
@@ -171,4 +223,63 @@
     <string name="place_eiffel_tower_price">Desde €23</string>
     <string name="place_eiffel_tower_altitude">330 m</string>
     <string name="place_eiffel_tower_description">El icono de París ofrece vistas de la ciudad desde sus distintos niveles y una experiencia arquitectónica emblemática junto al Sena.</string>
+
+    <string name="place_playa_blanca_title">Playa Blanca</string>
+    <string name="place_playa_blanca_location">Bolívar, Colombia</string>
+    <string name="place_playa_blanca_duration">Medio día</string>
+    <string name="place_playa_blanca_price">Acceso con costo</string>
+    <string name="place_playa_blanca_altitude">0 m</string>
+    <string name="place_playa_blanca_description">Una playa de arena clara y aguas cálidas en la isla de Barú, ideal para nadar, descansar y disfrutar el paisaje del Caribe colombiano.</string>
+
+    <string name="place_parque_tayrona_title">Parque Tayrona</string>
+    <string name="place_parque_tayrona_location">Magdalena, Colombia</string>
+    <string name="place_parque_tayrona_duration">Todo el día</string>
+    <string name="place_parque_tayrona_price">Entrada con costo</string>
+    <string name="place_parque_tayrona_altitude">0–900 m</string>
+    <string name="place_parque_tayrona_description">Un parque natural donde la Sierra Nevada se encuentra con el mar Caribe, con senderos entre bosque tropical, playas y vestigios arqueológicos.</string>
+
+    <string name="place_piedra_del_penol_title">Piedra del Peñol</string>
+    <string name="place_piedra_del_penol_location">Antioquia, Colombia</string>
+    <string name="place_piedra_del_penol_duration">2–3 horas</string>
+    <string name="place_piedra_del_penol_price">Ascenso con costo</string>
+    <string name="place_piedra_del_penol_altitude">2.135 m</string>
+    <string name="place_piedra_del_penol_description">Un monolito de gran altura con una escalinata hasta el mirador, desde donde se observan las islas y embalses que rodean Guatapé.</string>
+
+    <string name="place_cano_cristales_title">Caño Cristales</string>
+    <string name="place_cano_cristales_location">Meta, Colombia</string>
+    <string name="place_cano_cristales_duration">Todo el día</string>
+    <string name="place_cano_cristales_price">Visita guiada</string>
+    <string name="place_cano_cristales_altitude">200 m</string>
+    <string name="place_cano_cristales_description">Un río reconocido por los colores estacionales de sus plantas acuáticas, rodeado por formaciones rocosas, cascadas y ecosistemas de la Serranía de la Macarena.</string>
+
+    <!-- New Review Screen Strings -->
+    <string name="new_review_title">Nueva reseña</string>
+    <string name="new_review_draft">Borrador</string>
+    <string name="new_review_experience_question">¿Cómo fue tu experiencia?</string>
+    <string name="new_review_rating_1">Mala</string>
+    <string name="new_review_rating_2">Regular</string>
+    <string name="new_review_rating_3">Buena</string>
+    <string name="new_review_rating_4">Muy buena</string>
+    <string name="new_review_rating_5">Excelente</string>
+    <string name="new_review_title_label">Título de la reseña</string>
+    <string name="new_review_title_placeholder">Ej: Una vista que vale la pena...</string>
+    <string name="new_review_description_label">Describe tu experiencia</string>
+    <string name="new_review_description_placeholder">Cuéntanos qué fue lo que más te gustó, qué te sorprendió y si lo recomendarías a otros viajeros...</string>
+    <string name="new_review_character_counter">%1$d / %2$d</string>
+    <string name="new_review_add_photos_optional">Añadir fotos (opcional)</string>
+    <string name="new_review_add_photo">Añadir foto</string>
+    <string name="new_review_photos_limit">Puedes añadir hasta %1$d fotos</string>
+    <string name="new_review_publish">Publicar reseña</string>
+    <string name="new_review_place_image_content_description">Imagen de %1$s</string>
+    <string name="new_review_select_rating_content_description">Seleccionar calificación de %1$d estrellas</string>
+    <string name="new_review_current_rating_content_description">Calificación actual: %1$d de %2$d estrellas</string>
+    <string name="new_review_selected_photo_content_description">Foto seleccionada %1$d</string>
+    <string name="new_review_remove_photo_content_description">Eliminar foto %1$d</string>
+    <string name="new_review_save_draft_content_description">Guardar borrador</string>
+    <string name="place_parque_guell_title">Parque Güell</string>
+    <string name="place_parque_guell_location">Barcelona, España</string>
+    <string name="place_parque_guell_duration">2 - 3 horas</string>
+    <string name="place_parque_guell_price">Desde €18</string>
+    <string name="place_parque_guell_altitude">182 m</string>
+    <string name="place_parque_guell_description">Parque Güell es uno de los lugares más emblemáticos de Barcelona, reconocido por la arquitectura de Antoni Gaudí, sus mosaicos coloridos y sus vistas de la ciudad.</string>
 </resources>

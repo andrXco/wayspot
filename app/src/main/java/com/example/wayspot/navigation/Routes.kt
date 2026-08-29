@@ -1,12 +1,36 @@
 package com.example.wayspot.navigation
 
-object Routes {
-    const val SPLASH = "splash"
-    const val LOGIN = "login"
-    const val SIGNUP = "signup"
-    const val HOME = "home"
-    const val EXPLORE = "explore"
-    const val PROFILE = "profile"
-    const val PLACE_DETAIL = "place_detail"
-    const val NOTIFICATIONS = "notifications"
+sealed class Screen(val route: String) {
+
+    object Splash : Screen("splash")
+
+    object Login : Screen("login")
+
+    object SignUp : Screen("signup")
+
+    object Home : Screen("home")
+
+    object Explore : Screen("explore")
+
+    object Profile : Screen("profile")
+
+    object SavedPlaces : Screen("saved_places")
+
+    object EditProfile : Screen("edit_profile")
+
+    object Notifications : Screen("notifications")
+
+    object ForgotPassword : Screen("forgot_password")
+
+    object PlaceDetail : Screen("place_detail/{placeId}") {
+        fun createRoute(placeId: String): String {
+            return "place_detail/$placeId"
+        }
+    }
+
+    object NewReview : Screen("new_review/{placeId}") {
+        fun createRoute(placeId: String): String {
+            return "new_review/$placeId"
+        }
+    }
 }

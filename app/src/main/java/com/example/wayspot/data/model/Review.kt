@@ -1,4 +1,4 @@
-package com.example.wayspot.data
+package com.example.wayspot.data.model
 
 data class Review(
     val usuario: String,

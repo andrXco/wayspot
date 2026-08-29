@@ -40,7 +40,7 @@ fun ProfileStats(
             .fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.14f),
+            containerColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.12f),
             contentColor = MaterialTheme.colorScheme.onPrimary
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -101,7 +101,7 @@ private fun ProfileStat(
         Text(
             text = value,
             style = MaterialTheme.typography.titleLarge,
-            fontSize = 20.sp,
+            fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onPrimary
         )
@@ -109,9 +109,9 @@ private fun ProfileStat(
         Text(
             text = label,
             style = MaterialTheme.typography.bodySmall,
-            fontSize = 12.sp,
+            fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.78f)
+            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f)
         )
     }
 }

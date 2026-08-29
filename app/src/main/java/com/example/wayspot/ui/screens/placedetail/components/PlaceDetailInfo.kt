@@ -27,12 +27,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.wayspot.data.model.Places
+import com.example.wayspot.data.model.Place
 import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
-internal fun PlaceInfoRow(place: Places, modifier: Modifier = Modifier) {
+internal fun PlaceInfoRow(place: Place, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(10.dp)
