@@ -7,7 +7,14 @@
     <string name="welcome_tagline">Explora el mundo, un lugar a la vez</string>
     <string name="welcome_login_button">Iniciar sesión</string>
     <string name="welcome_signup_button">Crear cuenta</string>
-    <string name="welcome_terms">Al continuar, aceptas nuestros Términos de servicio y Política de privacidad.</string>
+    <string name="welcome_terms_prefix">Al continuar, aceptas nuestros </string>
+    <string name="welcome_terms_service">Términos de servicio</string>
+    <string name="welcome_terms_and"> y </string>
+    <string name="welcome_terms_privacy">Política de privacidad.</string>
+    <string name="splash_destination_patagonia">Patagonia</string>
+    <string name="splash_destination_cappadocia">Cappadocia</string>
+    <string name="splash_destination_kyoto">Kyoto</string>
+    <string name="splash_destination_machu_picchu">Machu Picchu</string>
     <string name="login_title">Iniciar Sesión</string>
     <string name="label_user">Usuario</string>
     <string name="label_password">Contraseña</string>

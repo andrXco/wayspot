@@ -4,7 +4,10 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,10 +18,9 @@ import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.splash.components.SplashActionsSection
 import com.example.wayspot.ui.screens.splash.components.SplashBackground
 import com.example.wayspot.ui.screens.splash.components.SplashBrandingSection
-import com.example.wayspot.ui.theme.ArenaDorado
-import com.example.wayspot.ui.theme.BlancoCalido
-import com.example.wayspot.ui.theme.Carbon
+import com.example.wayspot.ui.screens.splash.components.SplashDestinationChipsSection
 import com.example.wayspot.ui.theme.WayspotTheme
+import androidx.compose.material3.MaterialTheme
 
 @Composable
 fun SplashScreen(
@@ -27,31 +29,43 @@ fun SplashScreen(
     modifier: Modifier = Modifier
 ) {
     val isDarkTheme = isSystemInDarkTheme()
+    val colorScheme = MaterialTheme.colorScheme
 
     val foregroundColor = if (isDarkTheme) {
-        BlancoCalido
+        colorScheme.onBackground
     } else {
-        Carbon
+        colorScheme.onPrimary
     }
-
+    val primaryColor = if (isDarkTheme) {
+        colorScheme.primaryContainer
+    } else {
+        colorScheme.primary
+    }
+    val onPrimaryColor = if (isDarkTheme) {
+        colorScheme.onPrimaryContainer
+    } else {
+        colorScheme.onPrimary
+    }
+    val accentColor = if (isDarkTheme) {
+        colorScheme.tertiary
+    } else {
+        colorScheme.tertiaryContainer
+    }
     val backgroundOverlay = Brush.verticalGradient(
-        colors = if (isDarkTheme) {
-            listOf(
-                Carbon.copy(alpha = 0.72f),
-                Carbon.copy(alpha = 0.72f)
-            )
-        } else {
-            listOf(
-                Carbon.copy(alpha = 0.12f),
-                BlancoCalido.copy(alpha = 0.04f),
-                BlancoCalido.copy(alpha = 0.18f)
-            )
-        }
+        colorStops = arrayOf(
+            0f to colorScheme.scrim.copy(alpha = 0.56f),
+            0.35f to primaryColor.copy(alpha = 0.18f),
+            0.65f to colorScheme.scrim.copy(alpha = 0.58f),
+            0.85f to colorScheme.scrim.copy(alpha = 0.9f),
+            1f to colorScheme.scrim.copy(alpha = 0.96f)
+        )
     )
 
     SplashContent(
-        isDarkTheme = isDarkTheme,
         foregroundColor = foregroundColor,
+        primaryColor = primaryColor,
+        onPrimaryColor = onPrimaryColor,
+        accentColor = accentColor,
         backgroundOverlay = backgroundOverlay,
         onLoginClick = onLoginClick,
         onSignUpClick = onSignUpClick,
@@ -61,8 +75,10 @@ fun SplashScreen(
 
 @Composable
 fun SplashContent(
-    isDarkTheme: Boolean,
     foregroundColor: Color,
+    primaryColor: Color,
+    onPrimaryColor: Color,
+    accentColor: Color,
     backgroundOverlay: Brush,
     onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
@@ -75,24 +91,32 @@ fun SplashContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp, vertical = 28.dp),
+                .statusBarsPadding()
+                .navigationBarsPadding()
+                .padding(horizontal = 24.dp, vertical = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.weight(0.7f))
-
-            SplashBrandingSection(
-                isDarkTheme = isDarkTheme,
+            SplashDestinationChipsSection(
                 foregroundColor = foregroundColor,
-                accentColor = ArenaDorado,
                 modifier = Modifier
             )
 
             Spacer(modifier = Modifier.weight(1f))
 
+            SplashBrandingSection(
+                foregroundColor = foregroundColor,
+                accentColor = accentColor,
+                modifier = Modifier
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
             SplashActionsSection(
                 onLoginClick = onLoginClick,
                 onSignUpClick = onSignUpClick,
                 foregroundColor = foregroundColor,
+                primaryColor = primaryColor,
+                onPrimaryColor = onPrimaryColor,
                 modifier = Modifier
             )
         }

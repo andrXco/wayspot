@@ -3,6 +3,8 @@ package com.example.wayspot
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.graphics.Color as AndroidColor
+import android.os.Build
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -36,27 +38,45 @@ fun WaySpotApp(
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
         val drawsBehindStatusBar = currentRoute in edgeToEdgeRoutes
+        val drawsBehindNavigationBar = currentRoute == Screen.Splash.route
         val useDarkStatusBarIcons = when (currentRoute) {
             Screen.Splash.route -> false
             Screen.Profile.route -> MaterialTheme.colorScheme.primary.luminance() > 0.5f
+            else -> MaterialTheme.colorScheme.background.luminance() > 0.5f
+        }
+        val useDarkNavigationBarIcons = when (currentRoute) {
+            Screen.Splash.route -> false
             else -> MaterialTheme.colorScheme.background.luminance() > 0.5f
         }
         val view = LocalView.current
 
         SideEffect {
             view.context.findActivity()?.let { activity ->
-                WindowCompat.getInsetsController(
-                    activity.window,
+                val window = activity.window
+                val insetsController = WindowCompat.getInsetsController(
+                    window,
                     view
-                ).isAppearanceLightStatusBars = useDarkStatusBarIcons
+                )
+                insetsController.isAppearanceLightStatusBars = useDarkStatusBarIcons
+                insetsController.isAppearanceLightNavigationBars = useDarkNavigationBarIcons
+                makeNavigationBarTransparent(activity)
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    window.isNavigationBarContrastEnforced = false
+                }
             }
         }
 
         Scaffold(
             modifier = modifier.fillMaxSize(),
-            contentWindowInsets = WindowInsets.safeDrawing.only(
-                WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
-            ),
+            containerColor = MaterialTheme.colorScheme.background,
+            contentWindowInsets = if (drawsBehindNavigationBar) {
+                WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
+            } else {
+                WindowInsets.safeDrawing.only(
+                    WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
+                )
+            },
             bottomBar = {
                 if (currentRoute != null && currentRoute in bottomBarRoutes) {
                     WayspotBottomBar(
@@ -101,4 +121,9 @@ private tailrec fun Context.findActivity(): Activity? = when (this) {
     is Activity -> this
     is ContextWrapper -> baseContext.findActivity()
     else -> null
+}
+
+@Suppress("DEPRECATION")
+private fun makeNavigationBarTransparent(activity: Activity) {
+    activity.window.navigationBarColor = AndroidColor.TRANSPARENT
 }
