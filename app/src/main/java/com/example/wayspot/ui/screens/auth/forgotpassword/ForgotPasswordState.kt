@@ -1,4 +1,5 @@
 package com.example.wayspot.ui.screens.auth.forgotpassword
 
-class ForgotPasswordState {
-}
+data class ForgotPasswordState(
+    val email: String = ""
+)

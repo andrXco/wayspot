@@ -13,9 +13,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -26,38 +23,40 @@ import com.example.wayspot.ui.screens.auth.components.AuthHeader
 import com.example.wayspot.ui.screens.auth.signup.components.SignUpActionsSection
 import com.example.wayspot.ui.screens.auth.signup.components.SignUpFormSection
 import com.example.wayspot.ui.theme.WayspotTheme
+import androidx.compose.runtime.collectAsState
 
 @Composable
 fun SignUpScreen(
+    signUpViewModel: SignUpViewModel,
     onSignUpClick: () -> Unit,
     onBackToLoginClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var nombre by remember { mutableStateOf("") }
-    var correo by remember { mutableStateOf("") }
-    var contrasena by remember { mutableStateOf("") }
-    var confirmarContrasena by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
-    var confirmPasswordVisible by remember { mutableStateOf(false) }
-    var termsAccepted by remember { mutableStateOf(false) }
+    val state by signUpViewModel.uiState.collectAsState()
 
     SignUpContent(
-        nombre = nombre,
-        onNombreChange = { nombre = it },
-        correo = correo,
-        onCorreoChange = { correo = it },
-        contrasena = contrasena,
-        onContrasenaChange = { contrasena = it },
-        confirmarContrasena = confirmarContrasena,
-        onConfirmarContrasenaChange = { confirmarContrasena = it },
-        passwordVisible = passwordVisible,
-        onTogglePasswordVisibility = { passwordVisible = !passwordVisible },
-        confirmPasswordVisible = confirmPasswordVisible,
-        onToggleConfirmPasswordVisibility = {
-            confirmPasswordVisible = !confirmPasswordVisible
+        nombre = state.nombre,
+        onNombreChange = { signUpViewModel.updateNombre(it) },
+        correo = state.correo,
+        onCorreoChange = { signUpViewModel.updateCorreo(it) },
+        contrasena = state.contrasena,
+        onContrasenaChange = { signUpViewModel.updateContrasena(it) },
+        confirmarContrasena = state.confirmarContrasena,
+        onConfirmarContrasenaChange = {
+            signUpViewModel.updateConfirmarContrasena(it)
         },
-        termsAccepted = termsAccepted,
-        onTermsAcceptedChange = { termsAccepted = it },
+        passwordVisible = state.passwordVisible,
+        onTogglePasswordVisibility = {
+            signUpViewModel.togglePasswordVisibility()
+        },
+        confirmPasswordVisible = state.confirmPasswordVisible,
+        onToggleConfirmPasswordVisibility = {
+            signUpViewModel.toggleConfirmPasswordVisibility()
+        },
+        termsAccepted = state.termsAccepted,
+        onTermsAcceptedChange = {
+            signUpViewModel.updateTermsAccepted(it)
+        },
         onSignUpClick = onSignUpClick,
         onBackToLoginClick = onBackToLoginClick,
         modifier = modifier

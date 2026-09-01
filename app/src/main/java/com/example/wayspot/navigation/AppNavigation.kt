@@ -1,21 +1,20 @@
 package com.example.wayspot.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.wayspot.data.local.PreviewData
-import com.example.wayspot.data.local.PreviewDataPopular
-import com.example.wayspot.data.model.SavedPlacesRules
+import com.example.wayspot.ui.screens.auth.forgotpassword.ForgotPasswordScreen
 import com.example.wayspot.ui.screens.auth.login.LoginScreen
+import com.example.wayspot.ui.screens.auth.login.LoginViewModel
 import com.example.wayspot.ui.screens.auth.signup.SignUpScreen
+import com.example.wayspot.ui.screens.auth.signup.SignUpViewModel
 import com.example.wayspot.ui.screens.editprofile.EditProfileScreen
 import com.example.wayspot.ui.screens.explore.ExploreScreen
 import com.example.wayspot.ui.screens.home.HomeScreen
@@ -25,7 +24,7 @@ import com.example.wayspot.ui.screens.placedetail.PlaceDetailScreen
 import com.example.wayspot.ui.screens.profile.ProfileScreen
 import com.example.wayspot.ui.screens.savedplaces.SavedPlacesScreen
 import com.example.wayspot.ui.screens.splash.SplashScreen
-import com.example.wayspot.ui.screens.auth.forgotpassword.ForgotPasswordScreen
+import com.example.wayspot.ui.screens.auth.forgotpassword.ForgotPasswordViewModel
 
 @Composable
 fun AppNavigation(
@@ -33,13 +32,10 @@ fun AppNavigation(
     modifier: Modifier = Modifier
 ) {
 
-    var userProfile by remember {
-        mutableStateOf(PreviewData.userProfile)
-    }
+    val appNavigationViewModel: AppNavigationViewModel = viewModel()
 
-    var savedPlaces by remember {
-        mutableStateOf(PreviewData.savedPlaces)
-    }
+    val userProfile by appNavigationViewModel.userProfile.collectAsState()
+    val savedPlaces by appNavigationViewModel.savedPlaces.collectAsState()
 
     NavHost(
         navController = navController,
@@ -48,11 +44,19 @@ fun AppNavigation(
     ) {
 
         composable(Screen.ForgotPassword.route) {
+
+            val forgotPasswordViewModel: ForgotPasswordViewModel = viewModel()
+
             ForgotPasswordScreen(
+                forgotPasswordViewModel = forgotPasswordViewModel,
+
                 onSendClick = {
                 },
+
                 onBackToLoginClick = {
-                    navController.navigate(Screen.Login.route)
+                    navController.navigate(
+                        Screen.Login.route
+                    )
                 }
             )
         }
@@ -72,8 +76,7 @@ fun AppNavigation(
                 },
 
                 onRemoveFromList = { placeId, list ->
-                    savedPlaces = SavedPlacesRules.removeFromList(
-                        savedPlaces = savedPlaces,
+                    appNavigationViewModel.removeSavedPlace(
                         placeId = placeId,
                         list = list
                     )
@@ -90,14 +93,22 @@ fun AppNavigation(
                 },
 
                 onSaveClick = { updatedProfile ->
-                    userProfile = updatedProfile
-                    navController.navigate(Screen.Profile.route)
+                    appNavigationViewModel.updateUserProfile(
+                        updatedProfile
+                    )
+
+                    navController.navigate(
+                        Screen.Profile.route
+                    )
                 },
 
                 onDeleteAccountConfirmed = {
-                    userProfile = PreviewData.userProfile
-                    savedPlaces = PreviewData.savedPlaces
-                    navController.navigate(Screen.Login.route)
+                    appNavigationViewModel.resetUserProfile()
+                    appNavigationViewModel.resetSavedPlaces()
+
+                    navController.navigate(
+                        Screen.Login.route
+                    )
                 }
             )
         }
@@ -107,11 +118,15 @@ fun AppNavigation(
                 userProfile = userProfile,
 
                 onEditProfileClick = {
-                    navController.navigate(Screen.EditProfile.route)
+                    navController.navigate(
+                        Screen.EditProfile.route
+                    )
                 },
 
                 onSavedPlacesClick = {
-                    navController.navigate(Screen.SavedPlaces.route)
+                    navController.navigate(
+                        Screen.SavedPlaces.route
+                    )
                 }
             )
         }
@@ -127,9 +142,8 @@ fun AppNavigation(
                 savedPlaces = savedPlaces,
 
                 onSaveClick = { place ->
-                    savedPlaces = SavedPlacesRules.toggleSaved(
-                        savedPlaces = savedPlaces,
-                        place = place
+                    appNavigationViewModel.toggleSavedPlace(
+                        place
                     )
                 }
             )
@@ -144,14 +158,19 @@ fun AppNavigation(
             )
         ) { backStackEntry ->
 
-            val placeId = backStackEntry.arguments?.getString("placeId")
+            val placeId =
+                backStackEntry.arguments?.getString("placeId")
 
             if (placeId != null) {
                 PlaceDetailScreen(
                     placeId = placeId,
+
                     onBackClick = {
-                        navController.navigate(Screen.Home.route)
+                        navController.navigate(
+                            Screen.Home.route
+                        )
                     },
+
                     onWriteReviewClick = {
                         navController.navigate(
                             Screen.NewReview.createRoute(placeId)
@@ -164,25 +183,42 @@ fun AppNavigation(
         composable(Screen.Splash.route) {
             SplashScreen(
                 onLoginClick = {
-                    navController.navigate(Screen.Login.route)
+                    navController.navigate(
+                        Screen.Login.route
+                    )
                 },
 
                 onSignUpClick = {
-                    navController.navigate(Screen.SignUp.route)
+                    navController.navigate(
+                        Screen.SignUp.route
+                    )
                 }
             )
         }
 
         composable(Screen.Login.route) {
+
+            val loginViewModel: LoginViewModel = viewModel()
+
             LoginScreen(
+                loginViewModel = loginViewModel,
+
                 onLoginClick = {
-                    navController.navigate(Screen.Home.route)
+                    navController.navigate(
+                        Screen.Home.route
+                    )
                 },
+
                 onSignUpClick = {
-                    navController.navigate(Screen.SignUp.route)
+                    navController.navigate(
+                        Screen.SignUp.route
+                    )
                 },
+
                 onForgotPasswordClick = {
-                    navController.navigate(Screen.ForgotPassword.route)
+                    navController.navigate(
+                        Screen.ForgotPassword.route
+                    )
                 }
             )
         }
@@ -190,7 +226,9 @@ fun AppNavigation(
         composable(Screen.Notifications.route) {
             NotificationsScreen(
                 onBackClick = {
-                    navController.navigate(Screen.Home.route)
+                    navController.navigate(
+                        Screen.Home.route
+                    )
                 }
             )
         }
@@ -198,7 +236,9 @@ fun AppNavigation(
         composable(Screen.Home.route) {
             HomeScreen(
                 onNotificationsClick = {
-                    navController.navigate(Screen.Notifications.route)
+                    navController.navigate(
+                        Screen.Notifications.route
+                    )
                 },
 
                 onPlaceClick = { placeId ->
@@ -210,9 +250,16 @@ fun AppNavigation(
         }
 
         composable(Screen.SignUp.route) {
+
+            val signUpViewModel: SignUpViewModel = viewModel()
+
             SignUpScreen(
+                signUpViewModel = signUpViewModel,
+
                 onSignUpClick = {
-                    navController.navigate(Screen.Home.route) {
+                    navController.navigate(
+                        Screen.Home.route
+                    ) {
                         popUpTo(0) {
                             inclusive = true
                         }
@@ -220,7 +267,9 @@ fun AppNavigation(
                 },
 
                 onBackToLoginClick = {
-                    navController.navigate(Screen.Login.route)
+                    navController.navigate(
+                        Screen.Login.route
+                    )
                 }
             )
         }
@@ -234,11 +283,13 @@ fun AppNavigation(
             )
         ) { backStackEntry ->
 
-            val placeId = backStackEntry.arguments?.getString("placeId")
+            val placeId =
+                backStackEntry.arguments?.getString("placeId")
 
             if (placeId != null) {
                 NewReviewScreen(
                     placeId = placeId,
+
                     onBackClick = {
                         navController.navigate(
                             Screen.PlaceDetail.createRoute(placeId)
