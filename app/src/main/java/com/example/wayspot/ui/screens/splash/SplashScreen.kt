@@ -5,11 +5,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -20,14 +20,16 @@ import com.example.wayspot.ui.screens.splash.components.SplashBackground
 import com.example.wayspot.ui.screens.splash.components.SplashBrandingSection
 import com.example.wayspot.ui.screens.splash.components.SplashDestinationChipsSection
 import com.example.wayspot.ui.theme.WayspotTheme
-import androidx.compose.material3.MaterialTheme
 
 @Composable
 fun SplashScreen(
+    splashViewModel: SplashViewModel,
     onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val state by splashViewModel.uiState.collectAsState()
+
     val isDarkTheme = isSystemInDarkTheme()
     val colorScheme = MaterialTheme.colorScheme
 
@@ -36,21 +38,25 @@ fun SplashScreen(
     } else {
         colorScheme.onPrimary
     }
+
     val primaryColor = if (isDarkTheme) {
         colorScheme.primaryContainer
     } else {
         colorScheme.primary
     }
+
     val onPrimaryColor = if (isDarkTheme) {
         colorScheme.onPrimaryContainer
     } else {
         colorScheme.onPrimary
     }
+
     val accentColor = if (isDarkTheme) {
         colorScheme.tertiary
     } else {
         colorScheme.tertiaryContainer
     }
+
     val backgroundOverlay = Brush.verticalGradient(
         colorStops = arrayOf(
             0f to colorScheme.scrim.copy(alpha = 0.56f),
@@ -61,16 +67,18 @@ fun SplashScreen(
         )
     )
 
-    SplashContent(
-        foregroundColor = foregroundColor,
-        primaryColor = primaryColor,
-        onPrimaryColor = onPrimaryColor,
-        accentColor = accentColor,
-        backgroundOverlay = backgroundOverlay,
-        onLoginClick = onLoginClick,
-        onSignUpClick = onSignUpClick,
-        modifier = modifier
-    )
+    if (state.isReady) {
+        SplashContent(
+            foregroundColor = foregroundColor,
+            primaryColor = primaryColor,
+            onPrimaryColor = onPrimaryColor,
+            accentColor = accentColor,
+            backgroundOverlay = backgroundOverlay,
+            onLoginClick = onLoginClick,
+            onSignUpClick = onSignUpClick,
+            modifier = modifier
+        )
+    }
 }
 
 @Composable
@@ -91,17 +99,19 @@ fun SplashContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .statusBarsPadding()
-                .navigationBarsPadding()
-                .padding(horizontal = 24.dp, vertical = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(
+                    horizontal = 24.dp,
+                    vertical = 24.dp
+                )
         ) {
             SplashDestinationChipsSection(
                 foregroundColor = foregroundColor,
                 modifier = Modifier
             )
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(
+                modifier = Modifier.weight(1f)
+            )
 
             SplashBrandingSection(
                 foregroundColor = foregroundColor,
@@ -109,7 +119,9 @@ fun SplashContent(
                 modifier = Modifier
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(
+                modifier = Modifier.height(24.dp)
+            )
 
             SplashActionsSection(
                 onLoginClick = onLoginClick,
@@ -127,7 +139,19 @@ fun SplashContent(
 @Composable
 private fun SplashScreenPreview() {
     WayspotTheme {
-        SplashScreen(
+        val colorScheme = MaterialTheme.colorScheme
+
+        SplashContent(
+            foregroundColor = colorScheme.onPrimary,
+            primaryColor = colorScheme.primary,
+            onPrimaryColor = colorScheme.onPrimary,
+            accentColor = colorScheme.tertiaryContainer,
+            backgroundOverlay = Brush.verticalGradient(
+                colors = listOf(
+                    colorScheme.scrim,
+                    colorScheme.primary
+                )
+            ),
             onLoginClick = {},
             onSignUpClick = {}
         )

@@ -9,12 +9,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
@@ -34,19 +30,14 @@ import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun SavedPlacesScreen(
+    savedPlacesViewModel: SavedPlacesViewModel,
     savedPlaces: List<SavedPlace>,
     onBackClick: () -> Unit,
     onPlaceClick: (String) -> Unit,
     onRemoveFromList: (String, SavedPlaceList) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var searchQuery by rememberSaveable {
-        mutableStateOf("")
-    }
-
-    var selectedList by rememberSaveable {
-        mutableStateOf(SavedPlacesRules.defaultList)
-    }
+    val state by savedPlacesViewModel.uiState.collectAsState()
 
     val currentLocale = LocalConfiguration.current.locales[0]
 
@@ -58,61 +49,47 @@ fun SavedPlacesScreen(
         )
     }
 
-    val counts by remember(savedPlaces) {
-        derivedStateOf {
-            SavedPlaceList.entries.associateWith { list ->
-                savedPlaces.count { savedPlace ->
-                    list in savedPlace.lists
-                }
-            }
+    val counts = SavedPlaceList.entries.associateWith { list ->
+        savedPlaces.count { savedPlace ->
+            list in savedPlace.lists
         }
     }
 
-    val filteredSavedPlaces by remember(
-        savedPlaces,
-        selectedList,
-        searchQuery,
-        localizedSearchTerms,
-        currentLocale
-    ) {
-        derivedStateOf {
-            val normalizedQuery =
-                searchQuery.trim().lowercase(currentLocale)
+    val normalizedQuery =
+        state.searchQuery.trim().lowercase(currentLocale)
 
-            savedPlaces.filter { savedPlace ->
-                selectedList in savedPlace.lists &&
-                        (
-                                normalizedQuery.isEmpty() ||
-                                        localizedSearchTerms
-                                            .getValue(savedPlace.place.id)
-                                            .any { value ->
-                                                value
-                                                    .lowercase(currentLocale)
-                                                    .contains(normalizedQuery)
-                                            }
-                                )
-            }
-        }
+    val filteredSavedPlaces = savedPlaces.filter { savedPlace ->
+        state.selectedList in savedPlace.lists &&
+                (
+                        normalizedQuery.isEmpty() ||
+                                localizedSearchTerms
+                                    .getValue(savedPlace.place.id)
+                                    .any { value ->
+                                        value
+                                            .lowercase(currentLocale)
+                                            .contains(normalizedQuery)
+                                    }
+                        )
     }
 
     SavedPlacesContent(
         destinationCount = savedPlaces.size,
         savedPlaces = filteredSavedPlaces,
-        selectedList = selectedList,
+        selectedList = state.selectedList,
         counts = counts,
-        searchQuery = searchQuery,
+        searchQuery = state.searchQuery,
         onSearchQueryChange = {
-            searchQuery = it
+            savedPlacesViewModel.updateSearchQuery(it)
         },
         onListSelected = {
-            selectedList = it
+            savedPlacesViewModel.updateSelectedList(it)
         },
         onBackClick = onBackClick,
         onPlaceClick = onPlaceClick,
         onRemoveClick = { placeId ->
             onRemoveFromList(
                 placeId,
-                selectedList
+                state.selectedList
             )
         },
         modifier = modifier
@@ -218,12 +195,27 @@ fun SavedPlacesContent(
 @WayspotMultiPreview
 @Composable
 private fun SavedPlacesScreenPreview() {
+    val savedPlaces = PreviewData.savedPlaces
+    val selectedList = SavedPlacesRules.defaultList
+
     WayspotTheme {
-        SavedPlacesScreen(
-            savedPlaces = PreviewData.savedPlaces,
+        SavedPlacesContent(
+            destinationCount = savedPlaces.size,
+            savedPlaces = savedPlaces.filter { savedPlace ->
+                selectedList in savedPlace.lists
+            },
+            selectedList = selectedList,
+            counts = SavedPlaceList.entries.associateWith { list ->
+                savedPlaces.count { savedPlace ->
+                    list in savedPlace.lists
+                }
+            },
+            searchQuery = "",
+            onSearchQueryChange = {},
+            onListSelected = {},
             onBackClick = {},
             onPlaceClick = {},
-            onRemoveFromList = { _, _ -> }
+            onRemoveClick = {}
         )
     }
 }

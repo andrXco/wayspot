@@ -14,13 +14,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.data.local.PreviewData
@@ -36,6 +32,7 @@ import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun NewReviewScreen(
+    newReviewViewModel: NewReviewViewModel,
     placeId: String,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -43,6 +40,8 @@ fun NewReviewScreen(
     onSaveDraft: (ReviewDraft) -> Unit = {},
     onPublishReview: (ReviewDraft) -> Unit = {}
 ) {
+    val state by newReviewViewModel.uiState.collectAsState()
+
     val place = PreviewDataPopular.listPlaces.find {
         it.id == placeId
     }
@@ -51,89 +50,79 @@ fun NewReviewScreen(
         return
     }
 
-    val validInitialDraft = ReviewRules.normalizeDraft(
-        draft = initialDraft?.takeIf { draft ->
-            draft.placeId == place.id
-        } ?: ReviewRules.emptyDraft(place.id),
-        placeId = place.id
+    LaunchedEffect(Unit) {
+        newReviewViewModel.loadDraft(
+            placeId = place.id,
+            initialDraft = initialDraft
+        )
+    }
+
+    val isPublishEnabled = ReviewRules.canPublish(
+        rating = state.rating,
+        title = state.title,
+        description = state.description
     )
-
-    var rating by rememberSaveable(place.id) {
-        mutableIntStateOf(validInitialDraft.rating)
-    }
-    var title by rememberSaveable(place.id) {
-        mutableStateOf(validInitialDraft.title)
-    }
-    var description by rememberSaveable(place.id) {
-        mutableStateOf(validInitialDraft.description)
-    }
-    var photoUris by rememberSaveable(place.id) {
-        mutableStateOf(ArrayList(validInitialDraft.photoUris))
-    }
-
-    val isPublishEnabled by remember {
-        derivedStateOf {
-            ReviewRules.canPublish(
-                rating = rating,
-                title = title,
-                description = description
-            )
-        }
-    }
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { selectedUri ->
+
         val selectedUriString = selectedUri?.toString()
-        if (
-            selectedUriString != null &&
-            photoUris.size < ReviewRules.MAX_PHOTOS &&
-            selectedUriString !in photoUris
-        ) {
-            photoUris = ArrayList(photoUris).apply {
-                add(selectedUriString)
-            }
+
+        if (selectedUriString != null) {
+            newReviewViewModel.addPhoto(
+                selectedUriString
+            )
         }
     }
 
     val reviewDraft = ReviewDraft(
         placeId = place.id,
-        rating = rating,
-        title = title,
-        description = description,
-        photoUris = photoUris.toList()
+        rating = state.rating,
+        title = state.title,
+        description = state.description,
+        photoUris = state.photoUris
     )
 
-    BackHandler(onBack = onBackClick)
+    BackHandler(
+        onBack = onBackClick
+    )
 
     NewReviewContent(
         place = place,
         reviewDraft = reviewDraft,
-        onRatingSelected = { selectedRating ->
-            rating = selectedRating.coerceIn(
-                ReviewRules.MIN_RATING,
-                ReviewRules.MAX_RATING
-            )
+
+        onRatingSelected = {
+            newReviewViewModel.updateRating(it)
         },
-        onTitleChange = { value ->
-            title = value.take(ReviewRules.MAX_TITLE_LENGTH)
+
+        onTitleChange = {
+            newReviewViewModel.updateTitle(it)
         },
-        onDescriptionChange = { value ->
-            description = value.take(ReviewRules.MAX_DESCRIPTION_LENGTH)
+
+        onDescriptionChange = {
+            newReviewViewModel.updateDescription(it)
         },
+
         onAddPhotosClick = {
             photoPickerLauncher.launch(
-                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                PickVisualMediaRequest(
+                    ActivityResultContracts.PickVisualMedia.ImageOnly
+                )
             )
         },
-        onRemovePhotoClick = { photoUri ->
-            photoUris = ArrayList(photoUris.filterNot { it == photoUri })
+
+        onRemovePhotoClick = {
+            newReviewViewModel.removePhoto(it)
         },
+
         isPublishEnabled = isPublishEnabled,
         onBackClick = onBackClick,
+
         onSaveDraftClick = {
             onSaveDraft(reviewDraft)
         },
+
         onPublishClick = {
             if (isPublishEnabled) {
                 onPublishReview(
@@ -144,6 +133,7 @@ fun NewReviewScreen(
                 )
             }
         },
+
         modifier = modifier
     )
 }
@@ -186,8 +176,13 @@ fun NewReviewContent(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 16.dp)
+                .verticalScroll(
+                    rememberScrollState()
+                )
+                .padding(
+                    horizontal = 16.dp,
+                    vertical = 16.dp
+                )
         )
 
         ReviewBottomAction(

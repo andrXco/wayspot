@@ -18,12 +18,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -43,67 +40,39 @@ import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun EditProfileScreen(
+    editProfileViewModel: EditProfileViewModel,
     profile: UserProfile,
     onBackClick: () -> Unit,
     onSaveClick: (UserProfile) -> Unit,
     onDeleteAccountConfirmed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var username by rememberSaveable(profile.username) {
-        mutableStateOf(profile.username)
-    }
-    var email by rememberSaveable(profile.email) {
-        mutableStateOf(profile.email)
-    }
-    var bio by rememberSaveable(profile.bio) {
-        mutableStateOf(profile.bio)
-    }
-    var location by rememberSaveable(profile.location) {
-        mutableStateOf(profile.location)
-    }
-    var avatarUrl by rememberSaveable(profile.avatarUrl) {
-        mutableStateOf(profile.avatarUrl)
-    }
-    var newFollowersEnabled by rememberSaveable(
-        profile.notificationPreferences.newFollowers
-    ) {
-        mutableStateOf(profile.notificationPreferences.newFollowers)
-    }
-    var reviewCommentsEnabled by rememberSaveable(
-        profile.notificationPreferences.reviewComments
-    ) {
-        mutableStateOf(profile.notificationPreferences.reviewComments)
-    }
-    var receivedLikesEnabled by rememberSaveable(
-        profile.notificationPreferences.likesReceived
-    ) {
-        mutableStateOf(profile.notificationPreferences.likesReceived)
-    }
-    var isDeleteConfirmationVisible by rememberSaveable {
-        mutableStateOf(false)
+
+    val state by editProfileViewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        editProfileViewModel.loadProfile(profile)
     }
 
-    val isSaveEnabled by remember {
-        derivedStateOf {
-            EditProfileRules.canSave(
-                username = username,
-                email = email,
-                location = location
-            )
-        }
-    }
+    val isSaveEnabled = EditProfileRules.canSave(
+        username = state.username,
+        email = state.email,
+        location = state.location
+    )
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { selectedUri ->
         if (selectedUri != null) {
-            avatarUrl = selectedUri.toString()
+            editProfileViewModel.updateAvatarUrl(
+                selectedUri.toString()
+            )
         }
     }
 
     BackHandler {
-        if (isDeleteConfirmationVisible) {
-            isDeleteConfirmationVisible = false
+        if (state.isDeleteConfirmationVisible) {
+            editProfileViewModel.hideDeleteConfirmation()
         } else {
             onBackClick()
         }
@@ -111,51 +80,63 @@ fun EditProfileScreen(
 
     EditProfileContent(
         initials = profile.initials,
-        avatarUrl = avatarUrl,
-        username = username,
-        onUsernameChange = { value ->
-            username = EditProfileRules.filterUsername(value)
+        avatarUrl = state.avatarUrl,
+        username = state.username,
+        onUsernameChange = {
+            editProfileViewModel.updateUsername(it)
         },
-        email = email,
-        onEmailChange = { email = it },
-        bio = bio,
-        onBioChange = { value ->
-            bio = value.take(EditProfileRules.MAX_BIO_LENGTH)
+        email = state.email,
+        onEmailChange = {
+            editProfileViewModel.updateEmail(it)
         },
-        location = location,
-        onLocationChange = { location = it },
+        bio = state.bio,
+        onBioChange = {
+            editProfileViewModel.updateBio(it)
+        },
+        location = state.location,
+        onLocationChange = {
+            editProfileViewModel.updateLocation(it)
+        },
         notificationPreferences = ProfileNotificationPreferences(
-            newFollowers = newFollowersEnabled,
-            reviewComments = reviewCommentsEnabled,
-            likesReceived = receivedLikesEnabled
+            newFollowers = state.newFollowersEnabled,
+            reviewComments = state.reviewCommentsEnabled,
+            likesReceived = state.receivedLikesEnabled
         ),
-        onNewFollowersChange = { newFollowersEnabled = it },
-        onReviewCommentsChange = { reviewCommentsEnabled = it },
-        onReceivedLikesChange = { receivedLikesEnabled = it },
+        onNewFollowersChange = {
+            editProfileViewModel.updateNewFollowersEnabled(it)
+        },
+        onReviewCommentsChange = {
+            editProfileViewModel.updateReviewCommentsEnabled(it)
+        },
+        onReceivedLikesChange = {
+            editProfileViewModel.updateReceivedLikesEnabled(it)
+        },
         isSaveEnabled = isSaveEnabled,
         onBackClick = onBackClick,
         onChangePhotoClick = {
             photoPickerLauncher.launch(
-                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                PickVisualMediaRequest(
+                    ActivityResultContracts.PickVisualMedia.ImageOnly
+                )
             )
         },
         onDeleteAccountClick = {
-            isDeleteConfirmationVisible = true
+            editProfileViewModel.showDeleteConfirmation()
         },
         onSaveClick = {
             if (isSaveEnabled) {
                 onSaveClick(
                     EditProfileRules.normalizeProfile(
                         profile = profile,
-                        username = username,
-                        email = email,
-                        bio = bio,
-                        location = location,
-                        avatarUrl = avatarUrl,
+                        username = state.username,
+                        email = state.email,
+                        bio = state.bio,
+                        location = state.location,
+                        avatarUrl = state.avatarUrl,
                         preferences = ProfileNotificationPreferences(
-                            newFollowers = newFollowersEnabled,
-                            reviewComments = reviewCommentsEnabled,
-                            likesReceived = receivedLikesEnabled
+                            newFollowers = state.newFollowersEnabled,
+                            reviewComments = state.reviewCommentsEnabled,
+                            likesReceived = state.receivedLikesEnabled
                         )
                     )
                 )
@@ -164,34 +145,50 @@ fun EditProfileScreen(
         modifier = modifier
     )
 
-    if (isDeleteConfirmationVisible) {
+    if (state.isDeleteConfirmationVisible) {
         AlertDialog(
             onDismissRequest = {
-                isDeleteConfirmationVisible = false
+                editProfileViewModel.hideDeleteConfirmation()
             },
             title = {
-                Text(text = stringResource(R.string.edit_profile_delete_account))
+                Text(
+                    text = stringResource(
+                        R.string.edit_profile_delete_account
+                    )
+                )
             },
             text = {
-                Text(text = stringResource(R.string.edit_profile_delete_confirmation))
+                Text(
+                    text = stringResource(
+                        R.string.edit_profile_delete_confirmation
+                    )
+                )
             },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        isDeleteConfirmationVisible = false
+                        editProfileViewModel.hideDeleteConfirmation()
                         onDeleteAccountConfirmed()
                     }
                 ) {
-                    Text(text = stringResource(R.string.edit_profile_delete_account))
+                    Text(
+                        text = stringResource(
+                            R.string.edit_profile_delete_account
+                        )
+                    )
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = {
-                        isDeleteConfirmationVisible = false
+                        editProfileViewModel.hideDeleteConfirmation()
                     }
                 ) {
-                    Text(text = stringResource(R.string.edit_profile_cancel))
+                    Text(
+                        text = stringResource(
+                            R.string.edit_profile_cancel
+                        )
+                    )
                 }
             }
         )

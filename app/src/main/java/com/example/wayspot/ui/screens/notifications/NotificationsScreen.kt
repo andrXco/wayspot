@@ -14,6 +14,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -28,11 +30,14 @@ import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun NotificationsScreen(
+    notificationsViewModel: NotificationsViewModel,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val state by notificationsViewModel.uiState.collectAsState()
+
     NotificationsContent(
-        notifications = PreviewData.notifications,
+        notifications = state.notifications,
         onBackClick = onBackClick,
         modifier = modifier
     )
@@ -189,7 +194,8 @@ private fun NotificationsEmptySection(
 @Composable
 private fun NotificationsScreenPreview() {
     WayspotTheme {
-        NotificationsScreen(
+        NotificationsContent(
+            notifications = PreviewData.notifications,
             onBackClick = {}
         )
     }

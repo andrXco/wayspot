@@ -101,7 +101,7 @@ private fun ProfileStat(
         Text(
             text = value,
             style = MaterialTheme.typography.titleLarge,
-            fontSize = 28.sp,
+            //fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onPrimary
         )

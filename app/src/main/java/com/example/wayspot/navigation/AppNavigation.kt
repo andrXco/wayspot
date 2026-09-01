@@ -25,6 +25,15 @@ import com.example.wayspot.ui.screens.profile.ProfileScreen
 import com.example.wayspot.ui.screens.savedplaces.SavedPlacesScreen
 import com.example.wayspot.ui.screens.splash.SplashScreen
 import com.example.wayspot.ui.screens.auth.forgotpassword.ForgotPasswordViewModel
+import com.example.wayspot.ui.screens.editprofile.EditProfileViewModel
+import com.example.wayspot.ui.screens.home.HomeViewModel
+import com.example.wayspot.ui.screens.explore.ExploreViewModel
+import com.example.wayspot.ui.screens.savedplaces.SavedPlacesViewModel
+import com.example.wayspot.ui.screens.newreview.NewReviewViewModel
+import com.example.wayspot.ui.screens.profile.ProfileViewModel
+import com.example.wayspot.ui.screens.notifications.NotificationsViewModel
+import com.example.wayspot.ui.screens.placedetail.PlaceDetailViewModel
+import com.example.wayspot.ui.screens.splash.SplashViewModel
 
 @Composable
 fun AppNavigation(
@@ -62,11 +71,17 @@ fun AppNavigation(
         }
 
         composable(Screen.SavedPlaces.route) {
+
+            val savedPlacesViewModel: SavedPlacesViewModel = viewModel()
+
             SavedPlacesScreen(
+                savedPlacesViewModel = savedPlacesViewModel,
                 savedPlaces = savedPlaces,
 
                 onBackClick = {
-                    navController.navigate(Screen.Profile.route)
+                    navController.navigate(
+                        Screen.Profile.route
+                    )
                 },
 
                 onPlaceClick = { placeId ->
@@ -85,11 +100,17 @@ fun AppNavigation(
         }
 
         composable(Screen.EditProfile.route) {
+
+            val editProfileViewModel: EditProfileViewModel = viewModel()
+
             EditProfileScreen(
+                editProfileViewModel = editProfileViewModel,
                 profile = userProfile,
 
                 onBackClick = {
-                    navController.navigate(Screen.Profile.route)
+                    navController.navigate(
+                        Screen.Profile.route
+                    )
                 },
 
                 onSaveClick = { updatedProfile ->
@@ -114,7 +135,11 @@ fun AppNavigation(
         }
 
         composable(Screen.Profile.route) {
+
+            val profileViewModel: ProfileViewModel = viewModel()
+
             ProfileScreen(
+                profileViewModel = profileViewModel,
                 userProfile = userProfile,
 
                 onEditProfileClick = {
@@ -132,7 +157,12 @@ fun AppNavigation(
         }
 
         composable(Screen.Explore.route) {
+
+            val exploreViewModel: ExploreViewModel = viewModel()
+
             ExploreScreen(
+                exploreViewModel = exploreViewModel,
+
                 onPlaceClick = { placeId ->
                     navController.navigate(
                         Screen.PlaceDetail.createRoute(placeId)
@@ -162,7 +192,11 @@ fun AppNavigation(
                 backStackEntry.arguments?.getString("placeId")
 
             if (placeId != null) {
+
+                val placeDetailViewModel: PlaceDetailViewModel = viewModel()
+
                 PlaceDetailScreen(
+                    placeDetailViewModel = placeDetailViewModel,
                     placeId = placeId,
 
                     onBackClick = {
@@ -181,17 +215,18 @@ fun AppNavigation(
         }
 
         composable(Screen.Splash.route) {
+
+            val splashViewModel: SplashViewModel = viewModel()
+
             SplashScreen(
+                splashViewModel = splashViewModel,
+
                 onLoginClick = {
-                    navController.navigate(
-                        Screen.Login.route
-                    )
+                    navController.navigate(Screen.Login.route)
                 },
 
                 onSignUpClick = {
-                    navController.navigate(
-                        Screen.SignUp.route
-                    )
+                    navController.navigate(Screen.SignUp.route)
                 }
             )
         }
@@ -224,7 +259,12 @@ fun AppNavigation(
         }
 
         composable(Screen.Notifications.route) {
+
+            val notificationsViewModel: NotificationsViewModel = viewModel()
+
             NotificationsScreen(
+                notificationsViewModel = notificationsViewModel,
+
                 onBackClick = {
                     navController.navigate(
                         Screen.Home.route
@@ -234,7 +274,12 @@ fun AppNavigation(
         }
 
         composable(Screen.Home.route) {
+
+            val homeViewModel: HomeViewModel = viewModel()
+
             HomeScreen(
+                homeViewModel = homeViewModel,
+
                 onNotificationsClick = {
                     navController.navigate(
                         Screen.Notifications.route
@@ -287,7 +332,11 @@ fun AppNavigation(
                 backStackEntry.arguments?.getString("placeId")
 
             if (placeId != null) {
+
+                val newReviewViewModel: NewReviewViewModel = viewModel()
+
                 NewReviewScreen(
+                    newReviewViewModel = newReviewViewModel,
                     placeId = placeId,
 
                     onBackClick = {
