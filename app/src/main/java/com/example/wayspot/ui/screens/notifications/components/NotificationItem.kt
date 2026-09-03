@@ -19,11 +19,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.example.wayspot.R
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.model.Notification
 import com.example.wayspot.ui.preview.WayspotMultiPreview
@@ -89,7 +91,7 @@ fun NotificationItem(
                 ) {
 
                     Text(
-                        text = "Parque Tayrona ·",
+                        text = stringResource(R.string.parque_tayrona),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -110,7 +112,7 @@ fun NotificationItem(
                     )
 
                     Text(
-                        text = "4.8",
+                        text = stringResource(R.string._4_8),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

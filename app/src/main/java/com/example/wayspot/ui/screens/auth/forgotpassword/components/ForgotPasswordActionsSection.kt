@@ -40,7 +40,7 @@ fun ForgotPasswordActionsSection(
             )
 
             Text(
-                text = "o",
+                text = stringResource(R.string.o),
                 modifier = Modifier.padding(horizontal = 12.dp),
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

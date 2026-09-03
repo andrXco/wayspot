@@ -310,4 +310,9 @@
     <string name="password123">password123</string>
     <string name="contrase_a">Contraseña</string>
     <string name="introduce_tu_contrase_a">Introduce tu contraseña</string>
+    <string name="notificaciones">Notificaciones</string>
+    <string name="volver">Volver</string>
+    <string name="o">o</string>
+    <string name="parque_tayrona">Parque Tayrona ·</string>
+    <string name="_4_8">4.8</string>
 </resources>
