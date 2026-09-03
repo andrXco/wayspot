@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
@@ -38,7 +39,7 @@ fun ForgotPasswordHeader(
         )
 
         Text(
-            text = "¿Olvidaste tu contraseña?",
+            text = stringResource(R.string.olvidaste_tu_contrase_a),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
@@ -49,7 +50,7 @@ fun ForgotPasswordHeader(
         )
 
         Text(
-            text = "Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.",
+            text = stringResource(R.string.ingresa_tu_correo_electr_nico_y_te_enviaremos_un_enlace_para_restablecer_tu_contrase_a),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )

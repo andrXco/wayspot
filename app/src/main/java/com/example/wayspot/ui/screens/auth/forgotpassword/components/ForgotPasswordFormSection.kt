@@ -12,10 +12,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.wayspot.R
 import com.example.wayspot.ui.screens.auth.components.AuthTextField
 
 @Composable
@@ -32,8 +34,8 @@ fun ForgotPasswordFormSection(
         AuthTextField(
             value = email,
             onValueChange = onEmailChange,
-            label = "Correo electrónico",
-            placeholder = "tu@correo.com",
+            label = stringResource(R.string.correo_electr_nico),
+            placeholder = stringResource(R.string.tu_correo_com),
             leadingIcon = Icons.Outlined.Email,
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(
@@ -54,7 +56,7 @@ fun ForgotPasswordFormSection(
             shape = MaterialTheme.shapes.medium
         ) {
             Text(
-                text = "Enviar enlace de recuperación",
+                text = stringResource(R.string.enviar_enlace_de_recuperaci_n),
                 fontWeight = FontWeight.Bold
             )
         }

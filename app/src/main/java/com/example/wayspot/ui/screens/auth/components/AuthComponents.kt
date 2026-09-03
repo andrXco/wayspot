@@ -33,9 +33,10 @@ import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.theme.WayspotTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
+import androidx.compose.ui.res.stringResource
 
 @Composable
-//Comment
+
 internal fun AuthHeader(
     title: String,
     subtitle: String,
@@ -158,8 +159,8 @@ internal fun AuthSwitchPrompt(
 private fun AuthHeaderPreview() {
     WayspotTheme {
         AuthHeader(
-            title = "Wayspot",
-            subtitle = "Tu guía de lugares favoritos",
+            title = stringResource(R.string.wayspot),
+            subtitle = stringResource(R.string.tu_gu_a_de_lugares_favoritos),
             modifier = Modifier.padding(16.dp)
         )
     }
@@ -172,8 +173,8 @@ private fun AuthTextFieldPreview() {
         AuthTextField(
             value = "",
             onValueChange = {},
-            label = "Email",
-            placeholder = "ejemplo@correo.com",
+            label = stringResource(R.string.email),
+            placeholder = stringResource(R.string.ejemplo_correo_com),
             leadingIcon = Icons.Outlined.Email,
             modifier = Modifier.padding(16.dp)
         )
@@ -185,8 +186,8 @@ private fun AuthTextFieldPreview() {
 private fun AuthSwitchPromptPreview() {
     WayspotTheme {
         AuthSwitchPrompt(
-            prompt = "¿No tienes cuenta?",
-            action = "Regístrate",
+            prompt = stringResource(R.string.no_tienes_cuenta),
+            action = stringResource(R.string.reg_strate),
             onClick = {},
             modifier = Modifier.padding(16.dp)
         )
