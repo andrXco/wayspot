@@ -8,21 +8,23 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
 import com.example.wayspot.R
-import com.example.wayspot.data.model.Post
 import com.example.wayspot.data.local.PreviewData
+import com.example.wayspot.data.model.Post
+import com.example.wayspot.ui.theme.Blanco
+import com.example.wayspot.ui.theme.Carbon
 import com.example.wayspot.ui.theme.EstrellaAmarilla
 import com.example.wayspot.ui.theme.WayspotTheme
 
@@ -40,10 +42,11 @@ fun PostCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = MaterialTheme.shapes.medium
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            // Imagen de Fondo
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
             AsyncImage(
-                model = post.imagen ?: R.drawable.post_card_machu_pichu, // Imagen por defecto
+                model = post.imagen ?: R.drawable.post_card_machu_pichu,
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
@@ -51,17 +54,16 @@ fun PostCard(
                 error = painterResource(R.drawable.branding_logo_claro_wayspot)
             )
 
-            // Gradiente para asegurar legibilidad del texto
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(
                         Brush.verticalGradient(
                             0f to Color.Transparent,
-                            0.3f to Color.Black.copy(alpha = 0.1f),
-                            0.5f to Color.Black.copy(alpha = 0.5f),
-                            1.5f to Color.Black.copy(alpha = 0.8f),
-                            2.5f to Color.Black.copy(alpha = 0.95f)
+                            0.3f to Carbon.copy(alpha = 0.1f),
+                            0.5f to Carbon.copy(alpha = 0.5f),
+                            1.5f to Carbon.copy(alpha = 0.8f),
+                            2.5f to Carbon.copy(alpha = 0.95f)
                         )
                     )
             )
@@ -80,36 +82,45 @@ fun PostCard(
                         text = post.nombre,
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp,
-                        color = Color.White,
+                        color = Blanco,
                         style = MaterialTheme.typography.bodyMedium.copy(
                             shadow = Shadow(
-                                color = Color.Black,
+                                color = Carbon,
                                 offset = Offset(2f, 2f),
                                 blurRadius = 4f
                             )
                         )
                     )
+
                     Text(
-                        text = post.tiempo, 
-                        color = Color.White, 
+                        text = post.tiempo,
+                        color = Blanco,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Medium,
                         style = MaterialTheme.typography.bodySmall.copy(
-                            shadow = Shadow(color = Color.Black, blurRadius = 8f)
+                            shadow = Shadow(
+                                color = Carbon,
+                                blurRadius = 8f
+                            )
                         )
                     )
                 }
-                
+
                 Text(
-                    text = post.usuario, 
-                    color = Color.White.copy(alpha = 0.7f), 
+                    text = post.usuario,
+                    color = Blanco.copy(alpha = 0.7f),
                     fontSize = 12.sp,
                     style = MaterialTheme.typography.bodySmall.copy(
-                        shadow = Shadow(color = Color.Black, blurRadius = 2f)
+                        shadow = Shadow(
+                            color = Carbon,
+                            blurRadius = 2f
+                        )
                     )
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(
+                    modifier = Modifier.height(8.dp)
+                )
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -121,14 +132,20 @@ fun PostCard(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.labelMedium.copy(
-                            shadow = Shadow(color = Color.Black, blurRadius = 4f)
+                            shadow = Shadow(
+                                color = Carbon,
+                                blurRadius = 4f
+                            )
                         )
                     )
+
                     Row {
                         repeat(post.rating) {
                             Icon(
                                 imageVector = Icons.Filled.Star,
-                                contentDescription = stringResource(R.string.star_content_description),
+                                contentDescription = stringResource(
+                                    R.string.star_content_description
+                                ),
                                 tint = EstrellaAmarilla,
                                 modifier = Modifier.size(14.dp)
                             )
@@ -136,27 +153,33 @@ fun PostCard(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(
+                    modifier = Modifier.height(4.dp)
+                )
 
                 Text(
                     text = post.titulo,
                     fontWeight = FontWeight.Bold,
                     fontSize = 22.sp,
-                    color = Color.White,
+                    color = Blanco,
                     style = MaterialTheme.typography.headlineSmall.copy(
                         shadow = Shadow(
-                            color = Color.Black,
+                            color = Carbon,
                             offset = Offset(2f, 2f),
                             blurRadius = 6f
                         )
                     )
                 )
+
                 Text(
-                    text = post.ubicacion, 
-                    color = Color.White.copy(alpha = 0.9f), 
+                    text = post.ubicacion,
+                    color = Blanco.copy(alpha = 0.9f),
                     fontSize = 14.sp,
                     style = MaterialTheme.typography.bodyMedium.copy(
-                        shadow = Shadow(color = Color.Black, blurRadius = 4f)
+                        shadow = Shadow(
+                            color = Carbon,
+                            blurRadius = 4f
+                        )
                     )
                 )
             }
@@ -168,6 +191,9 @@ fun PostCard(
 @Composable
 private fun PostCardPreview() {
     WayspotTheme {
-        PostCard(post = PreviewData.samplePost1, onClick = {})
+        PostCard(
+            post = PreviewData.samplePost1,
+            onClick = {}
+        )
     }
 }
