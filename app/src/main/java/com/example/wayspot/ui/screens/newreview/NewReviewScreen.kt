@@ -23,7 +23,6 @@ import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.data.model.Place
 import com.example.wayspot.data.model.ReviewDraft
-import com.example.wayspot.data.model.ReviewRules
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.newreview.components.NewReviewHeader
 import com.example.wayspot.ui.screens.newreview.components.ReviewBottomAction
@@ -42,26 +41,15 @@ fun NewReviewScreen(
 ) {
     val state by newReviewViewModel.uiState.collectAsState()
 
-    val place = PreviewDataPopular.listPlaces.find {
-        it.id == placeId
-    }
-
-    if (place == null) {
-        return
-    }
-
-    LaunchedEffect(Unit) {
-        newReviewViewModel.loadDraft(
-            placeId = place.id,
+    LaunchedEffect(placeId, initialDraft) {
+        newReviewViewModel.loadReview(
+            placeId = placeId,
             initialDraft = initialDraft
         )
     }
 
-    val isPublishEnabled = ReviewRules.canPublish(
-        rating = state.rating,
-        title = state.title,
-        description = state.description
-    )
+    val place = state.place ?: return
+    val reviewDraft = state.reviewDraft ?: return
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
@@ -75,14 +63,6 @@ fun NewReviewScreen(
             )
         }
     }
-
-    val reviewDraft = ReviewDraft(
-        placeId = place.id,
-        rating = state.rating,
-        title = state.title,
-        description = state.description,
-        photoUris = state.photoUris
-    )
 
     BackHandler(
         onBack = onBackClick
@@ -116,22 +96,15 @@ fun NewReviewScreen(
             newReviewViewModel.removePhoto(it)
         },
 
-        isPublishEnabled = isPublishEnabled,
+        isPublishEnabled = state.isPublishEnabled,
         onBackClick = onBackClick,
 
         onSaveDraftClick = {
-            onSaveDraft(reviewDraft)
+            newReviewViewModel.draftForSaving()?.let(onSaveDraft)
         },
 
         onPublishClick = {
-            if (isPublishEnabled) {
-                onPublishReview(
-                    reviewDraft.copy(
-                        title = reviewDraft.title.trim(),
-                        description = reviewDraft.description.trim()
-                    )
-                )
-            }
+            newReviewViewModel.draftForPublishing()?.let(onPublishReview)
         },
 
         modifier = modifier
@@ -207,11 +180,7 @@ private fun NewReviewScreenPreview() {
             onDescriptionChange = {},
             onAddPhotosClick = {},
             onRemovePhotoClick = {},
-            isPublishEnabled = ReviewRules.canPublish(
-                rating = reviewDraft.rating,
-                title = reviewDraft.title,
-                description = reviewDraft.description
-            ),
+            isPublishEnabled = false,
             onBackClick = {},
             onSaveDraftClick = {},
             onPublishClick = {}

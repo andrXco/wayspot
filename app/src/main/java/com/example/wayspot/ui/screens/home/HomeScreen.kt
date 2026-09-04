@@ -32,7 +32,7 @@ fun HomeScreen(
     val state by homeViewModel.uiState.collectAsState()
 
     HomeContent(
-        posts = PreviewData.listPosts,
+        posts = state.posts,
         searchText = state.searchText,
         onSearchChange = {
             homeViewModel.updateSearchText(it)
@@ -88,7 +88,12 @@ private fun PostList(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier.fillMaxWidth()
     ) {
-        items(posts) { post ->
+        items(
+            items = posts,
+            key = { post ->
+                "${post.usuario}|${post.tiempo}|${post.placeId.orEmpty()}"
+            }
+        ) { post ->
             PostCard(
                 post = post,
                 onClick = {

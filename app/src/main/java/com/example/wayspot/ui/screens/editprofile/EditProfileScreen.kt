@@ -26,7 +26,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
 import com.example.wayspot.data.local.PreviewData
-import com.example.wayspot.data.model.EditProfileRules
 import com.example.wayspot.data.model.ProfileNotificationPreferences
 import com.example.wayspot.data.model.UserProfile
 import com.example.wayspot.ui.preview.WayspotMultiPreview
@@ -50,15 +49,9 @@ fun EditProfileScreen(
 
     val state by editProfileViewModel.uiState.collectAsState()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(profile) {
         editProfileViewModel.loadProfile(profile)
     }
-
-    val isSaveEnabled = EditProfileRules.canSave(
-        username = state.username,
-        email = state.email,
-        location = state.location
-    )
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
@@ -79,7 +72,7 @@ fun EditProfileScreen(
     }
 
     EditProfileContent(
-        initials = profile.initials,
+        initials = state.initials,
         avatarUrl = state.avatarUrl,
         username = state.username,
         onUsernameChange = {
@@ -97,11 +90,7 @@ fun EditProfileScreen(
         onLocationChange = {
             editProfileViewModel.updateLocation(it)
         },
-        notificationPreferences = ProfileNotificationPreferences(
-            newFollowers = state.newFollowersEnabled,
-            reviewComments = state.reviewCommentsEnabled,
-            likesReceived = state.receivedLikesEnabled
-        ),
+        notificationPreferences = state.notificationPreferences,
         onNewFollowersChange = {
             editProfileViewModel.updateNewFollowersEnabled(it)
         },
@@ -111,7 +100,7 @@ fun EditProfileScreen(
         onReceivedLikesChange = {
             editProfileViewModel.updateReceivedLikesEnabled(it)
         },
-        isSaveEnabled = isSaveEnabled,
+        isSaveEnabled = state.isSaveEnabled,
         onBackClick = onBackClick,
         onChangePhotoClick = {
             photoPickerLauncher.launch(
@@ -124,23 +113,7 @@ fun EditProfileScreen(
             editProfileViewModel.showDeleteConfirmation()
         },
         onSaveClick = {
-            if (isSaveEnabled) {
-                onSaveClick(
-                    EditProfileRules.normalizeProfile(
-                        profile = profile,
-                        username = state.username,
-                        email = state.email,
-                        bio = state.bio,
-                        location = state.location,
-                        avatarUrl = state.avatarUrl,
-                        preferences = ProfileNotificationPreferences(
-                            newFollowers = state.newFollowersEnabled,
-                            reviewComments = state.reviewCommentsEnabled,
-                            likesReceived = state.receivedLikesEnabled
-                        )
-                    )
-                )
-            }
+            editProfileViewModel.profileForSaving()?.let(onSaveClick)
         },
         modifier = modifier
     )
@@ -307,11 +280,7 @@ private fun EditProfileScreenPreview() {
             onNewFollowersChange = {},
             onReviewCommentsChange = {},
             onReceivedLikesChange = {},
-            isSaveEnabled = EditProfileRules.canSave(
-                username = profile.username,
-                email = profile.email,
-                location = profile.location
-            ),
+            isSaveEnabled = true,
             onBackClick = {},
             onChangePhotoClick = {},
             onDeleteAccountClick = {},

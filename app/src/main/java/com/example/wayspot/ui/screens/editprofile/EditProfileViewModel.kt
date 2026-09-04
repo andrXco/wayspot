@@ -15,47 +15,57 @@ class EditProfileViewModel : ViewModel() {
 
     fun loadProfile(profile: UserProfile) {
         _uiState.update { currentState ->
-            currentState.copy(
+            withValidation(
+                currentState.copy(
+                originalProfile = profile,
+                initials = profile.initials,
                 username = profile.username,
                 email = profile.email,
                 bio = profile.bio,
                 location = profile.location,
                 avatarUrl = profile.avatarUrl,
-                newFollowersEnabled = profile.notificationPreferences.newFollowers,
-                reviewCommentsEnabled = profile.notificationPreferences.reviewComments,
-                receivedLikesEnabled = profile.notificationPreferences.likesReceived
+                notificationPreferences = profile.notificationPreferences
+                )
             )
         }
     }
 
     fun updateUsername(input: String) {
         _uiState.update { currentState ->
-            currentState.copy(
-                username = EditProfileRules.filterUsername(input)
+            withValidation(
+                currentState.copy(
+                    username = EditProfileRules.filterUsername(input)
+                )
             )
         }
     }
 
     fun updateEmail(input: String) {
         _uiState.update { currentState ->
-            currentState.copy(
-                email = input
+            withValidation(
+                currentState.copy(
+                    email = input
+                )
             )
         }
     }
 
     fun updateBio(input: String) {
         _uiState.update { currentState ->
-            currentState.copy(
-                bio = input.take(EditProfileRules.MAX_BIO_LENGTH)
+            withValidation(
+                currentState.copy(
+                    bio = input.take(EditProfileRules.MAX_BIO_LENGTH)
+                )
             )
         }
     }
 
     fun updateLocation(input: String) {
         _uiState.update { currentState ->
-            currentState.copy(
-                location = input
+            withValidation(
+                currentState.copy(
+                    location = input
+                )
             )
         }
     }
@@ -71,7 +81,9 @@ class EditProfileViewModel : ViewModel() {
     fun updateNewFollowersEnabled(value: Boolean) {
         _uiState.update { currentState ->
             currentState.copy(
-                newFollowersEnabled = value
+                notificationPreferences = currentState.notificationPreferences.copy(
+                    newFollowers = value
+                )
             )
         }
     }
@@ -79,7 +91,9 @@ class EditProfileViewModel : ViewModel() {
     fun updateReviewCommentsEnabled(value: Boolean) {
         _uiState.update { currentState ->
             currentState.copy(
-                reviewCommentsEnabled = value
+                notificationPreferences = currentState.notificationPreferences.copy(
+                    reviewComments = value
+                )
             )
         }
     }
@@ -87,7 +101,9 @@ class EditProfileViewModel : ViewModel() {
     fun updateReceivedLikesEnabled(value: Boolean) {
         _uiState.update { currentState ->
             currentState.copy(
-                receivedLikesEnabled = value
+                notificationPreferences = currentState.notificationPreferences.copy(
+                    likesReceived = value
+                )
             )
         }
     }
@@ -107,4 +123,31 @@ class EditProfileViewModel : ViewModel() {
             )
         }
     }
+
+    fun profileForSaving(): UserProfile? {
+        val currentState = _uiState.value
+        val originalProfile = currentState.originalProfile
+
+        if (!currentState.isSaveEnabled || originalProfile == null) {
+            return null
+        }
+
+        return EditProfileRules.normalizeProfile(
+            profile = originalProfile,
+            username = currentState.username,
+            email = currentState.email,
+            bio = currentState.bio,
+            location = currentState.location,
+            avatarUrl = currentState.avatarUrl,
+            preferences = currentState.notificationPreferences
+        )
+    }
+
+    private fun withValidation(state: EditProfileState): EditProfileState = state.copy(
+        isSaveEnabled = EditProfileRules.canSave(
+            username = state.username,
+            email = state.email,
+            location = state.location
+        )
+    )
 }

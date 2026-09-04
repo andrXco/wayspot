@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -29,6 +30,7 @@ import com.example.wayspot.data.model.ExploreCategory
 import com.example.wayspot.data.model.ExploreCategoryRules
 import com.example.wayspot.data.model.Place
 import com.example.wayspot.data.model.SavedPlace
+import com.example.wayspot.data.model.SavedPlacesRules
 import com.example.wayspot.ui.components.WayspotSearch
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.explore.components.ExplorerPopularCard
@@ -45,17 +47,14 @@ fun ExploreScreen(
 ) {
     val state by exploreViewModel.uiState.collectAsState()
 
-    val places = PreviewDataPopular.listPlaces
-
-    val filteredPlaces = ExploreCategoryRules.filterPlaces(
-        places = places,
-        selectedCategory = state.selectedCategory
-    )
+    LaunchedEffect(savedPlaces) {
+        exploreViewModel.updateSavedPlaces(savedPlaces)
+    }
 
     ExplorerContent(
-        places = filteredPlaces,
+        places = state.places,
         searchText = state.searchText,
-        categories = ExploreCategoryRules.categories,
+        categories = state.categories,
         selectedCategory = state.selectedCategory,
         onSearchChange = {
             exploreViewModel.updateSearchText(it)
@@ -64,9 +63,7 @@ fun ExploreScreen(
             exploreViewModel.updateSelectedCategory(it)
         },
         onPlaceClick = onPlaceClick,
-        savedPlaceIds = savedPlaces.mapTo(mutableSetOf()) {
-            it.place.id
-        },
+        savedPlaceIds = state.savedPlaceIds,
         onSaveClick = onSaveClick,
         modifier = modifier
     )
@@ -219,9 +216,9 @@ private fun ExploreScreenPreview() {
             onSearchChange = {},
             onCategorySelect = {},
             onPlaceClick = {},
-            savedPlaceIds = PreviewData.savedPlaces.mapTo(mutableSetOf()) {
-                it.place.id
-            },
+            savedPlaceIds = SavedPlacesRules.savedPlaceIds(
+                PreviewData.savedPlaces
+            ),
             onSaveClick = {}
         )
     }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -49,34 +50,19 @@ fun SavedPlacesScreen(
         )
     }
 
-    val counts = SavedPlaceList.entries.associateWith { list ->
-        savedPlaces.count { savedPlace ->
-            list in savedPlace.lists
-        }
-    }
-
-    val normalizedQuery =
-        state.searchQuery.trim().lowercase(currentLocale)
-
-    val filteredSavedPlaces = savedPlaces.filter { savedPlace ->
-        state.selectedList in savedPlace.lists &&
-                (
-                        normalizedQuery.isEmpty() ||
-                                localizedSearchTerms
-                                    .getValue(savedPlace.place.id)
-                                    .any { value ->
-                                        value
-                                            .lowercase(currentLocale)
-                                            .contains(normalizedQuery)
-                                    }
-                        )
+    LaunchedEffect(savedPlaces, localizedSearchTerms, currentLocale) {
+        savedPlacesViewModel.updateSavedPlaces(
+            savedPlaces = savedPlaces,
+            localizedSearchTerms = localizedSearchTerms,
+            locale = currentLocale
+        )
     }
 
     SavedPlacesContent(
-        destinationCount = savedPlaces.size,
-        savedPlaces = filteredSavedPlaces,
+        destinationCount = state.destinationCount,
+        savedPlaces = state.savedPlaces,
         selectedList = state.selectedList,
-        counts = counts,
+        counts = state.counts,
         searchQuery = state.searchQuery,
         onSearchQueryChange = {
             savedPlacesViewModel.updateSearchQuery(it)
@@ -201,15 +187,12 @@ private fun SavedPlacesScreenPreview() {
     WayspotTheme {
         SavedPlacesContent(
             destinationCount = savedPlaces.size,
-            savedPlaces = savedPlaces.filter { savedPlace ->
-                selectedList in savedPlace.lists
-            },
+            savedPlaces = SavedPlacesRules.filterByList(
+                savedPlaces = savedPlaces,
+                list = selectedList
+            ),
             selectedList = selectedList,
-            counts = SavedPlaceList.entries.associateWith { list ->
-                savedPlaces.count { savedPlace ->
-                    list in savedPlace.lists
-                }
-            },
+            counts = SavedPlacesRules.countByList(savedPlaces),
             searchQuery = "",
             onSearchQueryChange = {},
             onListSelected = {},

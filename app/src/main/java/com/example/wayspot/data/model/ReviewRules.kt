@@ -37,4 +37,19 @@ object ReviewRules {
     ): Boolean = rating in MIN_RATING..MAX_RATING &&
         title.isNotBlank() &&
         description.isNotBlank()
+
+    fun canPublish(draft: ReviewDraft): Boolean = canPublish(
+        rating = draft.rating,
+        title = draft.title,
+        description = draft.description
+    )
+
+    fun prepareForPublish(draft: ReviewDraft): ReviewDraft? {
+        val normalizedDraft = normalizeDraft(draft).copy(
+            title = draft.title.trim(),
+            description = draft.description.trim()
+        )
+
+        return normalizedDraft.takeIf(::canPublish)
+    }
 }

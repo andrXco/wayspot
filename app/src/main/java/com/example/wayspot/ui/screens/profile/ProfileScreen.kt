@@ -21,17 +21,19 @@ fun ProfileScreen(
 ) {
     val state by profileViewModel.uiState.collectAsState()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(userProfile) {
         profileViewModel.loadProfile(userProfile)
     }
 
-    ProfileContent(
-        user = state.userProfile,
-        reviews = PreviewData.listReviews,
-        onEditProfileClick = onEditProfileClick,
-        onSavedPlacesClick = onSavedPlacesClick,
-        modifier = modifier
-    )
+    state.userProfile?.let { profile ->
+        ProfileContent(
+            user = profile,
+            reviews = state.reviews,
+            onEditProfileClick = onEditProfileClick,
+            onSavedPlacesClick = onSavedPlacesClick,
+            modifier = modifier
+        )
+    }
 }
 
 @WayspotMultiPreview
