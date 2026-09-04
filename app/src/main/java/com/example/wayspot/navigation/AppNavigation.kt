@@ -43,8 +43,9 @@ fun AppNavigation(
 
     val appNavigationViewModel: AppNavigationViewModel = viewModel()
 
-    val userProfile by appNavigationViewModel.userProfile.collectAsState()
-    val savedPlaces by appNavigationViewModel.savedPlaces.collectAsState()
+    val appNavigationState by appNavigationViewModel.uiState.collectAsState()
+    val userProfile = appNavigationState.userProfile ?: return
+    val savedPlaces = appNavigationState.savedPlaces
 
     NavHost(
         navController = navController,

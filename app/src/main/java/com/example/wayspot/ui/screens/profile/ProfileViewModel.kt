@@ -9,11 +9,21 @@ import kotlinx.coroutines.flow.update
 
 class ProfileViewModel : ViewModel() {
 
-    private val _uiState = MutableStateFlow(
-        ProfileState(reviews = PreviewData.listReviews)
-    )
+    private val _uiState = MutableStateFlow(ProfileState())
 
     val uiState: StateFlow<ProfileState> = _uiState
+
+    init {
+        loadReviews()
+    }
+
+    private fun loadReviews() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                reviews = PreviewData.listReviews
+            )
+        }
+    }
 
     fun loadProfile(profile: UserProfile) {
         _uiState.update { currentState ->

@@ -3,48 +3,78 @@ package com.example.wayspot.navigation
 import androidx.lifecycle.ViewModel
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.model.Place
-import com.example.wayspot.data.model.SavedPlace
 import com.example.wayspot.data.model.SavedPlaceList
 import com.example.wayspot.data.model.SavedPlacesRules
 import com.example.wayspot.data.model.UserProfile
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 
 class AppNavigationViewModel : ViewModel() {
 
-    private val _userProfile = MutableStateFlow(PreviewData.userProfile)
-    val userProfile: StateFlow<UserProfile> = _userProfile
+    private val _uiState = MutableStateFlow(AppNavigationState())
+    val uiState: StateFlow<AppNavigationState> = _uiState
 
-    private val _savedPlaces = MutableStateFlow(PreviewData.savedPlaces)
-    val savedPlaces: StateFlow<List<SavedPlace>> = _savedPlaces
+    init {
+        loadInitialData()
+    }
+
+    private fun loadInitialData() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                userProfile = PreviewData.userProfile,
+                savedPlaces = PreviewData.savedPlaces
+            )
+        }
+    }
 
     fun updateUserProfile(updatedProfile: UserProfile) {
-        _userProfile.value = updatedProfile
+        _uiState.update { currentState ->
+            currentState.copy(
+                userProfile = updatedProfile
+            )
+        }
     }
 
     fun resetUserProfile() {
-        _userProfile.value = PreviewData.userProfile
+        _uiState.update { currentState ->
+            currentState.copy(
+                userProfile = PreviewData.userProfile
+            )
+        }
     }
 
     fun resetSavedPlaces() {
-        _savedPlaces.value = PreviewData.savedPlaces
+        _uiState.update { currentState ->
+            currentState.copy(
+                savedPlaces = PreviewData.savedPlaces
+            )
+        }
     }
 
     fun removeSavedPlace(
         placeId: String,
         list: SavedPlaceList
     ) {
-        _savedPlaces.value = SavedPlacesRules.removeFromList(
-            savedPlaces = _savedPlaces.value,
-            placeId = placeId,
-            list = list
-        )
+        _uiState.update { currentState ->
+            currentState.copy(
+                savedPlaces = SavedPlacesRules.removeFromList(
+                    savedPlaces = currentState.savedPlaces,
+                    placeId = placeId,
+                    list = list
+                )
+            )
+        }
     }
 
     fun toggleSavedPlace(place: Place) {
-        _savedPlaces.value = SavedPlacesRules.toggleSaved(
-            savedPlaces = _savedPlaces.value,
-            place = place
-        )
+        _uiState.update { currentState ->
+            currentState.copy(
+                savedPlaces = SavedPlacesRules.toggleSaved(
+                    savedPlaces = currentState.savedPlaces,
+                    place = place
+                )
+            )
+        }
     }
 }
