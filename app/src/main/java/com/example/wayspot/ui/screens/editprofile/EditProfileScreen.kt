@@ -6,6 +6,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,18 +14,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.example.wayspot.R
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.model.ProfileNotificationPreferences
 import com.example.wayspot.data.model.UserProfile
@@ -32,6 +28,7 @@ import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.editprofile.components.EditProfileAvatarSection
 import com.example.wayspot.ui.screens.editprofile.components.EditProfileBottomAction
 import com.example.wayspot.ui.screens.editprofile.components.EditProfileDangerZone
+import com.example.wayspot.ui.screens.editprofile.components.EditProfileDeleteConfirmationDialog
 import com.example.wayspot.ui.screens.editprofile.components.EditProfileFormSection
 import com.example.wayspot.ui.screens.editprofile.components.EditProfileHeader
 import com.example.wayspot.ui.screens.editprofile.components.EditProfileNotificationsSection
@@ -115,57 +112,16 @@ fun EditProfileScreen(
         onSaveClick = {
             editProfileViewModel.profileForSaving()?.let(onSaveClick)
         },
+        isDeleteConfirmationVisible = state.isDeleteConfirmationVisible,
+        onDeleteConfirmationDismiss = {
+            editProfileViewModel.hideDeleteConfirmation()
+        },
+        onDeleteAccountConfirmed = {
+            editProfileViewModel.hideDeleteConfirmation()
+            onDeleteAccountConfirmed()
+        },
         modifier = modifier
     )
-
-    if (state.isDeleteConfirmationVisible) {
-        AlertDialog(
-            onDismissRequest = {
-                editProfileViewModel.hideDeleteConfirmation()
-            },
-            title = {
-                Text(
-                    text = stringResource(
-                        R.string.edit_profile_delete_account
-                    )
-                )
-            },
-            text = {
-                Text(
-                    text = stringResource(
-                        R.string.edit_profile_delete_confirmation
-                    )
-                )
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        editProfileViewModel.hideDeleteConfirmation()
-                        onDeleteAccountConfirmed()
-                    }
-                ) {
-                    Text(
-                        text = stringResource(
-                            R.string.edit_profile_delete_account
-                        )
-                    )
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        editProfileViewModel.hideDeleteConfirmation()
-                    }
-                ) {
-                    Text(
-                        text = stringResource(
-                            R.string.edit_profile_cancel
-                        )
-                    )
-                }
-            }
-        )
-    }
 }
 
 @Composable
@@ -189,73 +145,87 @@ fun EditProfileContent(
     onChangePhotoClick: () -> Unit,
     onDeleteAccountClick: () -> Unit,
     onSaveClick: () -> Unit,
+    isDeleteConfirmationVisible: Boolean,
+    onDeleteConfirmationDismiss: () -> Unit,
+    onDeleteAccountConfirmed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .imePadding()
+    Box(
+        modifier = modifier.fillMaxSize()
     ) {
-        EditProfileHeader(
-            onBackClick = onBackClick,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        LazyColumn(
+        Column(
             modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            contentPadding = PaddingValues(bottom = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .imePadding()
         ) {
-            item(key = "avatar") {
-                EditProfileAvatarSection(
-                    avatarUrl = avatarUrl,
-                    initials = initials,
-                    onChangePhotoClick = onChangePhotoClick
-                )
+            EditProfileHeader(
+                onBackClick = onBackClick,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(bottom = 24.dp),
+                verticalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+                item(key = "avatar") {
+                    EditProfileAvatarSection(
+                        avatarUrl = avatarUrl,
+                        initials = initials,
+                        onChangePhotoClick = onChangePhotoClick
+                    )
+                }
+
+                item(key = "form") {
+                    EditProfileFormSection(
+                        username = username,
+                        onUsernameChange = onUsernameChange,
+                        email = email,
+                        onEmailChange = onEmailChange,
+                        bio = bio,
+                        onBioChange = onBioChange,
+                        location = location,
+                        onLocationChange = onLocationChange,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+
+                item(key = "notifications") {
+                    EditProfileNotificationsSection(
+                        newFollowersEnabled = notificationPreferences.newFollowers,
+                        onNewFollowersChange = onNewFollowersChange,
+                        reviewCommentsEnabled = notificationPreferences.reviewComments,
+                        onReviewCommentsChange = onReviewCommentsChange,
+                        receivedLikesEnabled = notificationPreferences.likesReceived,
+                        onReceivedLikesChange = onReceivedLikesChange,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+
+                item(key = "danger_zone") {
+                    EditProfileDangerZone(
+                        onDeleteAccountClick = onDeleteAccountClick,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
             }
 
-            item(key = "form") {
-                EditProfileFormSection(
-                    username = username,
-                    onUsernameChange = onUsernameChange,
-                    email = email,
-                    onEmailChange = onEmailChange,
-                    bio = bio,
-                    onBioChange = onBioChange,
-                    location = location,
-                    onLocationChange = onLocationChange,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-            }
-
-            item(key = "notifications") {
-                EditProfileNotificationsSection(
-                    newFollowersEnabled = notificationPreferences.newFollowers,
-                    onNewFollowersChange = onNewFollowersChange,
-                    reviewCommentsEnabled = notificationPreferences.reviewComments,
-                    onReviewCommentsChange = onReviewCommentsChange,
-                    receivedLikesEnabled = notificationPreferences.likesReceived,
-                    onReceivedLikesChange = onReceivedLikesChange,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-            }
-
-            item(key = "danger_zone") {
-                EditProfileDangerZone(
-                    onDeleteAccountClick = onDeleteAccountClick,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-            }
+            EditProfileBottomAction(
+                isEnabled = isSaveEnabled,
+                onSaveClick = onSaveClick,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
 
-        EditProfileBottomAction(
-            isEnabled = isSaveEnabled,
-            onSaveClick = onSaveClick,
-            modifier = Modifier.fillMaxWidth()
-        )
+        if (isDeleteConfirmationVisible) {
+            EditProfileDeleteConfirmationDialog(
+                onDismissRequest = onDeleteConfirmationDismiss,
+                onConfirmClick = onDeleteAccountConfirmed
+            )
+        }
     }
 }
 
@@ -284,7 +254,10 @@ private fun EditProfileScreenPreview() {
             onBackClick = {},
             onChangePhotoClick = {},
             onDeleteAccountClick = {},
-            onSaveClick = {}
+            onSaveClick = {},
+            isDeleteConfirmationVisible = false,
+            onDeleteConfirmationDismiss = {},
+            onDeleteAccountConfirmed = {}
         )
     }
 }
