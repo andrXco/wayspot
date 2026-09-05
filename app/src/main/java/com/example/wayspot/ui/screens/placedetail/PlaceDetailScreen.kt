@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.data.local.PreviewDataPopular
@@ -16,6 +19,7 @@ import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun PlaceDetailScreen(
+    placeDetailViewModel: PlaceDetailViewModel,
     placeId: String,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -24,9 +28,13 @@ fun PlaceDetailScreen(
     onWriteReviewClick: () -> Unit = {},
     onSeeAllReviewsClick: () -> Unit = {}
 ) {
-    val place = PreviewDataPopular.listPlaces.find {
-        it.id == placeId
+    val state by placeDetailViewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        placeDetailViewModel.loadPlace(placeId)
     }
+
+    val place = state.place
 
     if (place != null) {
         PlaceDetailContent(
@@ -80,9 +88,13 @@ fun PlaceDetailContent(
 @Composable
 private fun PlaceDetailScreenPreview() {
     WayspotTheme {
-        PlaceDetailScreen(
-            placeId = PreviewDataPopular.samplePlaces1.id,
-            onBackClick = {}
+        PlaceDetailContent(
+            place = PreviewDataPopular.samplePlaces1,
+            onBackClick = {},
+            onSaveClick = {},
+            onShareClick = {},
+            onWriteReviewClick = {},
+            onSeeAllReviewsClick = {}
         )
     }
 }

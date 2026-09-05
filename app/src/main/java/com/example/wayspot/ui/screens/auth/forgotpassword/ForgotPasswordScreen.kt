@@ -12,10 +12,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -27,17 +25,21 @@ import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun ForgotPasswordScreen(
+    forgotPasswordViewModel: ForgotPasswordViewModel,
     onSendClick: () -> Unit,
     onBackToLoginClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var email by remember {
-        mutableStateOf("")
-    }
+
+    val state by forgotPasswordViewModel.uiState.collectAsState()
 
     ForgotPasswordContent(
-        email = email,
-        onEmailChange = { email = it },
+        email = state.email,
+
+        onEmailChange = {
+            forgotPasswordViewModel.updateEmail(it)
+        },
+
         onSendClick = onSendClick,
         onBackToLoginClick = onBackToLoginClick,
         modifier = modifier

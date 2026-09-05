@@ -14,11 +14,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.wayspot.R
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.model.Notification
 import com.example.wayspot.ui.preview.WayspotMultiPreview
@@ -28,11 +32,14 @@ import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun NotificationsScreen(
+    notificationsViewModel: NotificationsViewModel,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val state by notificationsViewModel.uiState.collectAsState()
+
     NotificationsContent(
-        notifications = PreviewData.notifications,
+        notifications = state.notifications,
         onBackClick = onBackClick,
         modifier = modifier
     )
@@ -78,7 +85,7 @@ fun NotificationsContent(
 
                 item {
                     NotificationSectionTitle(
-                        title = "HOY"
+                        title = stringResource(R.string.hoy)
                     )
                 }
 
@@ -103,7 +110,7 @@ fun NotificationsContent(
 
                     item {
                         NotificationSectionTitle(
-                            title = "ANTERIORES"
+                            title = stringResource(R.string.anteriores)
                         )
                     }
 
@@ -165,14 +172,14 @@ private fun NotificationsEmptySection(
         )
 
         Text(
-            text = "No tienes notificaciones",
+            text = stringResource(R.string.no_tienes_notificaciones),
             modifier = Modifier.padding(top = 16.dp),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
 
         Text(
-            text = "Cuando tengas nuevas notificaciones aparecerán aquí.",
+            text = stringResource(R.string.cuando_tengas_nuevas_notificaciones_aparecer_n_aqu),
             modifier = Modifier.padding(
                 start = 32.dp,
                 end = 32.dp,
@@ -189,7 +196,8 @@ private fun NotificationsEmptySection(
 @Composable
 private fun NotificationsScreenPreview() {
     WayspotTheme {
-        NotificationsScreen(
+        NotificationsContent(
+            notifications = PreviewData.notifications,
             onBackClick = {}
         )
     }

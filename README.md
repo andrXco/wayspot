@@ -65,6 +65,14 @@ Los colores de WaySpot combinan naturaleza, calidez y contraste para crear una e
 
 ---
 
+## Diseño en Figma
+
+Las pantallas de WaySpot fueron diseñadas previamente en Figma para definir la interfaz y experiencia de usuario de la aplicación.
+
+[Ver diseño de WaySpot en Figma](https://www.figma.com/make/RBOjIUcUe0htgqXmQTybX8/ReviewHub-mobile-app-design?code-node-id=0-6&p=f&t=n2XtAjCNciJ0qnT3-0&fullscreen=1)
+
+---
+
 ## Documentación
 
 * [Requisitos funcionales](./doc/Requisitos%20Funcionales.pdf)

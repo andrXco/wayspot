@@ -88,10 +88,10 @@ private fun PasswordVisibilityButton(
 private fun AuthPasswordFieldPreview() {
     WayspotTheme {
         AuthPasswordField(
-            value = "password123",
+            value = stringResource(R.string.password123),
             onValueChange = {},
-            label = "Contraseña",
-            placeholder = "Introduce tu contraseña",
+            label = stringResource(R.string.contrase_a),
+            placeholder = stringResource(R.string.introduce_tu_contrase_a),
             passwordVisible = false,
             onTogglePasswordVisibility = {},
             modifier = Modifier.padding(16.dp)

@@ -14,6 +14,25 @@ data class SavedPlace(
 object SavedPlacesRules {
     val defaultList = SavedPlaceList.WANT_TO_VISIT
 
+    fun savedPlaceIds(savedPlaces: List<SavedPlace>): Set<String> =
+        savedPlaces.mapTo(mutableSetOf()) { savedPlace ->
+            savedPlace.place.id
+        }
+
+    fun countByList(savedPlaces: List<SavedPlace>): Map<SavedPlaceList, Int> =
+        SavedPlaceList.entries.associateWith { list ->
+            savedPlaces.count { savedPlace ->
+                list in savedPlace.lists
+            }
+        }
+
+    fun filterByList(
+        savedPlaces: List<SavedPlace>,
+        list: SavedPlaceList
+    ): List<SavedPlace> = savedPlaces.filter { savedPlace ->
+        list in savedPlace.lists
+    }
+
     fun removeFromList(
         savedPlaces: List<SavedPlace>,
         placeId: String,

@@ -12,10 +12,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,23 +27,28 @@ import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun LoginScreen(
+    loginViewModel: LoginViewModel,
     onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier,
     onForgotPasswordClick: () -> Unit = {},
     onGoogleClick: () -> Unit = {}
 ) {
-    var usuario by remember { mutableStateOf("") }
-    var contrasena by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
+    val state by loginViewModel.uiState.collectAsState()
 
     LoginContent(
-        usuario = usuario,
-        onUsuarioChange = { usuario = it },
-        contrasena = contrasena,
-        onContrasenaChange = { contrasena = it },
-        passwordVisible = passwordVisible,
-        onTogglePasswordVisibility = { passwordVisible = !passwordVisible },
+        usuario = state.usuario,
+        onUsuarioChange = {
+            loginViewModel.updateUsuario(it)
+        },
+        contrasena = state.contrasena,
+        onContrasenaChange = {
+            loginViewModel.updateContrasena(it)
+        },
+        passwordVisible = state.passwordVisible,
+        onTogglePasswordVisibility = {
+            loginViewModel.togglePasswordVisibility()
+        },
         onLoginClick = onLoginClick,
         onSignUpClick = onSignUpClick,
         onForgotPasswordClick = onForgotPasswordClick,

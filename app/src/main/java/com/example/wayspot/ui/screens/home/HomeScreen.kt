@@ -10,10 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.data.local.PreviewData
@@ -26,19 +24,18 @@ import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun HomeScreen(
+    homeViewModel: HomeViewModel,
     onPlaceClick: (String) -> Unit,
     onNotificationsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var searchText by remember {
-        mutableStateOf("")
-    }
+    val state by homeViewModel.uiState.collectAsState()
 
     HomeContent(
-        posts = PreviewData.listPosts,
-        searchText = searchText,
+        posts = state.posts,
+        searchText = state.searchText,
         onSearchChange = {
-            searchText = it
+            homeViewModel.updateSearchText(it)
         },
         onNotificationsClick = onNotificationsClick,
         onPlaceClick = onPlaceClick,
@@ -91,7 +88,12 @@ private fun PostList(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier.fillMaxWidth()
     ) {
-        items(posts) { post ->
+        items(
+            items = posts,
+            key = { post ->
+                "${post.usuario}|${post.tiempo}|${post.placeId.orEmpty()}"
+            }
+        ) { post ->
             PostCard(
                 post = post,
                 onClick = {
@@ -108,7 +110,10 @@ private fun PostList(
 @Composable
 private fun HomeScreenPreview() {
     WayspotTheme {
-        HomeScreen(
+        HomeContent(
+            posts = PreviewData.listPosts,
+            searchText = "",
+            onSearchChange = {},
             onNotificationsClick = {},
             onPlaceClick = {}
         )

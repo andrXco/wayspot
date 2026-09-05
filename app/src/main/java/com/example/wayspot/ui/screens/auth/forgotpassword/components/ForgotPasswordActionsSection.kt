@@ -13,8 +13,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.wayspot.R
 
 @Composable
 fun ForgotPasswordActionsSection(
@@ -38,7 +40,7 @@ fun ForgotPasswordActionsSection(
             )
 
             Text(
-                text = "o",
+                text = stringResource(R.string.o),
                 modifier = Modifier.padding(horizontal = 12.dp),
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -49,7 +51,7 @@ fun ForgotPasswordActionsSection(
         }
 
         Text(
-            text = "¿Ya recordaste tu contraseña?",
+            text = stringResource(R.string.ya_recordaste_tu_contrase_a),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -58,7 +60,7 @@ fun ForgotPasswordActionsSection(
             onClick = onBackToLoginClick
         ) {
             Text(
-                text = "Volver al inicio de sesión",
+                text = stringResource(R.string.volver_al_inicio_de_sesi_n),
                 fontWeight = FontWeight.Bold
             )
         }
@@ -68,7 +70,7 @@ fun ForgotPasswordActionsSection(
         )
 
         Text(
-            text = "El enlace expira en 30 minutos. Si no solicitaste este cambio, ignora el correo.",
+            text = stringResource(R.string.el_enlace_expira_en_30_minutos_si_no_solicitaste_este_cambio_ignora_el_correo),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.fillMaxWidth()

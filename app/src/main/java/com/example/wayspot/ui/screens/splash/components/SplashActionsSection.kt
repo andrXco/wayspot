@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -12,10 +13,15 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
@@ -28,15 +34,34 @@ fun SplashActionsSection(
     onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
     foregroundColor: Color,
+    primaryColor: Color,
+    onPrimaryColor: Color,
     modifier: Modifier = Modifier
 ) {
+    val buttonShape = RoundedCornerShape(16.dp)
+
     Column(modifier = modifier) {
         Button(
             onClick = onLoginClick,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(54.dp),
-            shape = MaterialTheme.shapes.medium
+                .height(56.dp)
+                .shadow(
+                    elevation = 14.dp,
+                    shape = buttonShape,
+                    clip = false,
+                    ambientColor = primaryColor.copy(alpha = 0.46f),
+                    spotColor = primaryColor.copy(alpha = 0.62f)
+                ),
+            shape = buttonShape,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = primaryColor,
+                contentColor = onPrimaryColor
+            ),
+            elevation = ButtonDefaults.buttonElevation(
+                defaultElevation = 2.dp,
+                pressedElevation = 6.dp
+            )
         ) {
             Text(
                 text = stringResource(R.string.welcome_login_button),
@@ -50,14 +75,22 @@ fun SplashActionsSection(
             onClick = onSignUpClick,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(54.dp),
-            shape = MaterialTheme.shapes.medium,
+                .height(56.dp)
+                .shadow(
+                    elevation = 9.dp,
+                    shape = buttonShape,
+                    clip = false,
+                    ambientColor = foregroundColor.copy(alpha = 0.12f),
+                    spotColor = primaryColor.copy(alpha = 0.24f)
+                ),
+            shape = buttonShape,
             border = BorderStroke(
                 width = 1.dp,
-                color = MaterialTheme.colorScheme.primary
+                color = foregroundColor.copy(alpha = 0.2f)
             ),
             colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = MaterialTheme.colorScheme.primary
+                containerColor = foregroundColor.copy(alpha = 0.1f),
+                contentColor = foregroundColor.copy(alpha = 0.9f)
             )
         ) {
             Text(
@@ -69,11 +102,20 @@ fun SplashActionsSection(
         Spacer(modifier = Modifier.height(18.dp))
 
         Text(
-            text = stringResource(R.string.welcome_terms),
+            text = buildAnnotatedString {
+                append(stringResource(R.string.welcome_terms_prefix))
+                withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+                    append(stringResource(R.string.welcome_terms_service))
+                }
+                append(stringResource(R.string.welcome_terms_and))
+                withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+                    append(stringResource(R.string.welcome_terms_privacy))
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
-            fontSize = 11.sp,
-            lineHeight = 15.sp,
-            color = foregroundColor.copy(alpha = 0.68f),
+            fontSize = 12.sp,
+            lineHeight = 18.sp,
+            color = foregroundColor.copy(alpha = 0.42f),
             textAlign = TextAlign.Center
         )
     }
@@ -87,7 +129,9 @@ private fun SplashActionsSectionPreview() {
         SplashActionsSection(
             onLoginClick = {},
             onSignUpClick = {},
-            foregroundColor = MaterialTheme.colorScheme.onBackground
+            foregroundColor = MaterialTheme.colorScheme.onBackground,
+            primaryColor = MaterialTheme.colorScheme.primary,
+            onPrimaryColor = MaterialTheme.colorScheme.onPrimary
         )
     }
 }

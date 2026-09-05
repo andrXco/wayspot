@@ -14,10 +14,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -31,6 +30,7 @@ import com.example.wayspot.data.model.ExploreCategory
 import com.example.wayspot.data.model.ExploreCategoryRules
 import com.example.wayspot.data.model.Place
 import com.example.wayspot.data.model.SavedPlace
+import com.example.wayspot.data.model.SavedPlacesRules
 import com.example.wayspot.ui.components.WayspotSearch
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.explore.components.ExplorerPopularCard
@@ -39,40 +39,31 @@ import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun ExploreScreen(
+    exploreViewModel: ExploreViewModel,
     onPlaceClick: (String) -> Unit,
     savedPlaces: List<SavedPlace>,
     onSaveClick: (Place) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var searchText by remember {
-        mutableStateOf("")
-    }
+    val state by exploreViewModel.uiState.collectAsState()
 
-    var selectedCategory by remember {
-        mutableStateOf(ExploreCategoryRules.initialCategory)
+    LaunchedEffect(savedPlaces) {
+        exploreViewModel.updateSavedPlaces(savedPlaces)
     }
-
-    val places = PreviewDataPopular.listPlaces
-    val filteredPlaces = ExploreCategoryRules.filterPlaces(
-        places = places,
-        selectedCategory = selectedCategory
-    )
 
     ExplorerContent(
-        places = filteredPlaces,
-        searchText = searchText,
-        categories = ExploreCategoryRules.categories,
-        selectedCategory = selectedCategory,
+        places = state.places,
+        searchText = state.searchText,
+        categories = state.categories,
+        selectedCategory = state.selectedCategory,
         onSearchChange = {
-            searchText = it
+            exploreViewModel.updateSearchText(it)
         },
         onCategorySelect = {
-            selectedCategory = it
+            exploreViewModel.updateSelectedCategory(it)
         },
         onPlaceClick = onPlaceClick,
-        savedPlaceIds = savedPlaces.mapTo(mutableSetOf()) {
-            it.place.id
-        },
+        savedPlaceIds = state.savedPlaceIds,
         onSaveClick = onSaveClick,
         modifier = modifier
     )
@@ -217,9 +208,17 @@ fun ExplorerContent(
 @Composable
 private fun ExploreScreenPreview() {
     WayspotTheme {
-        ExploreScreen(
+        ExplorerContent(
+            places = PreviewDataPopular.listPlaces,
+            searchText = "",
+            categories = ExploreCategoryRules.categories,
+            selectedCategory = ExploreCategoryRules.initialCategory,
+            onSearchChange = {},
+            onCategorySelect = {},
             onPlaceClick = {},
-            savedPlaces = PreviewData.savedPlaces,
+            savedPlaceIds = SavedPlacesRules.savedPlaceIds(
+                PreviewData.savedPlaces
+            ),
             onSaveClick = {}
         )
     }
