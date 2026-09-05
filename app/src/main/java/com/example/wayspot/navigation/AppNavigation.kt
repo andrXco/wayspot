@@ -280,17 +280,15 @@ fun AppNavigation(
 
             HomeScreen(
                 homeViewModel = homeViewModel,
-
-                onNotificationsClick = {
-                    navController.navigate(
-                        Screen.Notifications.route
-                    )
-                },
-
+                savedPlaces = savedPlaces,
                 onPlaceClick = { placeId ->
                     navController.navigate(
                         Screen.PlaceDetail.createRoute(placeId)
                     )
+                },
+
+                onSaveClick = { place ->
+                    appNavigationViewModel.toggleSavedPlace(place)
                 }
             )
         }

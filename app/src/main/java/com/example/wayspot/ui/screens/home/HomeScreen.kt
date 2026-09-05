@@ -1,43 +1,62 @@
 package com.example.wayspot.ui.screens.home
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.wayspot.R
 import com.example.wayspot.data.local.PreviewData
-import com.example.wayspot.data.model.Post
-import com.example.wayspot.ui.components.WayspotHeader
-import com.example.wayspot.ui.components.WayspotSearch
+import com.example.wayspot.data.local.PreviewDataPopular
+import com.example.wayspot.data.model.HomeCategoryId
+import com.example.wayspot.data.model.HomeRules
+import com.example.wayspot.data.model.Place
+import com.example.wayspot.data.model.SavedPlace
 import com.example.wayspot.ui.preview.WayspotMultiPreview
-import com.example.wayspot.ui.screens.home.components.PostCard
+import com.example.wayspot.ui.screens.home.components.HomeCategoryChips
+import com.example.wayspot.ui.screens.home.components.HomeFeaturedPlanCarousel
+import com.example.wayspot.ui.screens.home.components.HomeIntroSection
+import com.example.wayspot.ui.screens.home.components.HomeReviewCard
+import com.example.wayspot.ui.screens.home.components.HomeReviewsEmptyState
+import com.example.wayspot.ui.screens.home.components.HomeReviewsHeader
 import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel,
+    savedPlaces: List<SavedPlace>,
     onPlaceClick: (String) -> Unit,
-    onNotificationsClick: () -> Unit,
+    onSaveClick: (Place) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by homeViewModel.uiState.collectAsState()
 
+    LaunchedEffect(savedPlaces) {
+        homeViewModel.updateSavedPlaces(savedPlaces)
+    }
+
     HomeContent(
-        posts = state.posts,
-        searchText = state.searchText,
-        onSearchChange = {
-            homeViewModel.updateSearchText(it)
-        },
-        onNotificationsClick = onNotificationsClick,
+        state = state,
+        onSearchQueryChange = homeViewModel::updateSearchQuery,
+        onCategoryClick = homeViewModel::selectCategory,
+        onPreviousFeaturedPlanClick = homeViewModel::showPreviousFeaturedPlan,
+        onNextFeaturedPlanClick = homeViewModel::showNextFeaturedPlan,
+        onFeaturedLikeClick = homeViewModel::toggleFeaturedLike,
+        onReviewLikeClick = homeViewModel::toggleReviewLike,
+        onReviewExpandClick = homeViewModel::toggleReviewExpanded,
+        onReviewCommentClick = homeViewModel::registerReviewComment,
+        onReviewShareClick = homeViewModel::toggleReviewShared,
+        onSaveClick = onSaveClick,
         onPlaceClick = onPlaceClick,
         modifier = modifier
     )
@@ -45,76 +64,157 @@ fun HomeScreen(
 
 @Composable
 fun HomeContent(
-    posts: List<Post>,
-    searchText: String,
-    onSearchChange: (String) -> Unit,
-    onNotificationsClick: () -> Unit,
+    state: HomeState,
+    onSearchQueryChange: (String) -> Unit,
+    onCategoryClick: (HomeCategoryId) -> Unit,
+    onPreviousFeaturedPlanClick: () -> Unit,
+    onNextFeaturedPlanClick: () -> Unit,
+    onFeaturedLikeClick: (String) -> Unit,
+    onReviewLikeClick: (String) -> Unit,
+    onReviewExpandClick: (String) -> Unit,
+    onReviewCommentClick: (String) -> Unit,
+    onReviewShareClick: (String) -> Unit,
+    onSaveClick: (Place) -> Unit,
     onPlaceClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
+    val context = LocalContext.current
+    val placesById = state.places.associateBy { place -> place.id }
+    val visibleReviews = state.reviews.filter { review ->
+        val place = placesById[review.placeId] ?: return@filter false
+        HomeRules.matchesSearch(
+            query = state.searchQuery,
+            candidates = listOf(
+                context.getString(review.authorNameRes),
+                context.getString(review.authorHandleRes),
+                context.getString(review.bodyRes),
+                context.getString(place.tituloRes),
+                context.getString(place.ubicacionRes)
+            )
+        )
+    }
+
+    LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp)
+            .background(MaterialTheme.colorScheme.background),
+        contentPadding = PaddingValues(bottom = 24.dp),
+        verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(14.dp)
     ) {
-        WayspotHeader(
-            onNotificationsClick = onNotificationsClick,
-            modifier = Modifier.padding(vertical = 16.dp)
-        )
-
-        WayspotSearch(
-            searchText = searchText,
-            onSearchChange = onSearchChange
-        )
-
-        Spacer(
-            modifier = Modifier.height(16.dp)
-        )
-
-        PostList(
-            posts = posts,
-            onPlaceClick = onPlaceClick
-        )
+        item(key = HomeSectionKey.INTRO) {
+            HomeIntroSection(
+                searchQuery = state.searchQuery,
+                onSearchQueryChange = onSearchQueryChange,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+        }
+        item(key = HomeSectionKey.CATEGORIES) {
+            HomeCategoryChips(
+                categories = state.categories,
+                selectedCategory = state.selectedCategory,
+                onCategoryClick = onCategoryClick,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        item(key = HomeSectionKey.FEATURED) {
+            HomeFeaturedPlanCarousel(
+                plans = state.featuredPlans,
+                places = state.places,
+                activePlanIndex = state.activeFeaturedPlanIndex,
+                likeCounts = state.featuredLikeCounts,
+                likedPlanIds = state.likedFeaturedPlanIds,
+                savedPlaceIds = state.savedPlaceIds,
+                onPreviousClick = onPreviousFeaturedPlanClick,
+                onNextClick = onNextFeaturedPlanClick,
+                onLikeClick = onFeaturedLikeClick,
+                onSaveClick = onSaveClick,
+                onPlaceClick = onPlaceClick,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+        }
+        item(key = HomeSectionKey.REVIEWS_HEADER) {
+            HomeReviewsHeader(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp)
+            )
+        }
+        if (visibleReviews.isEmpty()) {
+            item(key = HomeSectionKey.EMPTY_REVIEWS) {
+                HomeReviewsEmptyState(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp)
+                )
+            }
+        } else {
+            items(
+                items = visibleReviews,
+                key = { review -> review.id }
+            ) { review ->
+                placesById[review.placeId]?.let { place ->
+                    HomeReviewCard(
+                        review = review,
+                        place = place,
+                        likeCount = state.reviewLikeCounts[review.id] ?: review.initialLikeCount,
+                        commentCount = state.reviewCommentCounts[review.id] ?: review.initialCommentCount,
+                        isLiked = review.id in state.likedReviewIds,
+                        isExpanded = review.id in state.expandedReviewIds,
+                        isShared = review.id in state.sharedReviewIds,
+                        isSaved = place.id in state.savedPlaceIds,
+                        onPlaceClick = { onPlaceClick(place.id) },
+                        onLikeClick = { onReviewLikeClick(review.id) },
+                        onExpandClick = { onReviewExpandClick(review.id) },
+                        onCommentClick = { onReviewCommentClick(review.id) },
+                        onShareClick = { onReviewShareClick(review.id) },
+                        onSaveClick = { onSaveClick(place) },
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+            }
+        }
     }
 }
 
-@Composable
-private fun PostList(
-    posts: List<Post>,
-    onPlaceClick: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = modifier.fillMaxWidth()
-    ) {
-        items(
-            items = posts,
-            key = { post ->
-                "${post.usuario}|${post.tiempo}|${post.placeId.orEmpty()}"
-            }
-        ) { post ->
-            PostCard(
-                post = post,
-                onClick = {
-                    if (post.placeId != null) {
-                        onPlaceClick(post.placeId)
-                    }
-                }
-            )
-        }
-    }
+private enum class HomeSectionKey {
+    INTRO,
+    CATEGORIES,
+    FEATURED,
+    REVIEWS_HEADER,
+    EMPTY_REVIEWS
 }
 
 @WayspotMultiPreview
 @Composable
 private fun HomeScreenPreview() {
+    val selectedCategory = HomeCategoryId.NATURE
     WayspotTheme {
         HomeContent(
-            posts = PreviewData.listPosts,
-            searchText = "",
-            onSearchChange = {},
-            onNotificationsClick = {},
+            state = HomeState(
+                selectedCategory = selectedCategory,
+                categories = PreviewData.homeCategories,
+                featuredPlans = HomeRules.filterFeaturedPlans(
+                    plans = PreviewData.homeFeaturedPlans,
+                    categoryId = selectedCategory
+                ),
+                reviews = PreviewData.homeReviews,
+                places = PreviewDataPopular.listPlaces,
+                featuredLikeCounts = PreviewData.homeFeaturedPlans.associate { plan ->
+                    plan.id to plan.initialLikeCount
+                },
+                reviewLikeCounts = PreviewData.homeReviews.associate { review ->
+                    review.id to review.initialLikeCount
+                },
+                reviewCommentCounts = PreviewData.homeReviews.associate { review ->
+                    review.id to review.initialCommentCount
+                }
+            ),
+            onSearchQueryChange = {},
+            onCategoryClick = {},
+            onPreviousFeaturedPlanClick = {},
+            onNextFeaturedPlanClick = {},
+            onFeaturedLikeClick = {},
+            onReviewLikeClick = {},
+            onReviewExpandClick = {},
+            onReviewCommentClick = {},
+            onReviewShareClick = {},
+            onSaveClick = {},
             onPlaceClick = {}
         )
     }
