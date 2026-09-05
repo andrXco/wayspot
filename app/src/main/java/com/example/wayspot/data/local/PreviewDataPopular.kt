@@ -7,6 +7,112 @@ import com.example.wayspot.data.model.Place
 
 object PreviewDataPopular {
 
+    val cerroMonserrate = Place(
+        id = "cerro_monserrate",
+        tituloRes = R.string.place_cerro_monserrate_title,
+        categoriaRes = R.string.place_category_mountain,
+        ubicacionRes = R.string.place_cerro_monserrate_location,
+        rating = 4.8,
+        imagen = "https://images.unsplash.com/photo-1720067392108-89b9485aa090?w=800&h=520&fit=crop&auto=format",
+        detail = PlaceDetail(
+            durationRes = R.string.place_cerro_monserrate_duration,
+            priceRes = R.string.place_cerro_monserrate_price,
+            altitudeRes = R.string.place_cerro_monserrate_altitude,
+            descriptionRes = R.string.place_cerro_monserrate_description,
+            reviewCount = 2148,
+            recentReviews = listOf(
+                PlaceReview(
+                    userNameRes = R.string.home_review_valentina_name,
+                    dateRes = R.string.home_review_valentina_date,
+                    rating = 5,
+                    commentRes = R.string.place_cerro_monserrate_review
+                )
+            )
+        )
+    )
+
+    val cartagenaAmurallada = Place(
+        id = "cartagena_amurallada",
+        tituloRes = R.string.place_cartagena_amurallada_title,
+        categoriaRes = R.string.place_category_heritage,
+        ubicacionRes = R.string.place_cartagena_amurallada_location,
+        rating = 4.9,
+        imagen = "https://images.unsplash.com/photo-1583997052103-b4a1cb974ce5?q=80&w=1200&auto=format&fit=crop",
+        detail = PlaceDetail(
+            durationRes = R.string.place_cartagena_amurallada_duration,
+            priceRes = R.string.place_cartagena_amurallada_price,
+            altitudeRes = R.string.place_cartagena_amurallada_altitude,
+            descriptionRes = R.string.place_cartagena_amurallada_description,
+            reviewCount = 3294,
+            recentReviews = listOf(
+                PlaceReview(
+                    userNameRes = R.string.home_review_andres_name,
+                    dateRes = R.string.home_review_andres_date,
+                    rating = 5,
+                    commentRes = R.string.place_cartagena_amurallada_review
+                )
+            )
+        )
+    )
+
+    val valleDelCocora = Place(
+        id = "valle_del_cocora",
+        tituloRes = R.string.place_valle_cocora_title,
+        categoriaRes = R.string.place_category_nature,
+        ubicacionRes = R.string.place_valle_cocora_location,
+        rating = 4.9,
+        imagen = "https://images.unsplash.com/photo-1596395819057-e37f55c7de0e?q=80&w=1200&auto=format&fit=crop",
+        detail = PlaceDetail(
+            durationRes = R.string.place_valle_cocora_duration,
+            priceRes = R.string.place_valle_cocora_price,
+            altitudeRes = R.string.place_valle_cocora_altitude,
+            descriptionRes = R.string.place_valle_cocora_description,
+            reviewCount = 1847,
+            recentReviews = listOf(
+                PlaceReview(
+                    userNameRes = R.string.user_name_sample,
+                    dateRes = R.string.review_date_sample,
+                    rating = 5,
+                    commentRes = R.string.place_valle_cocora_review
+                )
+            )
+        )
+    )
+
+    val miradorCafetero = Place(
+        id = "mirador_cafetero",
+        tituloRes = R.string.place_mirador_cafetero_title,
+        categoriaRes = R.string.place_category_nature,
+        ubicacionRes = R.string.place_mirador_cafetero_location,
+        rating = 4.8,
+        imagen = "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=1200&auto=format&fit=crop",
+        detail = PlaceDetail(
+            durationRes = R.string.place_mirador_cafetero_duration,
+            priceRes = R.string.place_mirador_cafetero_price,
+            altitudeRes = R.string.place_mirador_cafetero_altitude,
+            descriptionRes = R.string.place_mirador_cafetero_description,
+            reviewCount = 341,
+            recentReviews = emptyList()
+        )
+    )
+
+    val paseoCostero = Place(
+        id = "paseo_costero",
+        tituloRes = R.string.place_paseo_costero_title,
+        categoriaRes = R.string.place_category_park,
+        ubicacionRes = R.string.place_paseo_costero_location,
+        rating = 4.7,
+        imagen = "https://images.unsplash.com/photo-1473116763249-2faaef81ccda?q=80&w=1200&auto=format&fit=crop",
+        detail = PlaceDetail(
+            durationRes = R.string.place_paseo_costero_duration,
+            priceRes = R.string.place_paseo_costero_price,
+            altitudeRes = R.string.place_paseo_costero_altitude,
+            descriptionRes = R.string.place_paseo_costero_description,
+            reviewCount = 276,
+            recentReviews = emptyList()
+        )
+    )
+
     private val machuPicchuDetail = PlaceDetail(
         durationRes = R.string.place_machu_picchu_duration,
         priceRes = R.string.place_machu_picchu_price,
@@ -204,6 +310,11 @@ object PreviewDataPopular {
     )
 
     val listPlaces = listOf(
+        cerroMonserrate,
+        cartagenaAmurallada,
+        valleDelCocora,
+        miradorCafetero,
+        paseoCostero,
         samplePlaces1,
         samplePlaces2,
         samplePlaces3,
