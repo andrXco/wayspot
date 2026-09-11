@@ -7,7 +7,6 @@ import com.example.wayspot.data.model.AuthFailure
 import com.example.wayspot.data.model.AuthOutcome
 import com.example.wayspot.data.model.AuthRules
 import com.example.wayspot.data.repository.AuthRepository
-import com.example.wayspot.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
@@ -22,7 +21,6 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val userRepository: UserRepository,
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
@@ -117,29 +115,10 @@ class SignUpViewModel @Inject constructor(
 
     private suspend fun completeRegistration(username: String) {
         when (val nameOutcome = authRepository.updateDisplayName(username)) {
-            is AuthOutcome.Failure -> {
-                rollbackRegistration(nameOutcome.reason)
-            }
+            is AuthOutcome.Failure -> showFailure(nameOutcome.reason)
             is AuthOutcome.Success -> {
-                when (val profileOutcome = userRepository.registerUser(nameOutcome.value, username)) {
-                    is AuthOutcome.Failure -> {
-                        rollbackRegistration(profileOutcome.reason)
-                    }
-                    is AuthOutcome.Success -> {
-                        _uiState.update { it.copy(isLoading = false) }
-                        _events.emit(SignUpEvent.NavigateHome)
-                    }
-                }
-            }
-        }
-    }
-
-    private suspend fun rollbackRegistration(originalFailure: AuthFailure) {
-        when (val cleanup = authRepository.deleteCurrentUser()) {
-            is AuthOutcome.Success -> showFailure(originalFailure)
-            is AuthOutcome.Failure -> {
-                authRepository.signOut()
-                showFailure(cleanup.reason)
+                _uiState.update { it.copy(isLoading = false) }
+                _events.emit(SignUpEvent.NavigateHome)
             }
         }
     }
