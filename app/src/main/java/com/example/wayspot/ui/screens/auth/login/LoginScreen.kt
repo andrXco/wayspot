@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -24,17 +25,25 @@ import com.example.wayspot.ui.screens.auth.components.AuthHeader
 import com.example.wayspot.ui.screens.auth.login.components.LoginActionsSection
 import com.example.wayspot.ui.screens.auth.login.components.LoginFormSection
 import com.example.wayspot.ui.theme.WayspotTheme
+import com.example.wayspot.ui.screens.auth.messageRes
+import kotlinx.coroutines.flow.collect
 
 @Composable
 fun LoginScreen(
     loginViewModel: LoginViewModel,
-    onLoginClick: () -> Unit,
+    onAuthenticated: () -> Unit,
     onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onForgotPasswordClick: () -> Unit = {},
-    onGoogleClick: () -> Unit = {}
+    onForgotPasswordClick: () -> Unit = {}
 ) {
     val state by loginViewModel.uiState.collectAsState()
+    LaunchedEffect(loginViewModel) {
+        loginViewModel.events.collect { event ->
+            when (event) {
+                LoginEvent.NavigateHome -> onAuthenticated()
+            }
+        }
+    }
 
     LoginContent(
         usuario = state.usuario,
@@ -49,10 +58,11 @@ fun LoginScreen(
         onTogglePasswordVisibility = {
             loginViewModel.togglePasswordVisibility()
         },
-        onLoginClick = onLoginClick,
+        onLoginClick = loginViewModel::signIn,
         onSignUpClick = onSignUpClick,
         onForgotPasswordClick = onForgotPasswordClick,
-        onGoogleClick = onGoogleClick,
+        isLoading = state.isLoading,
+        errorMessage = state.failure?.let { stringResource(it.messageRes()) },
         modifier = modifier
     )
 }
@@ -68,7 +78,8 @@ fun LoginContent(
     onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
     onForgotPasswordClick: () -> Unit,
-    onGoogleClick: () -> Unit,
+    isLoading: Boolean,
+    errorMessage: String?,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -100,8 +111,9 @@ fun LoginContent(
 
         LoginActionsSection(
             onLoginClick = onLoginClick,
-            onGoogleClick = onGoogleClick,
             onSignUpClick = onSignUpClick,
+            isLoading = isLoading,
+            errorMessage = errorMessage,
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -121,7 +133,8 @@ private fun LoginPreview() {
             onLoginClick = {},
             onSignUpClick = {},
             onForgotPasswordClick = {},
-            onGoogleClick = {}
+            isLoading = false,
+            errorMessage = null
         )
     }
 }

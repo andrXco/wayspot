@@ -1,17 +1,36 @@
 package com.example.wayspot.ui.screens.auth.signup
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.wayspot.data.injection.IoDispatcher
+import com.example.wayspot.data.model.AuthFailure
+import com.example.wayspot.data.model.AuthOutcome
+import com.example.wayspot.data.model.AuthRules
+import com.example.wayspot.data.repository.AuthRepository
+import com.example.wayspot.data.repository.UserRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 
 
-class SignUpViewModel : ViewModel() {
+@HiltViewModel
+class SignUpViewModel @Inject constructor(
+    private val authRepository: AuthRepository,
+    private val userRepository: UserRepository,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SignUpState())
 
     val uiState: StateFlow<SignUpState> = _uiState
+    private val _events = MutableSharedFlow<SignUpEvent>()
+    val events = _events
 
     fun updateNombre(input: String) {
         _uiState.update { currentState ->
@@ -72,4 +91,62 @@ class SignUpViewModel : ViewModel() {
             )
         }
     }
+
+    fun signUp() {
+        val current = _uiState.value
+        val validation = when {
+            current.nombre.isBlank() || current.correo.isBlank() || current.contrasena.isBlank() || current.confirmarContrasena.isBlank() -> AuthFailure.EmptyFields
+            !AuthRules.isValidUsername(current.nombre) -> AuthFailure.InvalidCredentials
+            !AuthRules.isValidEmail(current.correo) -> AuthFailure.InvalidEmail
+            !AuthRules.isValidPassword(current.contrasena) -> AuthFailure.InvalidPassword
+            current.contrasena != current.confirmarContrasena -> AuthFailure.PasswordMismatch
+            !current.termsAccepted -> AuthFailure.TermsNotAccepted
+            else -> null
+        }
+        if (validation != null) { _uiState.update { it.copy(failure = validation) }; return }
+        viewModelScope.launch(ioDispatcher) {
+            _uiState.update { it.copy(isLoading = true, failure = null) }
+            when (val authOutcome = authRepository.signUp(current.correo, current.contrasena)) {
+                is AuthOutcome.Failure -> showFailure(authOutcome.reason)
+                is AuthOutcome.Success -> completeRegistration(
+                    username = current.nombre
+                )
+            }
+        }
+    }
+
+    private suspend fun completeRegistration(username: String) {
+        when (val nameOutcome = authRepository.updateDisplayName(username)) {
+            is AuthOutcome.Failure -> {
+                rollbackRegistration(nameOutcome.reason)
+            }
+            is AuthOutcome.Success -> {
+                when (val profileOutcome = userRepository.registerUser(nameOutcome.value, username)) {
+                    is AuthOutcome.Failure -> {
+                        rollbackRegistration(profileOutcome.reason)
+                    }
+                    is AuthOutcome.Success -> {
+                        _uiState.update { it.copy(isLoading = false) }
+                        _events.emit(SignUpEvent.NavigateHome)
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun rollbackRegistration(originalFailure: AuthFailure) {
+        when (val cleanup = authRepository.deleteCurrentUser()) {
+            is AuthOutcome.Success -> showFailure(originalFailure)
+            is AuthOutcome.Failure -> {
+                authRepository.signOut()
+                showFailure(cleanup.reason)
+            }
+        }
+    }
+
+    private fun showFailure(failure: AuthFailure) {
+        _uiState.update { it.copy(isLoading = false, failure = failure) }
+    }
 }
+
+sealed interface SignUpEvent { data object NavigateHome : SignUpEvent }

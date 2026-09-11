@@ -10,6 +10,10 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
+import com.example.wayspot.R
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -23,6 +27,7 @@ fun ProfileContent(
     reviews: List<Review>,
     onEditProfileClick: () -> Unit,
     onSavedPlacesClick: () -> Unit,
+    onSignOutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -105,6 +110,12 @@ fun ProfileContent(
                 review = review,
                 modifier = Modifier.fillMaxWidth()
             )
+        }
+
+        item {
+            OutlinedButton(onClick = onSignOutClick, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+                Text(stringResource(R.string.auth_sign_out))
+            }
         }
     }
 }

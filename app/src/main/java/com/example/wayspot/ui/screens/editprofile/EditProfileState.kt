@@ -2,6 +2,7 @@ package com.example.wayspot.ui.screens.editprofile
 
 import com.example.wayspot.data.model.ProfileNotificationPreferences
 import com.example.wayspot.data.model.UserProfile
+import com.example.wayspot.data.model.AuthFailure
 
 data class EditProfileState(
     val originalProfile: UserProfile? = null,
@@ -18,5 +19,8 @@ data class EditProfileState(
             likesReceived = false
         ),
     val isSaveEnabled: Boolean = false,
-    val isDeleteConfirmationVisible: Boolean = false
+    val isDeleteConfirmationVisible: Boolean = false,
+    val deletePassword: String = "",
+    val deleteFailure: AuthFailure? = null,
+    val isDeleting: Boolean = false
 )

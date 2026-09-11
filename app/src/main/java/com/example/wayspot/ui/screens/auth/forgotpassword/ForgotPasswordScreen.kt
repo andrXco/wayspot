@@ -17,16 +17,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.auth.forgotpassword.components.ForgotPasswordActionsSection
 import com.example.wayspot.ui.screens.auth.forgotpassword.components.ForgotPasswordFormSection
 import com.example.wayspot.ui.screens.auth.forgotpassword.components.ForgotPasswordHeader
 import com.example.wayspot.ui.theme.WayspotTheme
+import com.example.wayspot.ui.screens.auth.messageRes
+import androidx.compose.material3.Text
 
 @Composable
 fun ForgotPasswordScreen(
     forgotPasswordViewModel: ForgotPasswordViewModel,
-    onSendClick: () -> Unit,
     onBackToLoginClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -40,8 +42,10 @@ fun ForgotPasswordScreen(
             forgotPasswordViewModel.updateEmail(it)
         },
 
-        onSendClick = onSendClick,
+        onSendClick = forgotPasswordViewModel::sendReset,
         onBackToLoginClick = onBackToLoginClick,
+        isLoading = state.isLoading,
+        message = if (state.isSent) stringResource(com.example.wayspot.R.string.auth_reset_sent) else state.failure?.let { stringResource(it.messageRes()) },
         modifier = modifier
     )
 }
@@ -52,6 +56,8 @@ fun ForgotPasswordContent(
     onEmailChange: (String) -> Unit,
     onSendClick: () -> Unit,
     onBackToLoginClick: () -> Unit,
+    isLoading: Boolean,
+    message: String?,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -74,6 +80,7 @@ fun ForgotPasswordContent(
         ForgotPasswordHeader(
             modifier = Modifier.fillMaxWidth()
         )
+        if (message != null) { Text(text = message, color = if (message == stringResource(com.example.wayspot.R.string.auth_reset_sent)) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error) }
 
         Spacer(
             modifier = Modifier.height(24.dp)
@@ -83,6 +90,7 @@ fun ForgotPasswordContent(
             email = email,
             onEmailChange = onEmailChange,
             onSendClick = onSendClick,
+            isLoading = isLoading,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -102,6 +110,7 @@ private fun ForgotPasswordPreview() {
             onEmailChange = {},
             onSendClick = {},
             onBackToLoginClick = {}
+            , isLoading = false, message = null
         )
     }
 }

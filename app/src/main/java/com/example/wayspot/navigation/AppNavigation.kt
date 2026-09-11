@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -41,7 +42,7 @@ fun AppNavigation(
     modifier: Modifier = Modifier
 ) {
 
-    val appNavigationViewModel: AppNavigationViewModel = viewModel()
+    val appNavigationViewModel: AppNavigationViewModel = hiltViewModel()
 
     val appNavigationState by appNavigationViewModel.uiState.collectAsState()
     val userProfile = appNavigationState.userProfile ?: return
@@ -55,14 +56,10 @@ fun AppNavigation(
 
         composable(Screen.ForgotPassword.route) {
 
-            val forgotPasswordViewModel: ForgotPasswordViewModel = viewModel()
+            val forgotPasswordViewModel: ForgotPasswordViewModel = hiltViewModel()
 
             ForgotPasswordScreen(
                 forgotPasswordViewModel = forgotPasswordViewModel,
-
-                onSendClick = {
-                },
-
                 onBackToLoginClick = {
                     navController.navigate(
                         Screen.Login.route
@@ -102,7 +99,7 @@ fun AppNavigation(
 
         composable(Screen.EditProfile.route) {
 
-            val editProfileViewModel: EditProfileViewModel = viewModel()
+            val editProfileViewModel: EditProfileViewModel = hiltViewModel()
 
             EditProfileScreen(
                 editProfileViewModel = editProfileViewModel,
@@ -137,7 +134,7 @@ fun AppNavigation(
 
         composable(Screen.Profile.route) {
 
-            val profileViewModel: ProfileViewModel = viewModel()
+            val profileViewModel: ProfileViewModel = hiltViewModel()
 
             ProfileScreen(
                 profileViewModel = profileViewModel,
@@ -153,7 +150,8 @@ fun AppNavigation(
                     navController.navigate(
                         Screen.SavedPlaces.route
                     )
-                }
+                },
+                onSignOutClick = { navController.navigate(Screen.Login.route) { popUpTo(0) { inclusive = true } } }
             )
         }
 
@@ -225,7 +223,6 @@ fun AppNavigation(
                 onLoginClick = {
                     navController.navigate(Screen.Login.route)
                 },
-
                 onSignUpClick = {
                     navController.navigate(Screen.SignUp.route)
                 }
@@ -234,16 +231,11 @@ fun AppNavigation(
 
         composable(Screen.Login.route) {
 
-            val loginViewModel: LoginViewModel = viewModel()
+            val loginViewModel: LoginViewModel = hiltViewModel()
 
             LoginScreen(
                 loginViewModel = loginViewModel,
-
-                onLoginClick = {
-                    navController.navigate(
-                        Screen.Home.route
-                    )
-                },
+                onAuthenticated = { navController.navigate(Screen.Home.route) { popUpTo(0) { inclusive = true } } },
 
                 onSignUpClick = {
                     navController.navigate(
@@ -295,20 +287,11 @@ fun AppNavigation(
 
         composable(Screen.SignUp.route) {
 
-            val signUpViewModel: SignUpViewModel = viewModel()
+            val signUpViewModel: SignUpViewModel = hiltViewModel()
 
             SignUpScreen(
                 signUpViewModel = signUpViewModel,
-
-                onSignUpClick = {
-                    navController.navigate(
-                        Screen.Home.route
-                    ) {
-                        popUpTo(0) {
-                            inclusive = true
-                        }
-                    }
-                },
+                onAuthenticated = { navController.navigate(Screen.Home.route) { popUpTo(0) { inclusive = true } } },
 
                 onBackToLoginClick = {
                     navController.navigate(

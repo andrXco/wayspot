@@ -13,9 +13,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.example.wayspot.R
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.data.model.HomeCategoryId
@@ -78,18 +77,17 @@ fun HomeContent(
     onPlaceClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     val placesById = state.places.associateBy { place -> place.id }
     val visibleReviews = state.reviews.filter { review ->
         val place = placesById[review.placeId] ?: return@filter false
         HomeRules.matchesSearch(
             query = state.searchQuery,
             candidates = listOf(
-                context.getString(review.authorNameRes),
-                context.getString(review.authorHandleRes),
-                context.getString(review.bodyRes),
-                context.getString(place.tituloRes),
-                context.getString(place.ubicacionRes)
+                stringResource(review.authorNameRes),
+                stringResource(review.authorHandleRes),
+                stringResource(review.bodyRes),
+                stringResource(place.tituloRes),
+                stringResource(place.ubicacionRes)
             )
         )
     }
@@ -170,14 +168,6 @@ fun HomeContent(
             }
         }
     }
-}
-
-private enum class HomeSectionKey {
-    INTRO,
-    CATEGORIES,
-    FEATURED,
-    REVIEWS_HEADER,
-    EMPTY_REVIEWS
 }
 
 @WayspotMultiPreview

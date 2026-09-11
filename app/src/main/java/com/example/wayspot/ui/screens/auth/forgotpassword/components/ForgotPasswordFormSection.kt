@@ -25,6 +25,7 @@ fun ForgotPasswordFormSection(
     email: String,
     onEmailChange: (String) -> Unit,
     onSendClick: () -> Unit,
+    isLoading: Boolean,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -50,6 +51,7 @@ fun ForgotPasswordFormSection(
 
         Button(
             onClick = onSendClick,
+            enabled = !isLoading,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(54.dp),

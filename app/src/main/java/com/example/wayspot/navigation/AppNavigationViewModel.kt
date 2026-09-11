@@ -1,22 +1,50 @@
 package com.example.wayspot.navigation
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.model.Place
 import com.example.wayspot.data.model.SavedPlaceList
 import com.example.wayspot.data.model.SavedPlacesRules
 import com.example.wayspot.data.model.UserProfile
+import com.example.wayspot.data.model.AuthStatus
+import com.example.wayspot.data.repository.AuthRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
-class AppNavigationViewModel : ViewModel() {
+@HiltViewModel
+class AppNavigationViewModel @Inject constructor(
+    authRepository: AuthRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AppNavigationState())
     val uiState: StateFlow<AppNavigationState> = _uiState
 
     init {
         loadInitialData()
+        viewModelScope.launch {
+            authRepository.authStatus.collect { status ->
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        authStatus = status,
+                        userProfile = if (status is AuthStatus.Authenticated) {
+                            currentState.userProfile?.copy(
+                                username = status.session.username ?: currentState.userProfile.username,
+                                email = status.session.email,
+                                isVerified = status.session.isEmailVerified
+                            )
+                        } else {
+                            currentState.userProfile
+                        }
+                    )
+                }
+            }
+        }
     }
 
     private fun loadInitialData() {

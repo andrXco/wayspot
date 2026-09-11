@@ -1,13 +1,20 @@
 package com.example.wayspot.ui.screens.profile
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.model.UserProfile
+import com.example.wayspot.data.repository.AuthRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
-class ProfileViewModel : ViewModel() {
+@HiltViewModel
+class ProfileViewModel @Inject constructor(
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileState())
 
@@ -32,4 +39,6 @@ class ProfileViewModel : ViewModel() {
             )
         }
     }
+
+    fun signOut() { authRepository.signOut() }
 }

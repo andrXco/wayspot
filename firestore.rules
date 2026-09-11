@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow create: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.uid == userId
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.username is string
+        && request.resource.data.usernameNormalized is string
+        && getAfter(/databases/$(database)/documents/usernames/$(request.resource.data.usernameNormalized)).data.uid == request.auth.uid
+        && !exists(/databases/$(database)/documents/users/$(userId));
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.email == resource.data.email
+        && request.resource.data.username == resource.data.username
+        && request.resource.data.usernameNormalized == resource.data.usernameNormalized;
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    match /usernames/{username} {
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && !exists(/databases/$(database)/documents/usernames/$(username))
+        && getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.usernameNormalized == username;
+      allow get: if request.auth != null;
+      allow update: if false;
+      allow delete: if request.auth != null && resource.data.uid == request.auth.uid;
+      allow list: if false;
+    }
+
+    match /{document=**} { allow read, write: if false; }
+  }
+}

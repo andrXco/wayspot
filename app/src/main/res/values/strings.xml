@@ -1,4 +1,24 @@
 <resources>
+    <string name="auth_error_empty_fields">Completa todos los campos obligatorios.</string>
+    <string name="auth_error_invalid_email">Ingresa un correo electrónico válido.</string>
+    <string name="auth_error_invalid_password">La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula y un número.</string>
+    <string name="auth_error_password_mismatch">Las contraseñas no coinciden.</string>
+    <string name="auth_error_terms">Debes aceptar los términos para continuar.</string>
+    <string name="auth_error_email_in_use">Este correo ya está registrado.</string>
+    <string name="auth_error_username_in_use">Este nombre de usuario ya está registrado.</string>
+    <string name="auth_error_invalid_credentials">Correo, contraseña o nombre de usuario no válidos.</string>
+    <string name="auth_error_network">No fue posible conectar. Revisa tu conexión e inténtalo de nuevo.</string>
+    <string name="auth_error_recent_login">Por seguridad, vuelve a autenticarte para continuar.</string>
+    <string name="auth_error_unknown">No fue posible completar la operación. Inténtalo de nuevo.</string>
+    <string name="auth_loading">Procesando…</string>
+    <string name="auth_reset_sent">Si el correo está registrado, recibirás un enlace de recuperación.</string>
+    <string name="verify_email_title">Verifica tu correo</string>
+    <string name="verify_email_message">Enviamos un enlace de verificación a %1$s. Abre tu correo y vuelve para continuar.</string>
+    <string name="verify_email_refresh">Ya verifiqué mi correo</string>
+    <string name="verify_email_resend">Reenviar correo</string>
+    <string name="verify_email_sign_out">Cerrar sesión</string>
+    <string name="verify_email_sent">Correo de verificación enviado.</string>
+    <string name="auth_sign_out">Cerrar sesión</string>
     <string name="app_name">wayspot</string>
     <string name="welcome_message">Bienvenido a %1$s</string>
     <string name="logo_content_description">Logo wayspot</string>

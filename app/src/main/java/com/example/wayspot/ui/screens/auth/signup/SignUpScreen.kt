@@ -24,15 +24,21 @@
     import com.example.wayspot.ui.screens.auth.signup.components.SignUpFormSection
     import com.example.wayspot.ui.theme.WayspotTheme
     import androidx.compose.runtime.collectAsState
+    import androidx.compose.runtime.LaunchedEffect
+    import com.example.wayspot.ui.screens.auth.messageRes
+    import kotlinx.coroutines.flow.collect
 
     @Composable
     fun SignUpScreen(
         signUpViewModel: SignUpViewModel,
-        onSignUpClick: () -> Unit,
+        onAuthenticated: () -> Unit,
         onBackToLoginClick: () -> Unit,
         modifier: Modifier = Modifier
     ) {
         val state by signUpViewModel.uiState.collectAsState()
+        LaunchedEffect(signUpViewModel) {
+            signUpViewModel.events.collect { onAuthenticated() }
+        }
 
         SignUpContent(
             nombre = state.nombre,
@@ -57,8 +63,10 @@
             onTermsAcceptedChange = {
                 signUpViewModel.updateTermsAccepted(it)
             },
-            onSignUpClick = onSignUpClick,
+            onSignUpClick = signUpViewModel::signUp,
             onBackToLoginClick = onBackToLoginClick,
+            isLoading = state.isLoading,
+            errorMessage = state.failure?.let { stringResource(it.messageRes()) },
             modifier = modifier
         )
     }
@@ -81,6 +89,8 @@
         onTermsAcceptedChange: (Boolean) -> Unit,
         onSignUpClick: () -> Unit,
         onBackToLoginClick: () -> Unit,
+        isLoading: Boolean,
+        errorMessage: String?,
         modifier: Modifier = Modifier
     ) {
         val passwordsDoNotMatch = confirmarContrasena.isNotEmpty() &&
@@ -127,6 +137,8 @@
                 signUpEnabled = termsAccepted && !passwordsDoNotMatch,
                 onSignUpClick = onSignUpClick,
                 onBackToLoginClick = onBackToLoginClick,
+                isLoading = isLoading,
+                errorMessage = errorMessage,
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -153,6 +165,7 @@
                 onTermsAcceptedChange = {},
                 onSignUpClick = {},
                 onBackToLoginClick = {}
+                , isLoading = false, errorMessage = null
             )
         }
     }

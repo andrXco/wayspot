@@ -14,6 +14,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +41,8 @@ internal fun SignUpActionsSection(
     signUpEnabled: Boolean,
     onSignUpClick: () -> Unit,
     onBackToLoginClick: () -> Unit,
+    isLoading: Boolean,
+    errorMessage: String?,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -54,8 +57,10 @@ internal fun SignUpActionsSection(
         Spacer(modifier = Modifier.height(18.dp))
         SignUpActionButton(
             onClick = onSignUpClick,
-            enabled = signUpEnabled
+            enabled = signUpEnabled && !isLoading
         )
+        if (isLoading) { CircularProgressIndicator(modifier = Modifier.padding(top = 12.dp)) }
+        if (errorMessage != null) { Text(text = errorMessage, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 12.dp)) }
         Spacer(modifier = Modifier.height(18.dp))
         AuthSwitchPrompt(
             prompt = stringResource(R.string.already_have_account_prompt),
@@ -225,6 +230,8 @@ private fun SignUpActionsSectionPreview() {
             signUpEnabled = true,
             onSignUpClick = {},
             onBackToLoginClick = {},
+            isLoading = false,
+            errorMessage = null,
             modifier = Modifier.padding(16.dp)
         )
     }

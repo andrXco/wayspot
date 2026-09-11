@@ -17,7 +17,8 @@ fun ProfileScreen(
     userProfile: UserProfile,
     modifier: Modifier = Modifier,
     onEditProfileClick: () -> Unit = {},
-    onSavedPlacesClick: () -> Unit = {}
+    onSavedPlacesClick: () -> Unit = {},
+    onSignOutClick: () -> Unit = {}
 ) {
     val state by profileViewModel.uiState.collectAsState()
 
@@ -31,6 +32,7 @@ fun ProfileScreen(
             reviews = state.reviews,
             onEditProfileClick = onEditProfileClick,
             onSavedPlacesClick = onSavedPlacesClick,
+            onSignOutClick = { profileViewModel.signOut(); onSignOutClick() },
             modifier = modifier
         )
     }
@@ -44,7 +46,8 @@ private fun ProfileScreenPreview() {
             user = PreviewData.userProfile,
             reviews = PreviewData.listReviews,
             onEditProfileClick = {},
-            onSavedPlacesClick = {}
+            onSavedPlacesClick = {},
+            onSignOutClick = {}
         )
     }
 }

@@ -19,6 +19,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.example.wayspot.ui.screens.auth.messageRes
+import androidx.compose.ui.res.stringResource
+import kotlinx.coroutines.flow.collect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.data.local.PreviewData
@@ -49,6 +52,7 @@ fun EditProfileScreen(
     LaunchedEffect(profile) {
         editProfileViewModel.loadProfile(profile)
     }
+    LaunchedEffect(editProfileViewModel) { editProfileViewModel.events.collect { onDeleteAccountConfirmed() } }
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
@@ -117,9 +121,12 @@ fun EditProfileScreen(
             editProfileViewModel.hideDeleteConfirmation()
         },
         onDeleteAccountConfirmed = {
-            editProfileViewModel.hideDeleteConfirmation()
-            onDeleteAccountConfirmed()
+            editProfileViewModel.deleteAccount()
         },
+        deletePassword = state.deletePassword,
+        onDeletePasswordChange = editProfileViewModel::updateDeletePassword,
+        isDeleting = state.isDeleting,
+        deleteErrorMessage = state.deleteFailure?.let { stringResource(it.messageRes()) },
         modifier = modifier
     )
 }
@@ -148,6 +155,10 @@ fun EditProfileContent(
     isDeleteConfirmationVisible: Boolean,
     onDeleteConfirmationDismiss: () -> Unit,
     onDeleteAccountConfirmed: () -> Unit,
+    deletePassword: String,
+    onDeletePasswordChange: (String) -> Unit,
+    isDeleting: Boolean,
+    deleteErrorMessage: String?,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -223,7 +234,11 @@ fun EditProfileContent(
         if (isDeleteConfirmationVisible) {
             EditProfileDeleteConfirmationDialog(
                 onDismissRequest = onDeleteConfirmationDismiss,
-                onConfirmClick = onDeleteAccountConfirmed
+                onConfirmClick = onDeleteAccountConfirmed,
+                password = deletePassword,
+                onPasswordChange = onDeletePasswordChange,
+                isLoading = isDeleting,
+                errorMessage = deleteErrorMessage
             )
         }
     }
@@ -258,6 +273,7 @@ private fun EditProfileScreenPreview() {
             isDeleteConfirmationVisible = false,
             onDeleteConfirmationDismiss = {},
             onDeleteAccountConfirmed = {}
+            , deletePassword = "", onDeletePasswordChange = {}, isDeleting = false, deleteErrorMessage = null
         )
     }
 }
