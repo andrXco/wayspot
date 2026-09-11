@@ -3,6 +3,7 @@ package com.example.wayspot.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -11,6 +12,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.wayspot.data.model.AuthStatus
 import com.example.wayspot.ui.screens.auth.forgotpassword.ForgotPasswordScreen
 import com.example.wayspot.ui.screens.auth.login.LoginScreen
 import com.example.wayspot.ui.screens.auth.login.LoginViewModel
@@ -45,12 +47,22 @@ fun AppNavigation(
     val appNavigationViewModel: AppNavigationViewModel = hiltViewModel()
 
     val appNavigationState by appNavigationViewModel.uiState.collectAsState()
+    val authStatus = appNavigationState.authStatus
+    if (authStatus is AuthStatus.Loading) return
+
+    val startDestination = remember {
+        when (authStatus) {
+            is AuthStatus.Authenticated -> Screen.Home.route
+            AuthStatus.SignedOut -> Screen.Splash.route
+            AuthStatus.Loading -> Screen.Splash.route
+        }
+    }
     val userProfile = appNavigationState.userProfile ?: return
     val savedPlaces = appNavigationState.savedPlaces
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Splash.route,
+        startDestination = startDestination,
         modifier = modifier
     ) {
 
@@ -125,9 +137,9 @@ fun AppNavigation(
                     appNavigationViewModel.resetUserProfile()
                     appNavigationViewModel.resetSavedPlaces()
 
-                    navController.navigate(
-                        Screen.Login.route
-                    )
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
                 }
             )
         }
