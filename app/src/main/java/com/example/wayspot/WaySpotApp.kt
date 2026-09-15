@@ -5,6 +5,10 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.Color as AndroidColor
 import android.os.Build
+import android.view.animation.DecelerateInterpolator
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -22,12 +26,34 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import androidx.core.splashscreen.SplashScreen
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.wayspot.navigation.AppNavigation
 import com.example.wayspot.navigation.Screen
 import com.example.wayspot.ui.components.WayspotBottomBar
 import com.example.wayspot.ui.theme.WayspotTheme
+
+internal fun ComponentActivity.setWaySpotContent() {
+    enableEdgeToEdge()
+    setContent {
+        WaySpotApp()
+    }
+}
+
+internal fun SplashScreen.configureWaySpotExitAnimation() {
+    setOnExitAnimationListener { splashScreenView ->
+        splashScreenView.view
+            .animate()
+            .alpha(0f)
+            .setDuration(SYSTEM_SPLASH_EXIT_DURATION_MS)
+            .setInterpolator(DecelerateInterpolator())
+            .withEndAction {
+                splashScreenView.remove()
+            }
+            .start()
+    }
+}
 
 @Composable
 fun WaySpotApp(
@@ -116,6 +142,8 @@ private val edgeToEdgeRoutes = setOf(
     Screen.Splash.route,
     Screen.Profile.route
 )
+
+private const val SYSTEM_SPLASH_EXIT_DURATION_MS = 450L
 
 private tailrec fun Context.findActivity(): Activity? = when (this) {
     is Activity -> this
