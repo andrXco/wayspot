@@ -221,13 +221,25 @@ fun AppNavigation(
 
             SplashScreen(
                 splashViewModel = splashViewModel,
-
+                onAuthenticated = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Splash.route) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
+                },
                 onLoginClick = {
-                    navController.navigate(Screen.Login.route)
+                    navController.navigate(Screen.Login.route){
+                        popUpTo(0) {inclusive = true}
+                    }
                 },
 
                 onSignUpClick = {
-                    navController.navigate(Screen.SignUp.route)
+                    navController.navigate(Screen.SignUp.route){
+                        popUpTo(0) {inclusive = true}
+
+                    }
                 }
             )
         }
