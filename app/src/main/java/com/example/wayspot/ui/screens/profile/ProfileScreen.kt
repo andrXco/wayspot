@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 fun ProfileScreen(
     profileViewModel: ProfileViewModel,
     userProfile: UserProfile,
+    onSignOut: () -> Unit,
     modifier: Modifier = Modifier,
     onEditProfileClick: () -> Unit = {},
     onSavedPlacesClick: () -> Unit = {}
@@ -31,6 +32,10 @@ fun ProfileScreen(
             reviews = state.reviews,
             onEditProfileClick = onEditProfileClick,
             onSavedPlacesClick = onSavedPlacesClick,
+            onSignOutClick = {
+                profileViewModel.signOut()
+                onSignOut()
+            },
             modifier = modifier
         )
     }
@@ -44,7 +49,8 @@ private fun ProfileScreenPreview() {
             user = PreviewData.userProfile,
             reviews = PreviewData.listReviews,
             onEditProfileClick = {},
-            onSavedPlacesClick = {}
+            onSavedPlacesClick = {},
+            onSignOutClick = {}
         )
     }
 }
