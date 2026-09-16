@@ -26,6 +26,9 @@
     <string name="button_signup">Registrarse</string>
     <string name="button_already_have_account">¿Ya tienes cuenta? Inicia sesión</string>
     <string name="auth_login_tagline">Tu próximo destino te espera</string>
+    <string name="auth_login_error_title">No se pudo iniciar sesión</string>
+    <string name="auth_login_invalid_credentials">El correo o la contraseña son incorrectos. Verifica tus datos e inténtalo de nuevo.</string>
+    <string name="auth_error_dismiss">Aceptar</string>
     <string name="auth_signup_tagline">Comienza tu próxima aventura de viaje</string>
     <string name="email_placeholder">tu@correo.com</string>
     <string name="password_placeholder">Ingresa tu contraseña</string>
