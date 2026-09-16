@@ -23,6 +23,7 @@ fun ProfileContent(
     reviews: List<Review>,
     onEditProfileClick: () -> Unit,
     onSavedPlacesClick: () -> Unit,
+    onSignOutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -104,6 +105,18 @@ fun ProfileContent(
             ProfileReviewItem(
                 review = review,
                 modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        item {
+            ProfileSignOutButton(
+                onClick = onSignOutClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 32.dp,
+                        vertical = 16.dp
+                    )
             )
         }
     }
