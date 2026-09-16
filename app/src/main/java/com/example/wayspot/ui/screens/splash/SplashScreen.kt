@@ -30,11 +30,20 @@ import kotlinx.coroutines.delay
 @Composable
 fun SplashScreen(
     splashViewModel: SplashViewModel,
+    onAuthenticated: () -> Unit,
     onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by splashViewModel.uiState.collectAsState()
+    val navigateHome by splashViewModel.navigateHome.collectAsState()
+
+    LaunchedEffect(navigateHome) {
+        if (navigateHome) {
+            splashViewModel.onNavigationHandled()
+            onAuthenticated()
+        }
+    }
 
     val isDarkTheme = isSystemInDarkTheme()
     val colorScheme = MaterialTheme.colorScheme

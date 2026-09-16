@@ -12,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -35,6 +36,14 @@ fun LoginScreen(
     onGoogleClick: () -> Unit = {}
 ) {
     val state by loginViewModel.uiState.collectAsState()
+    val navigateToHome by loginViewModel.navigateToHome.collectAsState()
+
+    LaunchedEffect(navigateToHome) {
+        if (navigateToHome) {
+            onLoginClick()
+            loginViewModel.onNavigationHandled()
+        }
+    }
 
     LoginContent(
         usuario = state.usuario,
@@ -49,7 +58,7 @@ fun LoginScreen(
         onTogglePasswordVisibility = {
             loginViewModel.togglePasswordVisibility()
         },
-        onLoginClick = onLoginClick,
+        onLoginClick = loginViewModel::signIn,
         onSignUpClick = onSignUpClick,
         onForgotPasswordClick = onForgotPasswordClick,
         onGoogleClick = onGoogleClick,
