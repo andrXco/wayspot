@@ -23,6 +23,7 @@ import com.example.wayspot.R
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.auth.components.AuthHeader
 import com.example.wayspot.ui.screens.auth.login.components.LoginActionsSection
+import com.example.wayspot.ui.screens.auth.login.components.LoginErrorDialog
 import com.example.wayspot.ui.screens.auth.login.components.LoginFormSection
 import com.example.wayspot.ui.theme.WayspotTheme
 
@@ -37,6 +38,7 @@ fun LoginScreen(
 ) {
     val state by loginViewModel.uiState.collectAsState()
     val navigateToHome by loginViewModel.navigateToHome.collectAsState()
+    val mostrarMensajeError by loginViewModel.mostrarMensajeError.collectAsState()
 
     LaunchedEffect(navigateToHome) {
         if (navigateToHome) {
@@ -55,6 +57,8 @@ fun LoginScreen(
             loginViewModel.updateContrasena(it)
         },
         passwordVisible = state.passwordVisible,
+        mostrarMensajeError = mostrarMensajeError,
+        onDismissError = loginViewModel::dismissError,
         onTogglePasswordVisibility = {
             loginViewModel.togglePasswordVisibility()
         },
@@ -73,6 +77,8 @@ fun LoginContent(
     contrasena: String,
     onContrasenaChange: (String) -> Unit,
     passwordVisible: Boolean,
+    mostrarMensajeError: Boolean,
+    onDismissError: () -> Unit,
     onTogglePasswordVisibility: () -> Unit,
     onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
@@ -80,6 +86,12 @@ fun LoginContent(
     onGoogleClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    if (mostrarMensajeError) {
+        LoginErrorDialog(
+            onDismissRequest = onDismissError
+        )
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -126,6 +138,8 @@ private fun LoginPreview() {
             contrasena = "",
             onContrasenaChange = {},
             passwordVisible = false,
+            mostrarMensajeError = false,
+            onDismissError = {},
             onTogglePasswordVisibility = {},
             onLoginClick = {},
             onSignUpClick = {},
