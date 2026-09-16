@@ -2,11 +2,14 @@
 
     import androidx.lifecycle.ViewModel
     import com.example.wayspot.data.local.PreviewData
+    import dagger.hilt.android.lifecycle.HiltViewModel
+    import javax.inject.Inject
     import kotlinx.coroutines.flow.MutableStateFlow
     import kotlinx.coroutines.flow.StateFlow
     import kotlinx.coroutines.flow.update
 
-    class NotificationsViewModel : ViewModel() {
+    @HiltViewModel
+    class NotificationsViewModel @Inject constructor() : ViewModel() {
 
         private val _uiState = MutableStateFlow(NotificationsState())
 

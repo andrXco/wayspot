@@ -12,6 +12,7 @@
     import androidx.compose.foundation.verticalScroll
     import androidx.compose.material3.MaterialTheme
     import androidx.compose.runtime.Composable
+    import androidx.compose.runtime.LaunchedEffect
     import androidx.compose.runtime.getValue
     import androidx.compose.ui.Alignment
     import androidx.compose.ui.Modifier
@@ -33,6 +34,14 @@
         modifier: Modifier = Modifier
     ) {
         val state by signUpViewModel.uiState.collectAsState()
+        val navigateToHome by signUpViewModel.navigateToHome.collectAsState()
+
+        LaunchedEffect(navigateToHome) {
+            if (navigateToHome) {
+                onSignUpClick()
+                signUpViewModel.onNavigationHandled()
+            }
+        }
 
         SignUpContent(
             nombre = state.nombre,
@@ -57,7 +66,7 @@
             onTermsAcceptedChange = {
                 signUpViewModel.updateTermsAccepted(it)
             },
-            onSignUpClick = onSignUpClick,
+            onSignUpClick = signUpViewModel::signUp,
             onBackToLoginClick = onBackToLoginClick,
             modifier = modifier
         )
