@@ -67,6 +67,7 @@ fun WaySpotApp(
         val drawsBehindNavigationBar = currentRoute == Screen.Splash.route
         val useDarkStatusBarIcons = when (currentRoute) {
             Screen.Splash.route -> false
+            Screen.PlaceDetail.route -> false
             Screen.Profile.route -> MaterialTheme.colorScheme.primary.luminance() > 0.5f
             else -> MaterialTheme.colorScheme.background.luminance() > 0.5f
         }
@@ -140,6 +141,7 @@ private val bottomBarRoutes = setOf(
 
 private val edgeToEdgeRoutes = setOf(
     Screen.Splash.route,
+    Screen.PlaceDetail.route,
     Screen.Profile.route
 )
 
