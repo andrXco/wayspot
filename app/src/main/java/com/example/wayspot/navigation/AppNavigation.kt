@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -41,7 +41,7 @@ fun AppNavigation(
     modifier: Modifier = Modifier
 ) {
 
-    val appNavigationViewModel: AppNavigationViewModel = viewModel()
+    val appNavigationViewModel: AppNavigationViewModel = hiltViewModel()
 
     val appNavigationState by appNavigationViewModel.uiState.collectAsState()
     val userProfile = appNavigationState.userProfile ?: return
@@ -55,7 +55,7 @@ fun AppNavigation(
 
         composable(Screen.ForgotPassword.route) {
 
-            val forgotPasswordViewModel: ForgotPasswordViewModel = viewModel()
+            val forgotPasswordViewModel: ForgotPasswordViewModel = hiltViewModel()
 
             ForgotPasswordScreen(
                 forgotPasswordViewModel = forgotPasswordViewModel,
@@ -73,7 +73,7 @@ fun AppNavigation(
 
         composable(Screen.SavedPlaces.route) {
 
-            val savedPlacesViewModel: SavedPlacesViewModel = viewModel()
+            val savedPlacesViewModel: SavedPlacesViewModel = hiltViewModel()
 
             SavedPlacesScreen(
                 savedPlacesViewModel = savedPlacesViewModel,
@@ -102,7 +102,7 @@ fun AppNavigation(
 
         composable(Screen.EditProfile.route) {
 
-            val editProfileViewModel: EditProfileViewModel = viewModel()
+            val editProfileViewModel: EditProfileViewModel = hiltViewModel()
 
             EditProfileScreen(
                 editProfileViewModel = editProfileViewModel,
@@ -137,7 +137,7 @@ fun AppNavigation(
 
         composable(Screen.Profile.route) {
 
-            val profileViewModel: ProfileViewModel = viewModel()
+            val profileViewModel: ProfileViewModel = hiltViewModel()
 
             ProfileScreen(
                 profileViewModel = profileViewModel,
@@ -159,7 +159,7 @@ fun AppNavigation(
 
         composable(Screen.Explore.route) {
 
-            val exploreViewModel: ExploreViewModel = viewModel()
+            val exploreViewModel: ExploreViewModel = hiltViewModel()
 
             ExploreScreen(
                 exploreViewModel = exploreViewModel,
@@ -194,7 +194,7 @@ fun AppNavigation(
 
             if (placeId != null) {
 
-                val placeDetailViewModel: PlaceDetailViewModel = viewModel()
+                val placeDetailViewModel: PlaceDetailViewModel = hiltViewModel()
 
                 PlaceDetailScreen(
                     placeDetailViewModel = placeDetailViewModel,
@@ -217,7 +217,7 @@ fun AppNavigation(
 
         composable(Screen.Splash.route) {
 
-            val splashViewModel: SplashViewModel = viewModel()
+            val splashViewModel: SplashViewModel = hiltViewModel()
 
             SplashScreen(
                 splashViewModel = splashViewModel,
@@ -234,7 +234,7 @@ fun AppNavigation(
 
         composable(Screen.Login.route) {
 
-            val loginViewModel: LoginViewModel = viewModel()
+            val loginViewModel: LoginViewModel = hiltViewModel()
 
             LoginScreen(
                 loginViewModel = loginViewModel,
@@ -261,7 +261,7 @@ fun AppNavigation(
 
         composable(Screen.Notifications.route) {
 
-            val notificationsViewModel: NotificationsViewModel = viewModel()
+            val notificationsViewModel: NotificationsViewModel = hiltViewModel()
 
             NotificationsScreen(
                 notificationsViewModel = notificationsViewModel,
@@ -276,7 +276,7 @@ fun AppNavigation(
 
         composable(Screen.Home.route) {
 
-            val homeViewModel: HomeViewModel = viewModel()
+            val homeViewModel: HomeViewModel = hiltViewModel()
 
             HomeScreen(
                 homeViewModel = homeViewModel,
@@ -295,7 +295,7 @@ fun AppNavigation(
 
         composable(Screen.SignUp.route) {
 
-            val signUpViewModel: SignUpViewModel = viewModel()
+            val signUpViewModel: SignUpViewModel = hiltViewModel()
 
             SignUpScreen(
                 signUpViewModel = signUpViewModel,
@@ -332,7 +332,7 @@ fun AppNavigation(
 
             if (placeId != null) {
 
-                val newReviewViewModel: NewReviewViewModel = viewModel()
+                val newReviewViewModel: NewReviewViewModel = hiltViewModel()
 
                 NewReviewScreen(
                     newReviewViewModel = newReviewViewModel,
