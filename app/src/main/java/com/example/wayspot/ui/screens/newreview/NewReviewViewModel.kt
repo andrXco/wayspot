@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
+/** Mantiene el borrador de reseña normalizado y deriva cuándo puede publicarse. */
 @HiltViewModel
 class NewReviewViewModel @Inject constructor() : ViewModel() {
 

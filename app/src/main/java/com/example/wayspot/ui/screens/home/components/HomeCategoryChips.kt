@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.example.wayspot.data.model.HomeCategory
 import com.example.wayspot.data.model.HomeCategoryId
 
+/** Selector horizontal de categorías para filtrar los planes destacados de inicio. */
 @Composable
 fun HomeCategoryChips(
     categories: List<HomeCategory>,

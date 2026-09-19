@@ -28,6 +28,7 @@ import com.example.wayspot.ui.screens.splash.components.SplashDestinationChipsSe
 import com.example.wayspot.ui.theme.WayspotTheme
 import kotlinx.coroutines.delay
 
+/** Resuelve la ruta inicial de sesión y prepara los colores adaptados al tema para la bienvenida. */
 @Composable
 fun SplashScreen(
     splashViewModel: SplashViewModel,
@@ -98,6 +99,7 @@ fun SplashScreen(
     }
 }
 
+/** Presenta el fondo, la animación de entrada y las acciones de acceso de la bienvenida. */
 @Composable
 fun SplashContent(
     foregroundColor: Color,

@@ -31,6 +31,7 @@ import com.example.wayspot.ui.screens.home.components.HomeReviewsEmptyState
 import com.example.wayspot.ui.screens.home.components.HomeReviewsHeader
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Adaptador de inicio entre [HomeViewModel], lugares guardados compartidos y contenido sin estado. */
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel,
@@ -62,6 +63,7 @@ fun HomeScreen(
     )
 }
 
+/** Renderiza las secciones de inicio a partir del estado recibido y propaga todas las acciones. */
 @Composable
 fun HomeContent(
     state: HomeState,

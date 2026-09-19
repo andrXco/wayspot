@@ -13,6 +13,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/** Provee las instancias de Firebase que consumen las capas de datos mediante Hilt. */
 @Module
 @InstallIn(SingletonComponent::class)
 class FirebaseHiltModule {

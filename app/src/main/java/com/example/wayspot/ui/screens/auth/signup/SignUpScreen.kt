@@ -26,6 +26,10 @@
     import com.example.wayspot.ui.theme.WayspotTheme
     import androidx.compose.runtime.collectAsState
 
+    /**
+     * Adapta el estado de registro a la interfaz y consume el evento de navegación al completar
+     * la creación de la cuenta.
+     */
     @Composable
     fun SignUpScreen(
         signUpViewModel: SignUpViewModel,
@@ -72,6 +76,7 @@
         )
     }
 
+    /** Contenido sin dependencia del ViewModel para composición y previsualización del formulario. */
     @Composable
     fun SignUpContent(
         nombre: String,

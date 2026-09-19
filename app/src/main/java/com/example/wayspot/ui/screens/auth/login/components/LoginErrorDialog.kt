@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.example.wayspot.R
 
+/** Diálogo local que comunica un fallo de autenticación sin exponer su detalle técnico. */
 @Composable
 internal fun LoginErrorDialog(
     onDismissRequest: () -> Unit,

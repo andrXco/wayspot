@@ -19,6 +19,7 @@ import com.example.wayspot.R
 import com.example.wayspot.ui.screens.auth.components.AuthPasswordField
 import com.example.wayspot.ui.screens.auth.components.AuthTextField
 
+/** Sección sin estado que reúne los campos y la validación visual de coincidencia de contraseñas. */
 @Composable
 internal fun SignUpFormSection(
     username: String,

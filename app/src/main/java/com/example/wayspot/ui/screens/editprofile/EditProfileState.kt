@@ -3,6 +3,7 @@ package com.example.wayspot.ui.screens.editprofile
 import com.example.wayspot.data.model.ProfileNotificationPreferences
 import com.example.wayspot.data.model.UserProfile
 
+/** Estado inmutable de la edición de perfil, incluida la validación y el diálogo destructivo. */
 data class EditProfileState(
     val originalProfile: UserProfile? = null,
     val initials: String = "",

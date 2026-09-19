@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
 
+/** Agrupa preferencias de notificación y comunica cada cambio al estado propietario. */
 @Composable
 fun EditProfileNotificationsSection(
     newFollowersEnabled: Boolean,

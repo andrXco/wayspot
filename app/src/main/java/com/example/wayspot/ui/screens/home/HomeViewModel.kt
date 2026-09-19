@@ -13,6 +13,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
+/**
+ * Carga el contenido de inicio y transforma las interacciones del carrusel y las reseñas en
+ * actualizaciones inmutables de [HomeState].
+ */
 @HiltViewModel
 class HomeViewModel @Inject constructor() : ViewModel() {
 

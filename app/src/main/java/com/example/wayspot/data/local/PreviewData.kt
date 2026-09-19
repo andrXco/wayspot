@@ -15,6 +15,7 @@ import com.example.wayspot.data.model.SavedPlaceList
 import com.example.wayspot.data.model.UserProfile
 import com.example.wayspot.data.model.UserStats
 
+/** Fuente centralizada de datos locales para previsualizaciones y flujos de interfaz no remotos. */
 object PreviewData {
     val savedPlaces = listOf(
         SavedPlace(

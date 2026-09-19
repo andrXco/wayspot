@@ -46,6 +46,7 @@ import com.example.wayspot.R
 import com.example.wayspot.data.model.ReviewRules
 import com.example.wayspot.data.model.SavedPlace
 
+/** Resume un destino guardado y expone acciones independientes para ver su detalle o retirarlo de la lista. */
 @Composable
 fun SavedPlaceCard(
     savedPlace: SavedPlace,

@@ -37,6 +37,7 @@ import com.example.wayspot.data.model.ReviewRules
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Gestiona visualmente la colección de fotografías del borrador mediante acciones elevadas. */
 @Composable
 fun ReviewPhotoSection(
     photoUris: List<String>,

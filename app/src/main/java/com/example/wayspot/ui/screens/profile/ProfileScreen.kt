@@ -11,6 +11,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 
+/** Sincroniza el perfil recibido con el ViewModel y conecta sus acciones de navegación. */
 @Composable
 fun ProfileScreen(
     profileViewModel: ProfileViewModel,

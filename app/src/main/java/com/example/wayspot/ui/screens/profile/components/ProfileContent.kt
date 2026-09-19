@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.example.wayspot.data.model.Review
 import com.example.wayspot.data.model.UserProfile
 
+/** Organiza la cabecera del perfil, sus accesos y el historial de reseñas en una lista con claves estables. */
 @Composable
 fun ProfileContent(
     user: UserProfile,

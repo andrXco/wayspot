@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
+/** Coordina la edición del perfil y aplica las reglas compartidas antes de exponer el estado. */
 @HiltViewModel
 class EditProfileViewModel @Inject constructor() : ViewModel() {
 

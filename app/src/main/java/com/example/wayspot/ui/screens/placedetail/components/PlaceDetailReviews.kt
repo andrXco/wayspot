@@ -30,6 +30,7 @@ import com.example.wayspot.data.model.PlaceReview
 import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Lista acotada de reseñas recientes y reenvía la solicitud para consultar el listado completo. */
 @Composable
 internal fun RecentReviewsSection(
     reviews: List<PlaceReview>,

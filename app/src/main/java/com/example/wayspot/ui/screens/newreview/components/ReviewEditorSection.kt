@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.example.wayspot.data.model.Place
 import com.example.wayspot.data.model.ReviewDraft
 
+/** Reúne las secciones del editor de reseña y mantiene sus cambios elevados al contenedor. */
 @Composable
 fun ReviewEditorSection(
     place: Place,

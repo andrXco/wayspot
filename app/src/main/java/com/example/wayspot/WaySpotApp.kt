@@ -34,6 +34,7 @@ import com.example.wayspot.navigation.Screen
 import com.example.wayspot.ui.components.WayspotBottomBar
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Configura edge-to-edge y delega el árbol Compose a la raíz única de la aplicación. */
 internal fun ComponentActivity.setWaySpotContent() {
     enableEdgeToEdge()
     setContent {
@@ -41,6 +42,7 @@ internal fun ComponentActivity.setWaySpotContent() {
     }
 }
 
+/** Aplica una salida breve al splash del sistema antes de liberar la vista subyacente. */
 internal fun SplashScreen.configureWaySpotExitAnimation() {
     setOnExitAnimationListener { splashScreenView ->
         splashScreenView.view
@@ -55,6 +57,12 @@ internal fun SplashScreen.configureWaySpotExitAnimation() {
     }
 }
 
+/**
+ * Raíz visual de WaySpot.
+ *
+ * Es propietaria del `NavController`, del único `Scaffold`, de las barras del sistema y de la
+ * política centralizada de insets para las rutas que se dibujan borde a borde.
+ */
 @Composable
 fun WaySpotApp(
     modifier: Modifier = Modifier

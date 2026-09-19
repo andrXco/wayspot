@@ -29,6 +29,7 @@ import com.example.wayspot.ui.screens.savedplaces.components.SavedPlacesEmptySta
 import com.example.wayspot.ui.screens.savedplaces.components.SavedPlacesHeader
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Localiza los términos de búsqueda y conecta los filtros del estado con la interfaz de lugares guardados. */
 @Composable
 fun SavedPlacesScreen(
     savedPlacesViewModel: SavedPlacesViewModel,
@@ -82,6 +83,7 @@ fun SavedPlacesScreen(
     )
 }
 
+/** Compone la búsqueda, categorías y lista vacía o filtrada de destinos guardados. */
 @Composable
 fun SavedPlacesContent(
     destinationCount: Int,

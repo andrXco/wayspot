@@ -3,6 +3,7 @@ package com.example.wayspot.data.model
 import androidx.annotation.StringRes
 import java.text.Normalizer
 
+/** Identificadores estables de las categorías que organizan el contenido destacado de inicio. */
 enum class HomeCategoryId {
     NATURE,
     GASTRONOMY,
@@ -11,11 +12,13 @@ enum class HomeCategoryId {
     ADVENTURE
 }
 
+/** Datos de presentación de una categoría de inicio. */
 data class HomeCategory(
     val id: HomeCategoryId,
     @param:StringRes val labelRes: Int
 )
 
+/** Vínculo entre un lugar destacado, su categoría y sus métricas iniciales de interacción. */
 data class HomeFeaturedPlan(
     val id: String,
     val placeId: String,
@@ -24,6 +27,7 @@ data class HomeFeaturedPlan(
     val initialLikeCount: Int
 )
 
+/** Reseña localizada que se muestra dentro del feed de inicio. */
 data class HomeReview(
     val id: String,
     val placeId: String,
@@ -38,6 +42,7 @@ data class HomeReview(
     val initialCommentCount: Int
 )
 
+/** Reglas puras compartidas para filtrar, navegar y normalizar datos del inicio. */
 object HomeRules {
     const val MAX_COLLAPSED_REVIEW_LINES = 4
     const val MIN_REVIEW_RATING = 1

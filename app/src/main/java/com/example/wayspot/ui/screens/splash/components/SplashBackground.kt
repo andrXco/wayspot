@@ -13,6 +13,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.example.wayspot.R
 
+/** Superpone imagen, degradados y transición de entrada sin acoplar el contenido de bienvenida. */
 @Composable
 fun SplashBackground(
     backgroundOverlay: Brush,

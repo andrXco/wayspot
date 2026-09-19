@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import java.util.Locale
 
+/** Deriva los lugares visibles y sus conteos a partir de los datos, filtros y configuración regional. */
 @HiltViewModel
 class SavedPlacesViewModel @Inject constructor() : ViewModel() {
 

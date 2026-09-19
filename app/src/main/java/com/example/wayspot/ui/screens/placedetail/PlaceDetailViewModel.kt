@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
+/** Resuelve el identificador de ruta en el proveedor de lugares y publica el detalle encontrado. */
 @HiltViewModel
 class PlaceDetailViewModel @Inject constructor() : ViewModel() {
 

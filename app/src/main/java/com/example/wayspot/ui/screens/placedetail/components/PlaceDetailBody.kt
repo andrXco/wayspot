@@ -26,6 +26,7 @@ import com.example.wayspot.data.model.Place
 import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Cuerpo del detalle con metadatos, información práctica, descripción y reseñas recientes. */
 @Composable
 fun PlaceDetailBody(
     place: Place,

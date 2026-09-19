@@ -35,6 +35,12 @@ import com.example.wayspot.ui.screens.notifications.NotificationsViewModel
 import com.example.wayspot.ui.screens.placedetail.PlaceDetailViewModel
 import com.example.wayspot.ui.screens.splash.SplashViewModel
 
+/**
+ * Registra los destinos de la aplicación y adapta sus callbacks al `NavController`.
+ *
+ * También entrega a los destinos el estado compartido gestionado por
+ * [AppNavigationViewModel], sin exponer el controlador de navegación a las pantallas.
+ */
 @Composable
 fun AppNavigation(
     navController: NavHostController,

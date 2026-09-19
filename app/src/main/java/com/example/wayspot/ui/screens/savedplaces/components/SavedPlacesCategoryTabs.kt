@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
 import com.example.wayspot.data.model.SavedPlaceList
 
+/** Muestra las listas disponibles, sus conteos y delega el cambio de filtro seleccionado. */
 @Composable
 fun SavedPlacesCategoryTabs(
     selectedList: SavedPlaceList,

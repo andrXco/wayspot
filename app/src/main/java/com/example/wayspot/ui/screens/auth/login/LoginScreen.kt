@@ -27,6 +27,12 @@ import com.example.wayspot.ui.screens.auth.login.components.LoginErrorDialog
 import com.example.wayspot.ui.screens.auth.login.components.LoginFormSection
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/**
+ * Adaptador de Compose para el inicio de sesión.
+ *
+ * Observa el estado del ViewModel, delega la interacción en sus eventos y consume la navegación
+ * exitosa antes de emitir la función externa de navegación.
+ */
 @Composable
 fun LoginScreen(
     loginViewModel: LoginViewModel,
@@ -70,6 +76,7 @@ fun LoginScreen(
     )
 }
 
+/** Contenido sin dependencia del ViewModel, apto para previsualizaciones y pruebas de interfaz. */
 @Composable
 fun LoginContent(
     usuario: String,

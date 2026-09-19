@@ -16,6 +16,7 @@ import com.example.wayspot.ui.theme.WayspotTheme
 import com.example.wayspot.data.model.ExploreCategory
 import com.example.wayspot.data.model.ExploreCategoryRules
 
+/** Fila de chips que eleva al padre la categoría elegida sin conservar estado propio. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExplorerTags(

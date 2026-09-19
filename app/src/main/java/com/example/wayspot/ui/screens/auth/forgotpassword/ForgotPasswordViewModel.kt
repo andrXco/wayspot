@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
+/** Conserva el correo de recuperación; el envío se delega mediante una función de devolución de llamada de pantalla. */
 @HiltViewModel
 class ForgotPasswordViewModel @Inject constructor() : ViewModel() {
 

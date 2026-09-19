@@ -90,6 +90,7 @@ fun HomeReviewsEmptyState(
     )
 }
 
+/** Tarjeta de reseña que recibe el estado de interacción resuelto por la pantalla de inicio. */
 @Composable
 fun HomeReviewCard(
     review: HomeReview,
