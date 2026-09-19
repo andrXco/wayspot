@@ -54,6 +54,9 @@ import com.example.wayspot.R
 import com.example.wayspot.data.model.HomeReview
 import com.example.wayspot.data.model.HomeRules
 import com.example.wayspot.data.model.Place
+import com.example.wayspot.data.local.PreviewData
+import com.example.wayspot.ui.preview.WayspotMultiPreview
+import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun HomeReviewsHeader(
@@ -469,5 +472,18 @@ private fun HomeReviewAction(
             tint = tint,
             modifier = Modifier.size(19.dp)
         )
+    }
+}
+
+@WayspotMultiPreview
+@Composable
+private fun HomeReviewPhotosPreview() {
+    WayspotTheme {
+        Surface {
+            HomeReviewPhotos(
+                review = PreviewData.homeReviews.first(),
+                placeTitle = "Cerro Monserrate"
+            )
+        }
     }
 }

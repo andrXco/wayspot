@@ -9,6 +9,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlin.toString
 
 /** Expone los datos del perfil y delega el cierre de sesión al repositorio de autenticación. */
 @HiltViewModel
@@ -16,7 +17,11 @@ class ProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(ProfileState())
+    private val _uiState = MutableStateFlow(ProfileState(
+        email = authRepository.currentUser?.photoUrl?.toString() ?: "",
+        profileImageUrl = authRepository.currentUser?.photoUrl.toString() ?: ""
+
+    ))
 
     val uiState: StateFlow<ProfileState> = _uiState
 

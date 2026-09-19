@@ -51,7 +51,7 @@ fun EditProfileScreen(
         editProfileViewModel.loadProfile(profile)
     }
 
-    val photoPickerLauncher = rememberLauncherForActivityResult(
+    val photoPickerLauncher = rememberLauncherForActivityResult( // VIEWMODEL
         contract = ActivityResultContracts.PickVisualMedia()
     ) { selectedUri ->
         if (selectedUri != null) {

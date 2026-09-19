@@ -13,7 +13,8 @@ import kotlinx.coroutines.flow.update
 @HiltViewModel
 class EditProfileViewModel @Inject constructor() : ViewModel() {
 
-    private val _uiState = MutableStateFlow(EditProfileState())
+    private val _uiState = MutableStateFlow(EditProfileState(
+    ))
 
     val uiState: StateFlow<EditProfileState> = _uiState
 
