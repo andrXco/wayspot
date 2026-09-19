@@ -21,6 +21,7 @@ import com.example.wayspot.ui.theme.WayspotTheme
 import com.example.wayspot.ui.screens.auth.components.AuthPasswordField
 import com.example.wayspot.ui.screens.auth.components.AuthTextField
 
+/** Sección sin estado que agrupa las credenciales y el acceso a recuperación de contraseña. */
 @Composable
 internal fun LoginFormSection(
     email: String,

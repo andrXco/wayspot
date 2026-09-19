@@ -1,5 +1,6 @@
 package com.example.wayspot.data.model
 
+/** Reúne las reglas de normalización y validez que comparte la edición de perfil. */
 object EditProfileRules {
     const val MAX_BIO_LENGTH = 160
 

@@ -5,6 +5,12 @@ import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
+/**
+ * Encapsula el acceso directo a Firebase Authentication.
+ *
+ * Convierte las operaciones basadas en `Task` en llamadas suspendidas para que las capas
+ * superiores no dependan de la API asíncrona del SDK.
+ */
 class AuthRemoteDataSource @Inject constructor(
     private val auth: FirebaseAuth
 ) {

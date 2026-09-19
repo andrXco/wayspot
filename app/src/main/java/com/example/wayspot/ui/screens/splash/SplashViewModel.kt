@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
+/** Determina si existe una sesión autenticada y expone el evento de navegación resultante. */
 @HiltViewModel
 class SplashViewModel @Inject constructor(
     private val authRepository: AuthRepository

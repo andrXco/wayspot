@@ -4,6 +4,11 @@ import com.example.wayspot.data.datasource.AuthRemoteDataSource
 import com.google.firebase.auth.FirebaseUser
 import javax.inject.Inject
 
+/**
+ * Contrato de autenticación para la capa de presentación.
+ *
+ * Delega en la fuente remota y mantiene a los ViewModels ajenos a FirebaseAuth.
+ */
 class AuthRepository @Inject constructor(
     private val authRemoteDataSource: AuthRemoteDataSource
 ) {

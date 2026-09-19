@@ -17,6 +17,7 @@ import com.example.wayspot.ui.screens.placedetail.components.PlaceDetailBody
 import com.example.wayspot.ui.screens.placedetail.components.PlaceDetailHero
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Sincroniza el argumento de ruta con el ViewModel y muestra el contenido solo cuando hay lugar. */
 @Composable
 fun PlaceDetailScreen(
     placeDetailViewModel: PlaceDetailViewModel,
@@ -49,6 +50,7 @@ fun PlaceDetailScreen(
     }
 }
 
+/** Compone la portada y el cuerpo del detalle como secciones independientes de una lista vertical. */
 @Composable
 fun PlaceDetailContent(
     place: Place,

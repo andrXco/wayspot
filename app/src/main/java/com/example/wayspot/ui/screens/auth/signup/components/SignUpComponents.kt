@@ -33,6 +33,7 @@ import com.example.wayspot.ui.theme.VerdeBosque
 import com.example.wayspot.ui.theme.VerdeSalvia
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Agrupa la aceptación de términos, el envío de registro y el retorno al inicio de sesión. */
 @Composable
 internal fun SignUpActionsSection(
     termsAccepted: Boolean,
@@ -66,6 +67,7 @@ internal fun SignUpActionsSection(
     }
 }
 
+/** Indicador visual derivado del contenido de la contraseña; no valida ni modifica el formulario. */
 @Composable
 fun PasswordStrengthIndicator(
     password: String,

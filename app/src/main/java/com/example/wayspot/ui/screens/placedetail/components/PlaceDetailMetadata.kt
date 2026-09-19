@@ -33,6 +33,7 @@ import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.ui.theme.EstrellaAmarilla
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Agrupa ubicación, valoración y la acción de compartir del lugar. */
 @Composable
 internal fun PlaceMetadata(
     place: Place,
@@ -95,6 +96,7 @@ private fun PlaceRating(
     }
 }
 
+/** Dibuja una valoración discreta con el tamaño solicitado por la sección consumidora. */
 @Composable
 internal fun RatingStars(rating: Int, size: Dp, modifier: Modifier = Modifier) {
     Row(modifier = modifier) {

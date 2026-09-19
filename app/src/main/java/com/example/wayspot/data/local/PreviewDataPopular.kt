@@ -5,6 +5,7 @@ import com.example.wayspot.data.model.PlaceDetail
 import com.example.wayspot.data.model.PlaceReview
 import com.example.wayspot.data.model.Place
 
+/** Catálogo local de lugares y detalles usado por las pantallas de exploración y sus previsualizaciones. */
 object PreviewDataPopular {
 
     val cerroMonserrate = Place(

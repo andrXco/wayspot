@@ -6,6 +6,7 @@ import com.example.wayspot.data.model.HomeFeaturedPlan
 import com.example.wayspot.data.model.HomeReview
 import com.example.wayspot.data.model.Place
 
+/** Estado inmutable de la experiencia de inicio, incluidas sus interacciones locales de feed. */
 data class HomeState(
     val searchQuery: String = "",
     val selectedCategory: HomeCategoryId? = null,

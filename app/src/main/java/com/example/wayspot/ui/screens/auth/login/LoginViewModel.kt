@@ -11,6 +11,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+/**
+ * Conserva el estado del formulario e inicia la autenticación con el repositorio.
+ *
+ * Los flujos de navegación y error son eventos de una sola lectura que la pantalla restablece
+ * después de consumirlos.
+ */
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val authRepository: AuthRepository

@@ -12,6 +12,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
+/**
+ * Mantiene los datos transversales de navegación que varias pantallas consumen o actualizan.
+ *
+ * El estado privado evita que cada destino cree una copia independiente del perfil o de los
+ * lugares guardados durante la navegación.
+ */
 @HiltViewModel
 class AppNavigationViewModel @Inject constructor() : ViewModel() {
 

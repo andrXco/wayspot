@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
 import com.example.wayspot.data.model.EditProfileRules
 
+/** Agrupa los campos editables del perfil y preserva los límites de texto recibidos. */
 @Composable
 fun EditProfileFormSection(
     username: String,

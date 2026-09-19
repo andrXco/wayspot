@@ -13,6 +13,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
+/**
+ * Conserva el catálogo completo internamente y publica la selección filtrada junto con el estado
+ * de búsqueda y los identificadores guardados.
+ */
 @HiltViewModel
 class ExploreViewModel @Inject constructor() : ViewModel() {
 

@@ -74,6 +74,7 @@ private val DarkColorScheme = darkColorScheme(
     onError = Blanco
 )
 
+/** Aplica la paleta y tipografía de WaySpot según la preferencia de tema del sistema. */
 @Composable
 fun WayspotTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

@@ -1,5 +1,6 @@
 package com.example.wayspot.data.model
 
+/** Centraliza límites, normalización y condiciones de publicación de una reseña. */
 object ReviewRules {
     const val MIN_RATING = 1
     const val MAX_RATING = 5

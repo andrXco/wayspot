@@ -34,6 +34,7 @@ import com.example.wayspot.ui.screens.editprofile.components.EditProfileHeader
 import com.example.wayspot.ui.screens.editprofile.components.EditProfileNotificationsSection
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Adapta el estado de edición a la interfaz y coordina el selector de foto y la navegación atrás. */
 @Composable
 fun EditProfileScreen(
     editProfileViewModel: EditProfileViewModel,
@@ -124,6 +125,7 @@ fun EditProfileScreen(
     )
 }
 
+/** Ensambla las secciones sin estado del formulario, las acciones y la confirmación de eliminación. */
 @Composable
 fun EditProfileContent(
     initials: String,

@@ -31,6 +31,7 @@ import com.example.wayspot.data.model.Notification
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Representa una notificación con identidad visual, mensaje enriquecido y metadatos contextuales. */
 @Composable
 fun NotificationItem(
     notification: Notification,

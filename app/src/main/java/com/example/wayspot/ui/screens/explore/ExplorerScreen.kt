@@ -37,6 +37,7 @@ import com.example.wayspot.ui.screens.explore.components.ExplorerPopularCard
 import com.example.wayspot.ui.screens.explore.components.ExplorerTags
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Adaptador entre el estado de exploración, los guardados compartidos y el contenido sin estado. */
 @Composable
 fun ExploreScreen(
     exploreViewModel: ExploreViewModel,
@@ -69,6 +70,7 @@ fun ExploreScreen(
     )
 }
 
+/** Muestra búsqueda, filtros y el catálogo en una cuadrícula construida por filas estables. */
 @Composable
 fun ExplorerContent(
     places: List<Place>,

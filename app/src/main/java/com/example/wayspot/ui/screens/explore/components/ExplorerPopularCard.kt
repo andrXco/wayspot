@@ -29,6 +29,7 @@ import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.ui.theme.EstrellaAmarilla
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Tarjeta reutilizable de un destino explorable con accesos al detalle y al estado de guardado. */
 @Composable
 fun ExplorerPopularCard(
     place: Place,

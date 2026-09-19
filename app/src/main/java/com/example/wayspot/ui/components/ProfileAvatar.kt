@@ -16,6 +16,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import coil.compose.AsyncImage
 
+/** Muestra las iniciales del perfil y las sustituye por una imagen remota cuando está disponible. */
 @Composable
 fun ProfileAvatar(
     avatarUrl: String?,

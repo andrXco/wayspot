@@ -35,6 +35,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.ui.res.stringResource
 
+/** Encabezado reutilizable con identidad visual y textos proporcionados por cada flujo de autenticación. */
 @Composable
 
 internal fun AuthHeader(
@@ -73,6 +74,7 @@ internal fun AuthHeader(
     }
 }
 
+/** Campo base de autenticación que concentra la presentación, accesibilidad y estado de error. */
 @Composable
 internal fun AuthTextField(
     value: String,

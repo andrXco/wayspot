@@ -21,6 +21,7 @@ import com.example.wayspot.R
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Variante de [AuthTextField] que aplica transformación de contraseña y delega su visibilidad. */
 @Composable
 internal fun AuthPasswordField(
     value: String,

@@ -50,6 +50,10 @@ import com.example.wayspot.R
 import com.example.wayspot.data.model.HomeFeaturedPlan
 import com.example.wayspot.data.model.Place
 
+/**
+ * Presenta el plan destacado activo y delega al padre el desplazamiento, los favoritos y el
+ * guardado del lugar asociado.
+ */
 @Composable
 fun HomeFeaturedPlanCarousel(
     plans: List<HomeFeaturedPlan>,

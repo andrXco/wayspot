@@ -23,6 +23,12 @@ import com.example.wayspot.ui.screens.auth.forgotpassword.components.ForgotPassw
 import com.example.wayspot.ui.screens.auth.forgotpassword.components.ForgotPasswordHeader
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/**
+ * Adapta el correo conservado por el ViewModel a la interfaz de recuperación.
+ *
+ * El envío y la navegación regresiva pertenecen a las funciones de devolución de llamada del
+ * destino.
+ */
 @Composable
 fun ForgotPasswordScreen(
     forgotPasswordViewModel: ForgotPasswordViewModel,
@@ -46,6 +52,7 @@ fun ForgotPasswordScreen(
     )
 }
 
+/** Contenido sin dependencia del ViewModel para la composición y previsualización de recuperación. */
 @Composable
 fun ForgotPasswordContent(
     email: String,

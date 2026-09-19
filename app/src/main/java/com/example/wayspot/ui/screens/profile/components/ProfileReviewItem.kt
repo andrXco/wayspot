@@ -35,6 +35,7 @@ import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.theme.EstrellaAmarilla
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Resume una reseña del perfil con lugar, valoración, fecha y comentario truncado. */
 @Composable
 fun ProfileReviewItem(
     review: Review,

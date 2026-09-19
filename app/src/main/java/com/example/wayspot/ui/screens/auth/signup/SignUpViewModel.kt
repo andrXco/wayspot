@@ -13,6 +13,11 @@ import kotlinx.coroutines.launch
 
 
 
+/**
+ * Gestiona el formulario de registro y solicita la creación de la cuenta mediante el repositorio.
+ *
+ * Publica navegación y error como eventos separados para que la pantalla los consuma y restablezca.
+ */
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val authRepository: AuthRepository

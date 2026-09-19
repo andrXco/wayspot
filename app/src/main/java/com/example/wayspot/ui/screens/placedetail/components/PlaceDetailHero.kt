@@ -40,6 +40,7 @@ import com.example.wayspot.ui.theme.Blanco
 import com.example.wayspot.ui.theme.Carbon
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Portada borde a borde que separa la imagen de fondo de los controles protegidos por el inset superior. */
 @Composable
 fun PlaceDetailHero(
     place: Place,

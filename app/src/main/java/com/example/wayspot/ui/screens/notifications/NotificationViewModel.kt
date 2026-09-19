@@ -8,6 +8,7 @@
     import kotlinx.coroutines.flow.StateFlow
     import kotlinx.coroutines.flow.update
 
+    /** Carga y expone la colección de notificaciones para su representación. */
     @HiltViewModel
     class NotificationsViewModel @Inject constructor() : ViewModel() {
 
