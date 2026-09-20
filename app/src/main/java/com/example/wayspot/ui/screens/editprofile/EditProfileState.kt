@@ -1,5 +1,6 @@
 package com.example.wayspot.ui.screens.editprofile
 
+import android.net.Uri
 import com.example.wayspot.data.model.ProfileNotificationPreferences
 import com.example.wayspot.data.model.UserProfile
 
@@ -12,6 +13,10 @@ data class EditProfileState(
     val bio: String = "",
     val location: String = "",
     val avatarUrl: String? = null,
+    val selectedAvatarUri: Uri? = null,
+    val isUploadingAvatar: Boolean = false,
+    val hasAvatarUploadError: Boolean = false,
+    val uploadedAvatarUrl: String? = null,
     val notificationPreferences: ProfileNotificationPreferences =
         ProfileNotificationPreferences(
             newFollowers = false,

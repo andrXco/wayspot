@@ -42,7 +42,8 @@ fun EditProfileScreen(
     onBackClick: () -> Unit,
     onSaveClick: (UserProfile) -> Unit,
     onDeleteAccountConfirmed: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onAvatarUploaded: (String) -> Unit = {}
 ) {
 
     val state by editProfileViewModel.uiState.collectAsState()
@@ -51,20 +52,25 @@ fun EditProfileScreen(
         editProfileViewModel.loadProfile(profile)
     }
 
+    LaunchedEffect(state.uploadedAvatarUrl) {
+        state.uploadedAvatarUrl?.let { uploadedAvatarUrl ->
+            onAvatarUploaded(uploadedAvatarUrl)
+            editProfileViewModel.consumeUploadedAvatar()
+        }
+    }
+
     val photoPickerLauncher = rememberLauncherForActivityResult( // VIEWMODEL
         contract = ActivityResultContracts.PickVisualMedia()
     ) { selectedUri ->
         if (selectedUri != null) {
-            editProfileViewModel.updateAvatarUrl(
-                selectedUri.toString()
-            )
+            editProfileViewModel.uploadAvatar(selectedUri)
         }
     }
 
     BackHandler {
         if (state.isDeleteConfirmationVisible) {
             editProfileViewModel.hideDeleteConfirmation()
-        } else {
+        } else if (!state.isUploadingAvatar) {
             onBackClick()
         }
     }
@@ -72,6 +78,9 @@ fun EditProfileScreen(
     EditProfileContent(
         initials = state.initials,
         avatarUrl = state.avatarUrl,
+        selectedAvatarUri = state.selectedAvatarUri,
+        isUploadingAvatar = state.isUploadingAvatar,
+        hasAvatarUploadError = state.hasAvatarUploadError,
         username = state.username,
         onUsernameChange = {
             editProfileViewModel.updateUsername(it)
@@ -99,7 +108,7 @@ fun EditProfileScreen(
             editProfileViewModel.updateReceivedLikesEnabled(it)
         },
         isSaveEnabled = state.isSaveEnabled,
-        onBackClick = onBackClick,
+        onBackClick = { if (!state.isUploadingAvatar) onBackClick() },
         onChangePhotoClick = {
             photoPickerLauncher.launch(
                 PickVisualMediaRequest(
@@ -108,7 +117,7 @@ fun EditProfileScreen(
             )
         },
         onDeleteAccountClick = {
-            editProfileViewModel.showDeleteConfirmation()
+            if (!state.isUploadingAvatar) editProfileViewModel.showDeleteConfirmation()
         },
         onSaveClick = {
             editProfileViewModel.profileForSaving()?.let(onSaveClick)
@@ -130,6 +139,9 @@ fun EditProfileScreen(
 fun EditProfileContent(
     initials: String,
     avatarUrl: String?,
+    selectedAvatarUri: android.net.Uri?,
+    isUploadingAvatar: Boolean,
+    hasAvatarUploadError: Boolean,
     username: String,
     onUsernameChange: (String) -> Unit,
     email: String,
@@ -163,6 +175,7 @@ fun EditProfileContent(
         ) {
             EditProfileHeader(
                 onBackClick = onBackClick,
+                isBackEnabled = !isUploadingAvatar,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -176,7 +189,10 @@ fun EditProfileContent(
                 item(key = "avatar") {
                     EditProfileAvatarSection(
                         avatarUrl = avatarUrl,
+                        selectedAvatarUri = selectedAvatarUri,
                         initials = initials,
+                        isUploadingAvatar = isUploadingAvatar,
+                        hasAvatarUploadError = hasAvatarUploadError,
                         onChangePhotoClick = onChangePhotoClick
                     )
                 }
@@ -210,6 +226,7 @@ fun EditProfileContent(
                 item(key = "danger_zone") {
                     EditProfileDangerZone(
                         onDeleteAccountClick = onDeleteAccountClick,
+                        isDeleteEnabled = !isUploadingAvatar,
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 }
@@ -240,6 +257,9 @@ private fun EditProfileScreenPreview() {
         EditProfileContent(
             initials = profile.initials,
             avatarUrl = profile.avatarUrl,
+            selectedAvatarUri = null,
+            isUploadingAvatar = false,
+            hasAvatarUploadError = false,
             username = profile.username,
             onUsernameChange = {},
             email = profile.email,

@@ -69,7 +69,6 @@ dependencies {
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.analytics)
     implementation(libs.kotlinx.coroutines.play.services)
-    implementation("com.google.firebase:firebase-storage-ktx")
 
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))

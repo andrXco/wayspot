@@ -39,16 +39,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import com.example.wayspot.R
 import com.example.wayspot.data.model.HomeFeaturedPlan
 import com.example.wayspot.data.model.Place
+import com.example.wayspot.ui.components.WayspotImage
 
 /**
  * Presenta el plan destacado activo y delega al padre el desplazamiento, los favoritos y el
@@ -69,8 +68,8 @@ fun HomeFeaturedPlanCarousel(
     onPlaceClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val plan = plans.getOrNull(activePlanIndex) ?: return
-    val place = places.firstOrNull { candidate -> candidate.id == plan.placeId } ?: return
+    val plan = plans.getOrNull(activePlanIndex) ?: return  // EXPLICACION DE ESTAS VARIABLES GETORNULLL ??
+    val place = places.firstOrNull { candidate -> candidate.id == plan.placeId } ?: return // IGUALMENTE CON EL FIRSTORNULL
     val placeTitle = stringResource(place.tituloRes)
     val isLiked = plan.id in likedPlanIds
     val isSaved = place.id in savedPlaceIds
@@ -98,16 +97,16 @@ fun HomeFeaturedPlanCarousel(
                     .height(208.dp)
                     .clickable { onPlaceClick(place.id) }
             ) {
-                AsyncImage(
-                    model = place.imagen ?: R.drawable.post_card_machu_pichu,
+                WayspotImage(
+                    imageModel = place.imagen ?: R.drawable.post_card_machu_pichu,
                     contentDescription = stringResource(
                         R.string.home_featured_image_content_description,
                         placeTitle
                     ),
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop,
-                    placeholder = painterResource(R.drawable.branding_logo_claro_wayspot),
-                    error = painterResource(R.drawable.branding_logo_claro_wayspot)
+                    placeholderResId = R.drawable.branding_logo_claro_wayspot,
+                    errorResId = R.drawable.branding_logo_claro_wayspot
                 )
                 Box(
                     modifier = Modifier

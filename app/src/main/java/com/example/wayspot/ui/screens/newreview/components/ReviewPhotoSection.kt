@@ -31,11 +31,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.example.wayspot.R
 import com.example.wayspot.data.model.ReviewRules
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.theme.WayspotTheme
+import com.example.wayspot.ui.components.WayspotImage
 
 /** Gestiona visualmente la colección de fotografías del borrador mediante acciones elevadas. */
 @Composable
@@ -139,8 +139,8 @@ private fun SelectedPhotoItem(
             .size(88.dp)
             .clip(RoundedCornerShape(12.dp))
     ) {
-        AsyncImage(
-            model = photoUri,
+        WayspotImage(
+            imageModel = photoUri,
             contentDescription = stringResource(
                 R.string.new_review_selected_photo_content_description,
                 photoIndex + 1

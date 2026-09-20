@@ -113,6 +113,7 @@ fun AppNavigation(
             EditProfileScreen(
                 editProfileViewModel = editProfileViewModel,
                 profile = userProfile,
+                onAvatarUploaded = appNavigationViewModel::updateUserAvatar,
 
                 onBackClick = {
                     navController.navigate(
@@ -162,6 +163,7 @@ fun AppNavigation(
                 },
 
                 onSignOut = {
+                    appNavigationViewModel.resetUserProfile()
                     navController.navigate(Screen.Login.route) {
                         popUpTo(0) {
                             inclusive = true
@@ -267,6 +269,7 @@ fun AppNavigation(
                 loginViewModel = loginViewModel,
 
                 onLoginClick = {
+                    appNavigationViewModel.syncAuthenticatedUser()
                     navController.navigate(
                         Screen.Home.route
                     )
@@ -328,6 +331,7 @@ fun AppNavigation(
                 signUpViewModel = signUpViewModel,
 
                 onSignUpClick = {
+                    appNavigationViewModel.syncAuthenticatedUser()
                     navController.navigate(
                         Screen.Home.route
                     ) {

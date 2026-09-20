@@ -1,5 +1,6 @@
 package com.example.wayspot.ui.screens.editprofile.components
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -15,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,7 +34,10 @@ import com.example.wayspot.ui.components.ProfileAvatar
 @Composable
 fun EditProfileAvatarSection(
     avatarUrl: String?,
+    selectedAvatarUri: Uri?,
     initials: String,
+    isUploadingAvatar: Boolean,
+    hasAvatarUploadError: Boolean,
     onChangePhotoClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -44,7 +49,7 @@ fun EditProfileAvatarSection(
 
         Box(contentAlignment = Alignment.BottomEnd) {
             ProfileAvatar(
-                avatarUrl = avatarUrl,
+                avatarUrl = selectedAvatarUri ?: avatarUrl,
                 initials = initials,
                 contentDescription = stringResource(
                     R.string.edit_profile_avatar_content_description,
@@ -61,6 +66,7 @@ fun EditProfileAvatarSection(
 
             IconButton(
                 onClick = onChangePhotoClick,
+                enabled = !isUploadingAvatar,
                 modifier = Modifier
                     .size(30.dp)
                     .background(
@@ -73,14 +79,22 @@ fun EditProfileAvatarSection(
                         shape = CircleShape
                     )
             ) {
-                Icon(
-                    imageVector = Icons.Outlined.Edit,
-                    contentDescription = stringResource(
-                        R.string.edit_profile_change_photo_content_description
-                    ),
-                    modifier = Modifier.size(16.dp),
-                    tint = MaterialTheme.colorScheme.onError
-                )
+                if (isUploadingAvatar) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(16.dp),
+                        color = MaterialTheme.colorScheme.onError,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Outlined.Edit,
+                        contentDescription = stringResource(
+                            R.string.edit_profile_change_photo_content_description
+                        ),
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.onError
+                    )
+                }
             }
         }
 
@@ -88,6 +102,7 @@ fun EditProfileAvatarSection(
 
         Button(
             onClick = onChangePhotoClick,
+            enabled = !isUploadingAvatar,
             shape = RoundedCornerShape(24.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -104,6 +119,17 @@ fun EditProfileAvatarSection(
                 text = stringResource(R.string.edit_profile_change_photo),
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold
+            )
+        }
+
+        if (hasAvatarUploadError) {
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = stringResource(R.string.edit_profile_avatar_upload_error),
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
         }
 

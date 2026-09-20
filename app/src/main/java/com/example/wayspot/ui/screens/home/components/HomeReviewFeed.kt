@@ -41,7 +41,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -49,13 +48,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import com.example.wayspot.R
 import com.example.wayspot.data.model.HomeReview
 import com.example.wayspot.data.model.HomeRules
 import com.example.wayspot.data.model.Place
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.ui.preview.WayspotMultiPreview
+import com.example.wayspot.ui.components.WayspotImage
 import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
@@ -353,8 +352,8 @@ private fun HomeReviewPhotos(
             items = review.photoUrls,
             key = { index, url -> "$index-$url" }
         ) { index, url ->
-            AsyncImage(
-                model = url,
+            WayspotImage( // PORQUE NO TIENE EL ASYNCIMAGE
+                imageModel = url,
                 contentDescription = stringResource(
                     R.string.home_review_photo_content_description,
                     index + 1,
@@ -365,8 +364,8 @@ private fun HomeReviewPhotos(
                     .height(160.dp)
                     .clip(RoundedCornerShape(12.dp)),
                 contentScale = ContentScale.Crop,
-                placeholder = painterResource(R.drawable.branding_logo_claro_wayspot),
-                error = painterResource(R.drawable.branding_logo_claro_wayspot)
+                placeholderResId = R.drawable.branding_logo_claro_wayspot,
+                errorResId = R.drawable.branding_logo_claro_wayspot
             )
         }
     }

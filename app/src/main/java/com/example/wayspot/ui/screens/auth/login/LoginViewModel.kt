@@ -29,9 +29,6 @@ class LoginViewModel @Inject constructor(
     private val _navigateToHome = MutableStateFlow(false)
     val navigateToHome: StateFlow<Boolean> = _navigateToHome.asStateFlow()
 
-    private val _errorMessage = MutableStateFlow("")
-    val errorMessage: StateFlow<String> = _errorMessage.asStateFlow()
-
     private val _mostrarMensajeError = MutableStateFlow(false)
     val mostrarMensajeError: StateFlow<Boolean> = _mostrarMensajeError.asStateFlow()
 
@@ -63,14 +60,13 @@ class LoginViewModel @Inject constructor(
 
     fun signIn() {
         viewModelScope.launch {
-            try {
-                authRepository.signIn(
-                    email = _uiState.value.usuario.trim(),
-                    password = _uiState.value.contrasena
-                )
+            val result = authRepository.signIn(
+                email = _uiState.value.usuario.trim(),
+                password = _uiState.value.contrasena
+            )
+            if (result.isSuccess) {
                 _navigateToHome.value = true
-            } catch (exception: Exception) {
-                _errorMessage.value = exception.localizedMessage.orEmpty()
+            } else {
                 _mostrarMensajeError.value = true
             }
         }
@@ -82,6 +78,5 @@ class LoginViewModel @Inject constructor(
 
     fun dismissError() {
         _mostrarMensajeError.value = false
-        _errorMessage.value = ""
     }
 }

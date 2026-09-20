@@ -1,6 +1,7 @@
 package com.example.wayspot.ui.screens.auth.signup
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.wayspot.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -8,10 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-
-
 
 /**
  * Gestiona el formulario de registro y solicita la creación de la cuenta mediante el repositorio.
@@ -29,9 +27,6 @@ class SignUpViewModel @Inject constructor(
 
     private val _navigateToHome = MutableStateFlow(false)
     val navigateToHome: StateFlow<Boolean> = _navigateToHome.asStateFlow()
-
-    private val _errorMessage = MutableStateFlow("")
-    val errorMessage: StateFlow<String> = _errorMessage.asStateFlow()
 
     private val _mostrarMensajeError = MutableStateFlow(false)
     val mostrarMensajeError: StateFlow<Boolean> = _mostrarMensajeError.asStateFlow()
@@ -95,16 +90,16 @@ class SignUpViewModel @Inject constructor(
             )
         }
     }
+
     fun signUp() {
         viewModelScope.launch {
-            try {
-                authRepository.signUp(
-                    email = _uiState.value.correo,
-                    password = _uiState.value.contrasena
-                )
+            val result = authRepository.signUp(
+                email = _uiState.value.correo,
+                password = _uiState.value.contrasena
+            )
+            if (result.isSuccess) {
                 _navigateToHome.value = true
-            } catch (exception: Exception) {
-                _errorMessage.value = exception.localizedMessage.orEmpty()
+            } else {
                 _mostrarMensajeError.value = true
             }
         }
@@ -116,6 +111,5 @@ class SignUpViewModel @Inject constructor(
 
     fun dismissError() {
         _mostrarMensajeError.value = false
-        _errorMessage.value = ""
     }
 }

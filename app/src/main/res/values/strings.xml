@@ -30,6 +30,8 @@
     <string name="auth_login_invalid_credentials">El correo o la contraseña son incorrectos. Verifica tus datos e inténtalo de nuevo.</string>
     <string name="auth_error_dismiss">Aceptar</string>
     <string name="auth_signup_tagline">Comienza tu próxima aventura de viaje</string>
+    <string name="auth_signup_error_title">No se pudo crear la cuenta</string>
+    <string name="auth_signup_error_message">Revisa tus datos y vuelve a intentarlo.</string>
     <string name="email_placeholder">tu@correo.com</string>
     <string name="password_placeholder">Ingresa tu contraseña</string>
     <string name="forgot_password">¿Olvidaste tu contraseña?</string>
@@ -115,7 +117,7 @@
     <string name="saved_places_list_count">(%1$d)</string>
     <string name="saved_places_view_details">Ver detalles</string>
     <string name="saved_places_remove_content_description">Quitar %1$s de esta lista</string>
-    <string name="saved_places_image_content_description">Imagen de %1$s</string>
+    <string name="saved_places_image_content_description">Imagen de %1$s</string>  // PORQUE SOLO ESXISTE DE SOLO 1%
     <string name="saved_places_location_content_description">Ubicación: %1$s</string>
     <string name="saved_places_rating_content_description">Calificación: %1$.1f de 5</string>
     <string name="saved_places_empty_title">No hay destinos guardados</string>
@@ -124,6 +126,7 @@
     <!-- Edit Profile Screen Strings -->
     <string name="edit_profile_title">Editar perfil</string>
     <string name="edit_profile_change_photo">Cambiar foto de perfil</string>
+    <string name="edit_profile_avatar_upload_error">No se pudo subir la foto. Se conserva la foto anterior.</string>
     <string name="edit_profile_username_label">Nombre de usuario</string>
     <string name="edit_profile_username_support">Solo letras, números y guiones bajos</string>
     <string name="edit_profile_email_label">Correo electrónico</string>

@@ -11,6 +11,9 @@
     import androidx.compose.foundation.rememberScrollState
     import androidx.compose.foundation.verticalScroll
     import androidx.compose.material3.MaterialTheme
+    import androidx.compose.material3.AlertDialog
+    import androidx.compose.material3.Text
+    import androidx.compose.material3.TextButton
     import androidx.compose.runtime.Composable
     import androidx.compose.runtime.LaunchedEffect
     import androidx.compose.runtime.getValue
@@ -39,6 +42,7 @@
     ) {
         val state by signUpViewModel.uiState.collectAsState()
         val navigateToHome by signUpViewModel.navigateToHome.collectAsState()
+        val mostrarMensajeError by signUpViewModel.mostrarMensajeError.collectAsState()
 
         LaunchedEffect(navigateToHome) {
             if (navigateToHome) {
@@ -70,6 +74,8 @@
             onTermsAcceptedChange = {
                 signUpViewModel.updateTermsAccepted(it)
             },
+            mostrarMensajeError = mostrarMensajeError,
+            onDismissError = signUpViewModel::dismissError,
             onSignUpClick = signUpViewModel::signUp,
             onBackToLoginClick = onBackToLoginClick,
             modifier = modifier
@@ -93,12 +99,27 @@
         onToggleConfirmPasswordVisibility: () -> Unit,
         termsAccepted: Boolean,
         onTermsAcceptedChange: (Boolean) -> Unit,
+        mostrarMensajeError: Boolean,
+        onDismissError: () -> Unit,
         onSignUpClick: () -> Unit,
         onBackToLoginClick: () -> Unit,
         modifier: Modifier = Modifier
     ) {
         val passwordsDoNotMatch = confirmarContrasena.isNotEmpty() &&
             contrasena != confirmarContrasena
+
+        if (mostrarMensajeError) {
+            AlertDialog(
+                onDismissRequest = onDismissError,
+                title = { Text(stringResource(R.string.auth_signup_error_title)) },
+                text = { Text(stringResource(R.string.auth_signup_error_message)) },
+                confirmButton = {
+                    TextButton(onClick = onDismissError) {
+                        Text(stringResource(R.string.auth_error_dismiss))
+                    }
+                }
+            )
+        }
 
         Column(
             modifier = modifier
@@ -165,6 +186,8 @@
                 onToggleConfirmPasswordVisibility = {},
                 termsAccepted = true,
                 onTermsAcceptedChange = {},
+                mostrarMensajeError = false,
+                onDismissError = {},
                 onSignUpClick = {},
                 onBackToLoginClick = {}
             )

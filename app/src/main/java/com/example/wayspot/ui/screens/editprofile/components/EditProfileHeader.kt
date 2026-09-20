@@ -31,7 +31,8 @@ import com.example.wayspot.R
 @Composable
 fun EditProfileHeader(
     onBackClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isBackEnabled: Boolean = true
 ) {
     val usesDarkColors = MaterialTheme.colorScheme.background.luminance() < 0.5f
 
@@ -49,6 +50,7 @@ fun EditProfileHeader(
         ) {
             IconButton(
                 onClick = onBackClick,
+                enabled = isBackEnabled,
                 modifier = Modifier.size(48.dp)
             ) {
                 Box(

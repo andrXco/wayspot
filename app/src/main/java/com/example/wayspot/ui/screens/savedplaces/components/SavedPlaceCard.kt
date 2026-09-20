@@ -34,17 +34,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.example.wayspot.R
 import com.example.wayspot.data.model.ReviewRules
 import com.example.wayspot.data.model.SavedPlace
+import com.example.wayspot.ui.components.WayspotImage
 
 /** Resume un destino guardado y expone acciones independientes para ver su detalle o retirarlo de la lista. */
 @Composable
@@ -84,8 +83,8 @@ fun SavedPlaceCard(
                     .width(100.dp)
                     .fillMaxHeight()
             ) {
-                AsyncImage(
-                    model = place.imagen ?: R.drawable.post_card_machu_pichu,
+                WayspotImage(
+                    imageModel = place.imagen ?: R.drawable.post_card_machu_pichu,
                     contentDescription = stringResource(
                         R.string.saved_places_image_content_description,
                         title
@@ -99,8 +98,8 @@ fun SavedPlaceCard(
                             )
                         ),
                     contentScale = ContentScale.Crop,
-                    placeholder = painterResource(R.drawable.branding_logo_claro_wayspot),
-                    error = painterResource(R.drawable.post_card_machu_pichu)
+                    placeholderResId = R.drawable.branding_logo_claro_wayspot,
+                    errorResId = R.drawable.post_card_machu_pichu
                 )
 
                 Surface(
