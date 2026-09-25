@@ -9,7 +9,7 @@ data class Place(
     @param:StringRes val categoriaRes: Int,
     @param:StringRes val ubicacionRes: Int,
     val rating: Double = 5.0,
-    val imagen: Any? = null,
+    val imagen: String? = null,
     val detail: PlaceDetail
 )
 

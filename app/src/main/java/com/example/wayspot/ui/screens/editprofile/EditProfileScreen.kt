@@ -59,7 +59,7 @@ fun EditProfileScreen(
         }
     }
 
-    val photoPickerLauncher = rememberLauncherForActivityResult( // VIEWMODEL
+    val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { selectedUri ->
         if (selectedUri != null) {

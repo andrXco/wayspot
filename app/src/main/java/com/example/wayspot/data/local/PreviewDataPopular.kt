@@ -136,7 +136,7 @@ object PreviewDataPopular {
         categoriaRes = R.string.place_category_heritage,
         ubicacionRes = R.string.place_machu_picchu_location,
         rating = 4.9,
-        imagen = R.drawable.post_card_machu_pichu,
+        imagen = "https://images.unsplash.com/photo-1531065208531-4036c0dba3ca?q=80&w=1200&auto=format&fit=crop",
         detail = machuPicchuDetail
     )
 

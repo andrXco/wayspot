@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "273632035052",
-    "project_id": "wayspot-2fa22",
-    "storage_bucket": "wayspot-2fa22.firebasestorage.app"
+    "project_number": "246437303383",
+    "project_id": "wayspot-60fd2",
+    "storage_bucket": "wayspot-60fd2.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:273632035052:android:e079d9b73c5764d309e5c9",
+        "mobilesdk_app_id": "1:246437303383:android:58ef8171852e0bf0bc7f12",
         "android_client_info": {
           "package_name": "com.example.wayspot"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDmKiolKMQeVbf-aIgq3Sqk1R0eBiXebkQ"
+          "current_key": "AIzaSyDrMITxKMVGuQ0e1asClFDpm04CwxxEYas"
         }
       ],
       "services": {

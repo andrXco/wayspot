@@ -31,6 +31,9 @@ class SignUpViewModel @Inject constructor(
     private val _mostrarMensajeError = MutableStateFlow(false)
     val mostrarMensajeError: StateFlow<Boolean> = _mostrarMensajeError.asStateFlow()
 
+    private val _mensajeError = MutableStateFlow("")
+    val mensajeError: StateFlow<String> = _mensajeError.asStateFlow()
+
     fun updateNombre(input: String) {
         _uiState.update { currentState ->
             currentState.copy(
@@ -100,6 +103,9 @@ class SignUpViewModel @Inject constructor(
             if (result.isSuccess) {
                 _navigateToHome.value = true
             } else {
+                _mensajeError.value =
+                    result.exceptionOrNull()?.message ?: "Error al registrarse"
+
                 _mostrarMensajeError.value = true
             }
         }

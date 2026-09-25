@@ -35,12 +35,11 @@ class AuthRepository @Inject constructor(
 
 
     suspend fun signUp(email: String, password: String): Result<Unit> {
-        try {
+        return try {
             authRemoteDataSource.signUp(email, password)
-            return Result.success(Unit)
-        }
-        catch (e: Exception) {
-            return Result.failure(e)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(Exception("Error al registrarse"))
         }
     }
 

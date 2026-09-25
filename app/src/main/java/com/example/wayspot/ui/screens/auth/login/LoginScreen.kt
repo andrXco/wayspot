@@ -45,6 +45,7 @@ fun LoginScreen(
     val state by loginViewModel.uiState.collectAsState()
     val navigateToHome by loginViewModel.navigateToHome.collectAsState()
     val mostrarMensajeError by loginViewModel.mostrarMensajeError.collectAsState()
+    val mensajeError by loginViewModel.mensajeError.collectAsState()
 
     LaunchedEffect(navigateToHome) {
         if (navigateToHome) {
@@ -64,6 +65,7 @@ fun LoginScreen(
         },
         passwordVisible = state.passwordVisible,
         mostrarMensajeError = mostrarMensajeError,
+        mensajeError = mensajeError,
         onDismissError = loginViewModel::dismissError,
         onTogglePasswordVisibility = {
             loginViewModel.togglePasswordVisibility()
@@ -85,6 +87,7 @@ fun LoginContent(
     onContrasenaChange: (String) -> Unit,
     passwordVisible: Boolean,
     mostrarMensajeError: Boolean,
+    mensajeError: String,
     onDismissError: () -> Unit,
     onTogglePasswordVisibility: () -> Unit,
     onLoginClick: () -> Unit,
@@ -95,6 +98,7 @@ fun LoginContent(
 ) {
     if (mostrarMensajeError) {
         LoginErrorDialog(
+            mensajeError = mensajeError,
             onDismissRequest = onDismissError
         )
     }
@@ -146,6 +150,7 @@ private fun LoginPreview() {
             onContrasenaChange = {},
             passwordVisible = false,
             mostrarMensajeError = false,
+            mensajeError = "",
             onDismissError = {},
             onTogglePasswordVisibility = {},
             onLoginClick = {},

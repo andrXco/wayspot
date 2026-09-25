@@ -31,6 +31,8 @@ class LoginViewModel @Inject constructor(
 
     private val _mostrarMensajeError = MutableStateFlow(false)
     val mostrarMensajeError: StateFlow<Boolean> = _mostrarMensajeError.asStateFlow()
+    private val _mensajeError = MutableStateFlow("")
+    val mensajeError: StateFlow<String> = _mensajeError.asStateFlow()
 
     fun updateUsuario(input: String) {
         _uiState.update { currentState ->
@@ -67,6 +69,9 @@ class LoginViewModel @Inject constructor(
             if (result.isSuccess) {
                 _navigateToHome.value = true
             } else {
+                _mensajeError.value =
+                    result.exceptionOrNull()?.message ?: "Error al iniciar sesión"
+
                 _mostrarMensajeError.value = true
             }
         }

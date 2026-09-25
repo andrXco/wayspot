@@ -8,9 +8,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.example.wayspot.R
 
-/** Diálogo local que comunica un fallo de autenticación sin exponer su detalle técnico. */
+/** Diálogo local que comunica un fallo de autenticación. */
 @Composable
 internal fun LoginErrorDialog(
+    mensajeError: String,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -23,7 +24,7 @@ internal fun LoginErrorDialog(
         },
         text = {
             Text(
-                text = stringResource(R.string.auth_login_invalid_credentials)
+                text = mensajeError
             )
         },
         confirmButton = {
