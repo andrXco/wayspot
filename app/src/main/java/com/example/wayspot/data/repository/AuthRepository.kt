@@ -3,6 +3,7 @@ package com.example.wayspot.data.repository
 import com.example.wayspot.data.datasource.AuthRemoteDataSource
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.auth.FirebaseUser
 import javax.inject.Inject
 
@@ -30,7 +31,6 @@ class AuthRepository @Inject constructor(
         catch (e: Exception) {
             Result.failure(Exception("Error al iniciar sesion"))
         }
-
     }
 
 
@@ -40,6 +40,14 @@ class AuthRepository @Inject constructor(
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(Exception("Error al registrarse"))
+        }  catch (e: FirebaseAuthWeakPasswordException) {
+            Result.failure(
+            Exception("La contraseña debe tener al menos 6 caracteres")
+        )
+        }   catch (e: FirebaseAuthInvalidCredentialsException) {
+            Result.failure(
+                Exception("El correo no es válido")
+            )
         }
     }
 
