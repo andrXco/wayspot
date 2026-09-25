@@ -1,4 +1,4 @@
-package com.example.wayspot.ui.screens.editprofile.components
+    package com.example.wayspot.ui.screens.editprofile.components
 
 import android.net.Uri
 import androidx.compose.foundation.background
@@ -37,7 +37,7 @@ fun EditProfileAvatarSection(
     selectedAvatarUri: Uri?,
     initials: String,
     isUploadingAvatar: Boolean,
-    hasAvatarUploadError: Boolean,
+    avatarUploadErrorMessage: String?,
     onChangePhotoClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -122,11 +122,11 @@ fun EditProfileAvatarSection(
             )
         }
 
-        if (hasAvatarUploadError) {
+        if (avatarUploadErrorMessage != null) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = stringResource(R.string.edit_profile_avatar_upload_error),
+                text = avatarUploadErrorMessage,
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(horizontal = 16.dp)

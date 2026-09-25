@@ -45,7 +45,6 @@ fun EditProfileScreen(
     modifier: Modifier = Modifier,
     onAvatarUploaded: (String) -> Unit = {}
 ) {
-
     val state by editProfileViewModel.uiState.collectAsState()
 
     LaunchedEffect(profile) {
@@ -80,7 +79,7 @@ fun EditProfileScreen(
         avatarUrl = state.avatarUrl,
         selectedAvatarUri = state.selectedAvatarUri,
         isUploadingAvatar = state.isUploadingAvatar,
-        hasAvatarUploadError = state.hasAvatarUploadError,
+        avatarUploadErrorMessage = state.avatarUploadErrorMessage,
         username = state.username,
         onUsernameChange = {
             editProfileViewModel.updateUsername(it)
@@ -108,7 +107,11 @@ fun EditProfileScreen(
             editProfileViewModel.updateReceivedLikesEnabled(it)
         },
         isSaveEnabled = state.isSaveEnabled,
-        onBackClick = { if (!state.isUploadingAvatar) onBackClick() },
+        onBackClick = {
+            if (!state.isUploadingAvatar) {
+                onBackClick()
+            }
+        },
         onChangePhotoClick = {
             photoPickerLauncher.launch(
                 PickVisualMediaRequest(
@@ -117,7 +120,9 @@ fun EditProfileScreen(
             )
         },
         onDeleteAccountClick = {
-            if (!state.isUploadingAvatar) editProfileViewModel.showDeleteConfirmation()
+            if (!state.isUploadingAvatar) {
+                editProfileViewModel.showDeleteConfirmation()
+            }
         },
         onSaveClick = {
             editProfileViewModel.profileForSaving()?.let(onSaveClick)
@@ -141,7 +146,7 @@ fun EditProfileContent(
     avatarUrl: String?,
     selectedAvatarUri: android.net.Uri?,
     isUploadingAvatar: Boolean,
-    hasAvatarUploadError: Boolean,
+    avatarUploadErrorMessage: String?,
     username: String,
     onUsernameChange: (String) -> Unit,
     email: String,
@@ -192,7 +197,7 @@ fun EditProfileContent(
                         selectedAvatarUri = selectedAvatarUri,
                         initials = initials,
                         isUploadingAvatar = isUploadingAvatar,
-                        hasAvatarUploadError = hasAvatarUploadError,
+                        avatarUploadErrorMessage = avatarUploadErrorMessage,
                         onChangePhotoClick = onChangePhotoClick
                     )
                 }
@@ -259,7 +264,7 @@ private fun EditProfileScreenPreview() {
             avatarUrl = profile.avatarUrl,
             selectedAvatarUri = null,
             isUploadingAvatar = false,
-            hasAvatarUploadError = false,
+            avatarUploadErrorMessage = null,
             username = profile.username,
             onUsernameChange = {},
             email = profile.email,

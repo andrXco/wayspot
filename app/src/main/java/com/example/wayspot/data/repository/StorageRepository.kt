@@ -13,7 +13,7 @@ class StorageRepository @Inject constructor(
     suspend fun uploadProfileImage(uri: Uri): Result<String> {
         val userId = auth.currentUser?.uid
             ?: return Result.failure(
-                IllegalStateException("Authenticated user is required.")
+                Exception("Debes iniciar sesión para cambiar tu foto de perfil")
             )
 
         return try {
@@ -25,7 +25,9 @@ class StorageRepository @Inject constructor(
 
             Result.success(url)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(
+                Exception("No se pudo subir la foto de perfil")
+            )
         }
     }
 }

@@ -270,7 +270,7 @@ object PreviewData {
             usuario = "@valentina_viaja",
             placeTitle = "Cerro Monserrate",
             location = "Bogotá, Colombia",
-            imageRes = R.drawable.post_card_machu_pichu,
+            imageUrl = "https://images.unsplash.com/photo-1720067392108-89b9485aa090?w=800&h=520&fit=crop&auto=format",
             comentario = "Una experiencia espiritual única. La vista desde la cima al atardecer es simplemente...",
             rating = 5,
             fecha = "12 ago 2026"
@@ -279,7 +279,7 @@ object PreviewData {
             usuario = "@valentina_viaja",
             placeTitle = "Machu Picchu",
             location = "Cusco, Perú",
-            imageRes = R.drawable.post_card_machu_pichu,
+            imageUrl = "https://images.unsplash.com/photo-1531065208531-4036c0dba3ca?q=80&w=1200&auto=format&fit=crop",
             comentario = "Una maravilla del mundo que supera todas las expectativas. El amanecer es...",
             rating = 5,
             fecha = "3 jul 2026"

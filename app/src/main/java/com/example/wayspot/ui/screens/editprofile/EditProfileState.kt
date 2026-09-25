@@ -15,7 +15,7 @@ data class EditProfileState(
     val avatarUrl: String? = null,
     val selectedAvatarUri: Uri? = null,
     val isUploadingAvatar: Boolean = false,
-    val hasAvatarUploadError: Boolean = false,
+    val avatarUploadErrorMessage: String? = null,
     val uploadedAvatarUrl: String? = null,
     val notificationPreferences: ProfileNotificationPreferences =
         ProfileNotificationPreferences(

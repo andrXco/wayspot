@@ -19,8 +19,7 @@ class EditProfileViewModel @Inject constructor(
     private val storageRepository: StorageRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(EditProfileState()) // ***
-
+    private val _uiState = MutableStateFlow(EditProfileState())
     val uiState: StateFlow<EditProfileState> = _uiState
 
     fun loadProfile(profile: UserProfile) {
@@ -86,12 +85,13 @@ class EditProfileViewModel @Inject constructor(
 
     fun uploadAvatar(uri: Uri) {
         if (_uiState.value.isUploadingAvatar) return
+
         _uiState.update { currentState ->
             withValidation(
                 currentState.copy(
                     selectedAvatarUri = uri,
                     isUploadingAvatar = true,
-                    hasAvatarUploadError = false,
+                    avatarUploadErrorMessage = null,
                     uploadedAvatarUrl = null
                 )
             )
@@ -100,22 +100,32 @@ class EditProfileViewModel @Inject constructor(
         viewModelScope.launch {
             val result = storageRepository.uploadProfileImage(uri)
             val uploadedUrl = result.getOrNull()
+
             if (result.isSuccess && uploadedUrl != null) {
                 _uiState.update { currentState ->
-                    withValidation(currentState.copy(
-                        avatarUrl = uploadedUrl,
-                        selectedAvatarUri = null,
-                        isUploadingAvatar = false,
-                        uploadedAvatarUrl = uploadedUrl
-                    ))
+                    withValidation(
+                        currentState.copy(
+                            avatarUrl = uploadedUrl,
+                            selectedAvatarUri = null,
+                            isUploadingAvatar = false,
+                            avatarUploadErrorMessage = null,
+                            uploadedAvatarUrl = uploadedUrl
+                        )
+                    )
                 }
             } else {
+                val mensaje =
+                    result.exceptionOrNull()?.message
+                        ?: "No se pudo subir la foto de perfil"
+
                 _uiState.update { currentState ->
-                    withValidation(currentState.copy(
-                        selectedAvatarUri = null,
-                        isUploadingAvatar = false,
-                        hasAvatarUploadError = true
-                    ))
+                    withValidation(
+                        currentState.copy(
+                            selectedAvatarUri = null,
+                            isUploadingAvatar = false,
+                            avatarUploadErrorMessage = mensaje
+                        )
+                    )
                 }
             }
         }
