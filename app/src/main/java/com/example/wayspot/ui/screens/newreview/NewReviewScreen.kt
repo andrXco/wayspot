@@ -29,6 +29,7 @@ import com.example.wayspot.ui.screens.newreview.components.ReviewBottomAction
 import com.example.wayspot.ui.screens.newreview.components.ReviewEditorSection
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Conecta el borrador con el editor y coordina la selección de fotografías del sistema. */
 @Composable
 fun NewReviewScreen(
     newReviewViewModel: NewReviewViewModel,
@@ -111,6 +112,7 @@ fun NewReviewScreen(
     )
 }
 
+/** Presenta el editor de reseña como composición sin estado de encabezado, contenido y acción final. */
 @Composable
 fun NewReviewContent(
     place: Place,

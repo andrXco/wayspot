@@ -30,6 +30,7 @@ import com.example.wayspot.ui.screens.notifications.components.NotificationItem
 import com.example.wayspot.ui.screens.notifications.components.NotificationsHeader
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Observa las notificaciones y delega su representación al contenido sin estado. */
 @Composable
 fun NotificationsScreen(
     notificationsViewModel: NotificationsViewModel,
@@ -45,6 +46,7 @@ fun NotificationsScreen(
     )
 }
 
+/** Agrupa las notificaciones disponibles y presenta un estado vacío cuando corresponde. */
 @Composable
 fun NotificationsContent(
     notifications: List<Notification>,

@@ -5,6 +5,10 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.Color as AndroidColor
 import android.os.Build
+import android.view.animation.DecelerateInterpolator
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -22,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import androidx.core.splashscreen.SplashScreen
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.wayspot.navigation.AppNavigation
@@ -29,6 +34,35 @@ import com.example.wayspot.navigation.Screen
 import com.example.wayspot.ui.components.WayspotBottomBar
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Configura edge-to-edge y delega el árbol Compose a la raíz única de la aplicación. */
+internal fun ComponentActivity.setWaySpotContent() {
+    enableEdgeToEdge()
+    setContent {
+        WaySpotApp()
+    }
+}
+
+/** Aplica una salida breve al splash del sistema antes de liberar la vista subyacente. */
+internal fun SplashScreen.configureWaySpotExitAnimation() {
+    setOnExitAnimationListener { splashScreenView ->
+        splashScreenView.view
+            .animate()
+            .alpha(0f)
+            .setDuration(SYSTEM_SPLASH_EXIT_DURATION_MS)
+            .setInterpolator(DecelerateInterpolator())
+            .withEndAction {
+                splashScreenView.remove()
+            }
+            .start()
+    }
+}
+
+/**
+ * Raíz visual de WaySpot.
+ *
+ * Es propietaria del `NavController`, del único `Scaffold`, de las barras del sistema y de la
+ * política centralizada de insets para las rutas que se dibujan borde a borde.
+ */
 @Composable
 fun WaySpotApp(
     modifier: Modifier = Modifier
@@ -41,6 +75,7 @@ fun WaySpotApp(
         val drawsBehindNavigationBar = currentRoute == Screen.Splash.route
         val useDarkStatusBarIcons = when (currentRoute) {
             Screen.Splash.route -> false
+            Screen.PlaceDetail.route -> false
             Screen.Profile.route -> MaterialTheme.colorScheme.primary.luminance() > 0.5f
             else -> MaterialTheme.colorScheme.background.luminance() > 0.5f
         }
@@ -114,8 +149,11 @@ private val bottomBarRoutes = setOf(
 
 private val edgeToEdgeRoutes = setOf(
     Screen.Splash.route,
+    Screen.PlaceDetail.route,
     Screen.Profile.route
 )
+
+private const val SYSTEM_SPLASH_EXIT_DURATION_MS = 450L
 
 private tailrec fun Context.findActivity(): Activity? = when (this) {
     is Activity -> this

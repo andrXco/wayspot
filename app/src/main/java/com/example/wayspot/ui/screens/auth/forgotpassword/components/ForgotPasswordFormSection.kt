@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
 import com.example.wayspot.ui.screens.auth.components.AuthTextField
 
+/** Sección sin estado que captura el correo y delega la solicitud de envío. */
 @Composable
 fun ForgotPasswordFormSection(
     email: String,

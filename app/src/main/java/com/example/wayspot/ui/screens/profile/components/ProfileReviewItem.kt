@@ -1,7 +1,6 @@
 package com.example.wayspot.ui.screens.profile.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -34,7 +32,9 @@ import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.theme.EstrellaAmarilla
 import com.example.wayspot.ui.theme.WayspotTheme
+import com.example.wayspot.ui.components.WayspotImage
 
+/** Resume una reseña del perfil con lugar, valoración, fecha y comentario truncado. */
 @Composable
 fun ProfileReviewItem(
     review: Review,
@@ -57,15 +57,16 @@ fun ProfileReviewItem(
             verticalAlignment = Alignment.Top
         ) {
             // Place Image
-            if (review.imageRes != null) {
-                Image(
-                    painter = painterResource(id = review.imageRes),
+            if (review.imageUrl != null) {
+                WayspotImage(
+                    imageModel = review.imageUrl,
                     contentDescription = review.placeTitle,
                     modifier = Modifier
                         .size(84.dp)
                         .clip(RoundedCornerShape(12.dp)),
                     contentScale = ContentScale.Crop
                 )
+
                 Spacer(modifier = Modifier.width(14.dp))
             }
 

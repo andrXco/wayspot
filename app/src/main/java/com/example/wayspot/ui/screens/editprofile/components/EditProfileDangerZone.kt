@@ -29,7 +29,8 @@ import com.example.wayspot.R
 @Composable
 fun EditProfileDangerZone(
     onDeleteAccountClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isDeleteEnabled: Boolean = true
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -76,6 +77,7 @@ fun EditProfileDangerZone(
             )
             OutlinedButton(
                 onClick = onDeleteAccountClick,
+                enabled = isDeleteEnabled,
                 modifier = Modifier
                     .height(48.dp)
                     .semantics {

@@ -1,30 +1,43 @@
 package com.example.wayspot.ui.screens.editprofile
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.wayspot.data.model.EditProfileRules
 import com.example.wayspot.data.model.UserProfile
+import com.example.wayspot.data.repository.StorageRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class EditProfileViewModel : ViewModel() {
+/** Coordina la edición del perfil y aplica las reglas compartidas antes de exponer el estado. */
+@HiltViewModel
+class EditProfileViewModel @Inject constructor(
+    private val storageRepository: StorageRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(EditProfileState())
-
     val uiState: StateFlow<EditProfileState> = _uiState
 
     fun loadProfile(profile: UserProfile) {
         _uiState.update { currentState ->
+            if (currentState.originalProfile != null) {
+                return@update currentState
+            }
+
             withValidation(
                 currentState.copy(
-                originalProfile = profile,
-                initials = profile.initials,
-                username = profile.username,
-                email = profile.email,
-                bio = profile.bio,
-                location = profile.location,
-                avatarUrl = profile.avatarUrl,
-                notificationPreferences = profile.notificationPreferences
+                    originalProfile = profile,
+                    initials = profile.initials,
+                    username = profile.username,
+                    email = profile.email,
+                    bio = profile.bio,
+                    location = profile.location,
+                    avatarUrl = profile.avatarUrl,
+                    notificationPreferences = profile.notificationPreferences
                 )
             )
         }
@@ -70,11 +83,57 @@ class EditProfileViewModel : ViewModel() {
         }
     }
 
-    fun updateAvatarUrl(input: String) {
+    fun uploadAvatar(uri: Uri) {
+        if (_uiState.value.isUploadingAvatar) return
+
         _uiState.update { currentState ->
-            currentState.copy(
-                avatarUrl = input
+            withValidation(
+                currentState.copy(
+                    selectedAvatarUri = uri,
+                    isUploadingAvatar = true,
+                    avatarUploadErrorMessage = null,
+                    uploadedAvatarUrl = null
+                )
             )
+        }
+
+        viewModelScope.launch {
+            val result = storageRepository.uploadProfileImage(uri)
+            val uploadedUrl = result.getOrNull()
+
+            if (result.isSuccess && uploadedUrl != null) {
+                _uiState.update { currentState ->
+                    withValidation(
+                        currentState.copy(
+                            avatarUrl = uploadedUrl,
+                            selectedAvatarUri = null,
+                            isUploadingAvatar = false,
+                            avatarUploadErrorMessage = null,
+                            uploadedAvatarUrl = uploadedUrl
+                        )
+                    )
+                }
+            } else {
+                val mensaje =
+                    result.exceptionOrNull()?.message
+                        ?: "No se pudo subir la foto de perfil"
+
+                _uiState.update { currentState ->
+                    withValidation(
+                        currentState.copy(
+                            selectedAvatarUri = null,
+                            isUploadingAvatar = false,
+                            avatarUploadErrorMessage = mensaje
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    fun consumeUploadedAvatar() {
+        _uiState.update { currentState ->
+            currentState.copy(uploadedAvatarUrl = null)
         }
     }
 
@@ -144,7 +203,7 @@ class EditProfileViewModel : ViewModel() {
     }
 
     private fun withValidation(state: EditProfileState): EditProfileState = state.copy(
-        isSaveEnabled = EditProfileRules.canSave(
+        isSaveEnabled = !state.isUploadingAvatar && EditProfileRules.canSave(
             username = state.username,
             email = state.email,
             location = state.location

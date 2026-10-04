@@ -11,10 +11,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 
+/** Sincroniza el perfil recibido con el ViewModel y conecta sus acciones de navegación. */
 @Composable
 fun ProfileScreen(
     profileViewModel: ProfileViewModel,
     userProfile: UserProfile,
+    onSignOut: () -> Unit,
     modifier: Modifier = Modifier,
     onEditProfileClick: () -> Unit = {},
     onSavedPlacesClick: () -> Unit = {}
@@ -31,6 +33,10 @@ fun ProfileScreen(
             reviews = state.reviews,
             onEditProfileClick = onEditProfileClick,
             onSavedPlacesClick = onSavedPlacesClick,
+            onSignOutClick = {
+                profileViewModel.signOut()
+                onSignOut()
+            },
             modifier = modifier
         )
     }
@@ -44,7 +50,8 @@ private fun ProfileScreenPreview() {
             user = PreviewData.userProfile,
             reviews = PreviewData.listReviews,
             onEditProfileClick = {},
-            onSavedPlacesClick = {}
+            onSavedPlacesClick = {},
+            onSignOutClick = {}
         )
     }
 }

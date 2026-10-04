@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Encabezado global que muestra la identidad de la aplicación y el acceso a notificaciones. */
 @Composable
 fun WayspotHeader(
     onNotificationsClick: () -> Unit,

@@ -31,6 +31,7 @@ import com.example.wayspot.data.model.Place
 import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Resume la duración, el precio y la altitud declarados por el detalle del lugar. */
 @Composable
 internal fun PlaceInfoRow(place: Place, modifier: Modifier = Modifier) {
     Row(

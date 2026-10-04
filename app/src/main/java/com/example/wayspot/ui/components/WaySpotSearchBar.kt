@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Campo de búsqueda reutilizable con icono, etiqueta accesible y texto de ayuda configurable. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WaySpotSearchBar(

@@ -29,6 +29,7 @@ import com.example.wayspot.ui.theme.WayspotTheme
 import com.example.wayspot.R
 import com.example.wayspot.ui.screens.auth.components.AuthSwitchPrompt
 
+/** Agrupa las acciones de acceso, proveedor social y cambio a registro. */
 @Composable
 internal fun LoginActionsSection(
     onLoginClick: () -> Unit,

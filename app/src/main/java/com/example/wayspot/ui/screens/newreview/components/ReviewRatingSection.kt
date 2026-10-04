@@ -30,6 +30,7 @@ import com.example.wayspot.data.model.ReviewRules
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Presenta la selección de valoración y comunica al padre el valor elegido. */
 @Composable
 fun ReviewRatingSection(
     rating: Int,

@@ -3,12 +3,14 @@ package com.example.wayspot.data.model
 import androidx.annotation.StringRes
 import com.example.wayspot.R
 
+/** Categoría de exploración que relaciona una etiqueta visible con categorías de lugares. */
 data class ExploreCategory(
     @param:StringRes val labelRes: Int,
     val placeCategoryResIds: Set<Int>,
     val showsAllPlaces: Boolean = false
 )
 
+/** Define las categorías disponibles y el filtrado determinista del catálogo local. */
 object ExploreCategoryRules {
     val categories = listOf(
         ExploreCategory(

@@ -1,16 +1,19 @@
 package com.example.wayspot.data.model
 
+/** Listas personales a las que puede pertenecer un lugar guardado. */
 enum class SavedPlaceList {
     WANT_TO_VISIT,
     FAVORITES,
     VISITED
 }
 
+/** Asociación inmutable entre un lugar y las listas personales que lo contienen. */
 data class SavedPlace(
     val place: Place,
     val lists: Set<SavedPlaceList>
 )
 
+/** Operaciones puras para consultar y actualizar colecciones de lugares guardados. */
 object SavedPlacesRules {
     val defaultList = SavedPlaceList.WANT_TO_VISIT
 

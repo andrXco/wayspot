@@ -4,12 +4,16 @@ import androidx.lifecycle.ViewModel
 import com.example.wayspot.data.model.SavedPlace
 import com.example.wayspot.data.model.SavedPlaceList
 import com.example.wayspot.data.model.SavedPlacesRules
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import java.util.Locale
 
-class SavedPlacesViewModel : ViewModel() {
+/** Deriva los lugares visibles y sus conteos a partir de los datos, filtros y configuración regional. */
+@HiltViewModel
+class SavedPlacesViewModel @Inject constructor() : ViewModel() {
 
     private var allSavedPlaces: List<SavedPlace> = emptyList()
     private var searchTermsByPlaceId: Map<String, List<String>> = emptyMap()

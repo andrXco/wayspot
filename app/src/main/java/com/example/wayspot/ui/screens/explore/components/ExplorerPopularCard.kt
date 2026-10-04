@@ -16,19 +16,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import com.example.wayspot.R
 import com.example.wayspot.data.model.Place
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.ui.theme.EstrellaAmarilla
 import com.example.wayspot.ui.theme.WayspotTheme
+import com.example.wayspot.ui.components.WayspotImage
 
+/** Tarjeta reutilizable de un destino explorable con accesos al detalle y al estado de guardado. */
 @Composable
 fun ExplorerPopularCard(
     place: Place,
@@ -58,12 +58,12 @@ fun ExplorerPopularCard(
                     .padding(8.dp)
                     .clip(RoundedCornerShape(20.dp))
             ) {
-                AsyncImage(
-                    model = place.imagen ?: R.drawable.post_card_machu_pichu,
+                WayspotImage(
+                    imageModel = place.imagen ?: R.drawable.post_card_machu_pichu,
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop,
-                    placeholder = painterResource(R.drawable.branding_logo_claro_wayspot)
+                    placeholderResId = R.drawable.branding_logo_claro_wayspot
                 )
 
                 // Badge de Categoría

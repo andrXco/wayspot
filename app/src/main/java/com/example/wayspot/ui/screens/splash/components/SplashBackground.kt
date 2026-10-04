@@ -7,13 +7,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.example.wayspot.R
 
+/** Superpone imagen, degradados y transición de entrada sin acoplar el contenido de bienvenida. */
 @Composable
 fun SplashBackground(
     backgroundOverlay: Brush,
+    entranceOverlayColor: Color,
+    entranceOverlayAlpha: Float,
+    contentAlpha: Float,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
@@ -31,6 +37,22 @@ fun SplashBackground(
                 .background(backgroundOverlay)
         )
 
-        content()
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    entranceOverlayColor.copy(alpha = entranceOverlayAlpha)
+                )
+        )
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .graphicsLayer {
+                    alpha = contentAlpha
+                }
+        ) {
+            content()
+        }
     }
 }

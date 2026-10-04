@@ -17,12 +17,14 @@ import androidx.compose.ui.unit.dp
 import com.example.wayspot.data.model.Review
 import com.example.wayspot.data.model.UserProfile
 
+/** Organiza la cabecera del perfil, sus accesos y el historial de reseñas en una lista con claves estables. */
 @Composable
 fun ProfileContent(
     user: UserProfile,
     reviews: List<Review>,
     onEditProfileClick: () -> Unit,
     onSavedPlacesClick: () -> Unit,
+    onSignOutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -104,6 +106,18 @@ fun ProfileContent(
             ProfileReviewItem(
                 review = review,
                 modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        item {
+            ProfileSignOutButton(
+                onClick = onSignOutClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 32.dp,
+                        vertical = 16.dp
+                    )
             )
         }
     }

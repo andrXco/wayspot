@@ -7,11 +7,18 @@ import com.example.wayspot.data.model.ExploreCategoryRules
 import com.example.wayspot.data.model.Place
 import com.example.wayspot.data.model.SavedPlace
 import com.example.wayspot.data.model.SavedPlacesRules
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
-class ExploreViewModel : ViewModel() {
+/**
+ * Conserva el catálogo completo internamente y publica la selección filtrada junto con el estado
+ * de búsqueda y los identificadores guardados.
+ */
+@HiltViewModel
+class ExploreViewModel @Inject constructor() : ViewModel() {
 
     private var allPlaces: List<Place> = emptyList()
 

@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
 
+/** Acciones y texto auxiliar posteriores al formulario de recuperación. */
 @Composable
 fun ForgotPasswordActionsSection(
     onBackToLoginClick: () -> Unit,

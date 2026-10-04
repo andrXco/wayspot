@@ -22,17 +22,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.example.wayspot.R
 import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.data.model.Place
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.theme.WayspotTheme
+import com.example.wayspot.ui.components.WayspotImage
 
 @Composable
 fun ReviewPlaceSummaryCard(
@@ -58,8 +57,8 @@ fun ReviewPlaceSummaryCard(
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            AsyncImage(
-                model = place.imagen,
+            WayspotImage(
+                imageModel = place.imagen,
                 contentDescription = stringResource(
                     R.string.new_review_place_image_content_description,
                     stringResource(place.tituloRes)
@@ -68,9 +67,9 @@ fun ReviewPlaceSummaryCard(
                     .size(58.dp)
                     .clip(RoundedCornerShape(12.dp)),
                 contentScale = ContentScale.Crop,
-                placeholder = painterResource(R.drawable.branding_logo_wayspot),
-                error = painterResource(R.drawable.branding_logo_wayspot),
-                fallback = painterResource(R.drawable.branding_logo_wayspot)
+                placeholderResId = R.drawable.branding_logo_wayspot,
+                errorResId = R.drawable.branding_logo_wayspot,
+                fallbackResId = R.drawable.branding_logo_wayspot
             )
 
             Spacer(modifier = Modifier.width(12.dp))

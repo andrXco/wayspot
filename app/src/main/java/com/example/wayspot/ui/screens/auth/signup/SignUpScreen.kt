@@ -1,158 +1,211 @@
-    package com.example.wayspot.ui.screens.auth.signup
+package com.example.wayspot.ui.screens.auth.signup
 
-    import androidx.compose.foundation.background
-    import androidx.compose.foundation.layout.Column
-    import androidx.compose.foundation.layout.Spacer
-    import androidx.compose.foundation.layout.fillMaxSize
-    import androidx.compose.foundation.layout.fillMaxWidth
-    import androidx.compose.foundation.layout.height
-    import androidx.compose.foundation.layout.imePadding
-    import androidx.compose.foundation.layout.padding
-    import androidx.compose.foundation.rememberScrollState
-    import androidx.compose.foundation.verticalScroll
-    import androidx.compose.material3.MaterialTheme
-    import androidx.compose.runtime.Composable
-    import androidx.compose.runtime.getValue
-    import androidx.compose.ui.Alignment
-    import androidx.compose.ui.Modifier
-    import androidx.compose.ui.res.stringResource
-    import androidx.compose.ui.unit.dp
-    import com.example.wayspot.R
-    import com.example.wayspot.ui.preview.WayspotMultiPreview
-    import com.example.wayspot.ui.screens.auth.components.AuthHeader
-    import com.example.wayspot.ui.screens.auth.signup.components.SignUpActionsSection
-    import com.example.wayspot.ui.screens.auth.signup.components.SignUpFormSection
-    import com.example.wayspot.ui.theme.WayspotTheme
-    import androidx.compose.runtime.collectAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import com.example.wayspot.R
+import com.example.wayspot.ui.preview.WayspotMultiPreview
+import com.example.wayspot.ui.screens.auth.components.AuthHeader
+import com.example.wayspot.ui.screens.auth.signup.components.SignUpActionsSection
+import com.example.wayspot.ui.screens.auth.signup.components.SignUpFormSection
+import com.example.wayspot.ui.theme.WayspotTheme
 
-    @Composable
-    fun SignUpScreen(
-        signUpViewModel: SignUpViewModel,
-        onSignUpClick: () -> Unit,
-        onBackToLoginClick: () -> Unit,
-        modifier: Modifier = Modifier
-    ) {
-        val state by signUpViewModel.uiState.collectAsState()
+/**
+ * Adapta el estado de registro a la interfaz y consume el evento de navegación al completar
+ * la creación de la cuenta.
+ */
+@Composable
+fun SignUpScreen(
+    signUpViewModel: SignUpViewModel,
+    onSignUpClick: () -> Unit,
+    onBackToLoginClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val state by signUpViewModel.uiState.collectAsState()
+    val navigateToHome by signUpViewModel.navigateToHome.collectAsState()
+    val mostrarMensajeError by signUpViewModel.mostrarMensajeError.collectAsState()
+    val mensajeError by signUpViewModel.mensajeError.collectAsState()
 
-        SignUpContent(
-            nombre = state.nombre,
-            onNombreChange = { signUpViewModel.updateNombre(it) },
-            correo = state.correo,
-            onCorreoChange = { signUpViewModel.updateCorreo(it) },
-            contrasena = state.contrasena,
-            onContrasenaChange = { signUpViewModel.updateContrasena(it) },
-            confirmarContrasena = state.confirmarContrasena,
-            onConfirmarContrasenaChange = {
-                signUpViewModel.updateConfirmarContrasena(it)
+    LaunchedEffect(navigateToHome) {
+        if (navigateToHome) {
+            onSignUpClick()
+            signUpViewModel.onNavigationHandled()
+        }
+    }
+
+    SignUpContent(
+        nombre = state.nombre,
+        onNombreChange = { signUpViewModel.updateNombre(it) },
+        correo = state.correo,
+        onCorreoChange = { signUpViewModel.updateCorreo(it) },
+        contrasena = state.contrasena,
+        onContrasenaChange = { signUpViewModel.updateContrasena(it) },
+        confirmarContrasena = state.confirmarContrasena,
+        onConfirmarContrasenaChange = {
+            signUpViewModel.updateConfirmarContrasena(it)
+        },
+        passwordVisible = state.passwordVisible,
+        onTogglePasswordVisibility = {
+            signUpViewModel.togglePasswordVisibility()
+        },
+        confirmPasswordVisible = state.confirmPasswordVisible,
+        onToggleConfirmPasswordVisibility = {
+            signUpViewModel.toggleConfirmPasswordVisibility()
+        },
+        termsAccepted = state.termsAccepted,
+        onTermsAcceptedChange = {
+            signUpViewModel.updateTermsAccepted(it)
+        },
+        mostrarMensajeError = mostrarMensajeError,
+        mensajeError = mensajeError,
+        onDismissError = signUpViewModel::dismissError,
+        onSignUpClick = signUpViewModel::signUp,
+        onBackToLoginClick = onBackToLoginClick,
+        modifier = modifier
+    )
+}
+
+/** Contenido sin dependencia del ViewModel para composición y previsualización del formulario. */
+@Composable
+fun SignUpContent(
+    nombre: String,
+    onNombreChange: (String) -> Unit,
+    correo: String,
+    onCorreoChange: (String) -> Unit,
+    contrasena: String,
+    onContrasenaChange: (String) -> Unit,
+    confirmarContrasena: String,
+    onConfirmarContrasenaChange: (String) -> Unit,
+    passwordVisible: Boolean,
+    onTogglePasswordVisibility: () -> Unit,
+    confirmPasswordVisible: Boolean,
+    onToggleConfirmPasswordVisibility: () -> Unit,
+    termsAccepted: Boolean,
+    onTermsAcceptedChange: (Boolean) -> Unit,
+    mostrarMensajeError: Boolean,
+    mensajeError: String,
+    onDismissError: () -> Unit,
+    onSignUpClick: () -> Unit,
+    onBackToLoginClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val passwordsDoNotMatch = confirmarContrasena.isNotEmpty() &&
+            contrasena != confirmarContrasena
+
+    if (mostrarMensajeError) {
+        AlertDialog(
+            onDismissRequest = onDismissError,
+            title = {
+                Text(
+                    stringResource(R.string.auth_signup_error_title)
+                )
             },
-            passwordVisible = state.passwordVisible,
-            onTogglePasswordVisibility = {
-                signUpViewModel.togglePasswordVisibility()
+            text = {
+                Text(
+                    mensajeError
+                )
             },
-            confirmPasswordVisible = state.confirmPasswordVisible,
-            onToggleConfirmPasswordVisibility = {
-                signUpViewModel.toggleConfirmPasswordVisibility()
-            },
-            termsAccepted = state.termsAccepted,
-            onTermsAcceptedChange = {
-                signUpViewModel.updateTermsAccepted(it)
-            },
-            onSignUpClick = onSignUpClick,
-            onBackToLoginClick = onBackToLoginClick,
-            modifier = modifier
+            confirmButton = {
+                TextButton(
+                    onClick = onDismissError
+                ) {
+                    Text(
+                        stringResource(R.string.auth_error_dismiss)
+                    )
+                }
+            }
         )
     }
 
-    @Composable
-    fun SignUpContent(
-        nombre: String,
-        onNombreChange: (String) -> Unit,
-        correo: String,
-        onCorreoChange: (String) -> Unit,
-        contrasena: String,
-        onContrasenaChange: (String) -> Unit,
-        confirmarContrasena: String,
-        onConfirmarContrasenaChange: (String) -> Unit,
-        passwordVisible: Boolean,
-        onTogglePasswordVisibility: () -> Unit,
-        confirmPasswordVisible: Boolean,
-        onToggleConfirmPasswordVisibility: () -> Unit,
-        termsAccepted: Boolean,
-        onTermsAcceptedChange: (Boolean) -> Unit,
-        onSignUpClick: () -> Unit,
-        onBackToLoginClick: () -> Unit,
-        modifier: Modifier = Modifier
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(rememberScrollState())
+            .imePadding()
+            .padding(horizontal = 24.dp, vertical = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val passwordsDoNotMatch = confirmarContrasena.isNotEmpty() &&
-            contrasena != confirmarContrasena
+        AuthHeader(
+            title = stringResource(R.string.signup_title),
+            subtitle = stringResource(R.string.auth_signup_tagline)
+        )
 
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .verticalScroll(rememberScrollState())
-                .imePadding()
-                .padding(horizontal = 24.dp, vertical = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            AuthHeader(
-                title = stringResource(R.string.signup_title),
-                subtitle = stringResource(R.string.auth_signup_tagline)
-            )
+        Spacer(modifier = Modifier.height(26.dp))
 
-            Spacer(modifier = Modifier.height(26.dp))
+        SignUpFormSection(
+            username = nombre,
+            onUsernameChange = onNombreChange,
+            email = correo,
+            onEmailChange = onCorreoChange,
+            password = contrasena,
+            onPasswordChange = onContrasenaChange,
+            confirmPassword = confirmarContrasena,
+            onConfirmPasswordChange = onConfirmarContrasenaChange,
+            passwordVisible = passwordVisible,
+            onTogglePasswordVisibility = onTogglePasswordVisibility,
+            confirmPasswordVisible = confirmPasswordVisible,
+            onToggleConfirmPasswordVisibility = onToggleConfirmPasswordVisibility,
+            passwordsDoNotMatch = passwordsDoNotMatch,
+            modifier = Modifier.fillMaxWidth()
+        )
 
-            SignUpFormSection(
-                username = nombre,
-                onUsernameChange = onNombreChange,
-                email = correo,
-                onEmailChange = onCorreoChange,
-                password = contrasena,
-                onPasswordChange = onContrasenaChange,
-                confirmPassword = confirmarContrasena,
-                onConfirmPasswordChange = onConfirmarContrasenaChange,
-                passwordVisible = passwordVisible,
-                onTogglePasswordVisibility = onTogglePasswordVisibility,
-                confirmPasswordVisible = confirmPasswordVisible,
-                onToggleConfirmPasswordVisibility = onToggleConfirmPasswordVisibility,
-                passwordsDoNotMatch = passwordsDoNotMatch,
-                modifier = Modifier.fillMaxWidth()
-            )
+        Spacer(modifier = Modifier.height(16.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            SignUpActionsSection(
-                termsAccepted = termsAccepted,
-                onTermsAcceptedChange = onTermsAcceptedChange,
-                signUpEnabled = termsAccepted && !passwordsDoNotMatch,
-                onSignUpClick = onSignUpClick,
-                onBackToLoginClick = onBackToLoginClick,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        SignUpActionsSection(
+            termsAccepted = termsAccepted,
+            onTermsAcceptedChange = onTermsAcceptedChange,
+            signUpEnabled = termsAccepted && !passwordsDoNotMatch,
+            onSignUpClick = onSignUpClick,
+            onBackToLoginClick = onBackToLoginClick,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
+}
 
-    @WayspotMultiPreview
-    @Composable
-    private fun SignUpScreenPreview() {
-        WayspotTheme {
-            SignUpContent(
-                nombre = "",
-                onNombreChange = {},
-                correo = "",
-                onCorreoChange = {},
-                contrasena = "Wayspot123",
-                onContrasenaChange = {},
-                confirmarContrasena = "Wayspot123",
-                onConfirmarContrasenaChange = {},
-                passwordVisible = false,
-                onTogglePasswordVisibility = {},
-                confirmPasswordVisible = false,
-                onToggleConfirmPasswordVisibility = {},
-                termsAccepted = true,
-                onTermsAcceptedChange = {},
-                onSignUpClick = {},
-                onBackToLoginClick = {}
-            )
-        }
+@WayspotMultiPreview
+@Composable
+private fun SignUpScreenPreview() {
+    WayspotTheme {
+        SignUpContent(
+            nombre = "",
+            onNombreChange = {},
+            correo = "",
+            onCorreoChange = {},
+            contrasena = "Wayspot123",
+            onContrasenaChange = {},
+            confirmarContrasena = "Wayspot123",
+            onConfirmarContrasenaChange = {},
+            passwordVisible = false,
+            onTogglePasswordVisibility = {},
+            confirmPasswordVisible = false,
+            onToggleConfirmPasswordVisibility = {},
+            termsAccepted = true,
+            onTermsAcceptedChange = {},
+            mostrarMensajeError = false,
+            mensajeError = "",
+            onDismissError = {},
+            onSignUpClick = {},
+            onBackToLoginClick = {}
+        )
     }
+}

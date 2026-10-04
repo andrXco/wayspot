@@ -32,6 +32,7 @@ import com.example.wayspot.ui.components.ProfileAvatar
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Presenta la identidad, verificación opcional y biografía sobre el encabezado visual del perfil. */
 @Composable
 fun ProfileHeader(
     user: UserProfile,

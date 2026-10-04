@@ -4,11 +4,15 @@ import androidx.lifecycle.ViewModel
 import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.data.model.ReviewDraft
 import com.example.wayspot.data.model.ReviewRules
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
-class NewReviewViewModel : ViewModel() {
+/** Mantiene el borrador de reseña normalizado y deriva cuándo puede publicarse. */
+@HiltViewModel
+class NewReviewViewModel @Inject constructor() : ViewModel() {
 
     private val _uiState = MutableStateFlow(NewReviewState())
 

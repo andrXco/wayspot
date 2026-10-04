@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -35,13 +35,19 @@ import com.example.wayspot.ui.screens.notifications.NotificationsViewModel
 import com.example.wayspot.ui.screens.placedetail.PlaceDetailViewModel
 import com.example.wayspot.ui.screens.splash.SplashViewModel
 
+/**
+ * Registra los destinos de la aplicación y adapta sus callbacks al `NavController`.
+ *
+ * También entrega a los destinos el estado compartido gestionado por
+ * [AppNavigationViewModel], sin exponer el controlador de navegación a las pantallas.
+ */
 @Composable
 fun AppNavigation(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
 
-    val appNavigationViewModel: AppNavigationViewModel = viewModel()
+    val appNavigationViewModel: AppNavigationViewModel = hiltViewModel()
 
     val appNavigationState by appNavigationViewModel.uiState.collectAsState()
     val userProfile = appNavigationState.userProfile ?: return
@@ -55,7 +61,7 @@ fun AppNavigation(
 
         composable(Screen.ForgotPassword.route) {
 
-            val forgotPasswordViewModel: ForgotPasswordViewModel = viewModel()
+            val forgotPasswordViewModel: ForgotPasswordViewModel = hiltViewModel()
 
             ForgotPasswordScreen(
                 forgotPasswordViewModel = forgotPasswordViewModel,
@@ -73,7 +79,7 @@ fun AppNavigation(
 
         composable(Screen.SavedPlaces.route) {
 
-            val savedPlacesViewModel: SavedPlacesViewModel = viewModel()
+            val savedPlacesViewModel: SavedPlacesViewModel = hiltViewModel()
 
             SavedPlacesScreen(
                 savedPlacesViewModel = savedPlacesViewModel,
@@ -102,11 +108,12 @@ fun AppNavigation(
 
         composable(Screen.EditProfile.route) {
 
-            val editProfileViewModel: EditProfileViewModel = viewModel()
+            val editProfileViewModel: EditProfileViewModel = hiltViewModel()
 
             EditProfileScreen(
                 editProfileViewModel = editProfileViewModel,
                 profile = userProfile,
+                onAvatarUploaded = appNavigationViewModel::updateUserAvatar,
 
                 onBackClick = {
                     navController.navigate(
@@ -137,7 +144,7 @@ fun AppNavigation(
 
         composable(Screen.Profile.route) {
 
-            val profileViewModel: ProfileViewModel = viewModel()
+            val profileViewModel: ProfileViewModel = hiltViewModel()
 
             ProfileScreen(
                 profileViewModel = profileViewModel,
@@ -153,13 +160,23 @@ fun AppNavigation(
                     navController.navigate(
                         Screen.SavedPlaces.route
                     )
+                },
+
+                onSignOut = {
+                    appNavigationViewModel.resetUserProfile()
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(0) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
                 }
             )
         }
 
         composable(Screen.Explore.route) {
 
-            val exploreViewModel: ExploreViewModel = viewModel()
+            val exploreViewModel: ExploreViewModel = hiltViewModel()
 
             ExploreScreen(
                 exploreViewModel = exploreViewModel,
@@ -194,7 +211,7 @@ fun AppNavigation(
 
             if (placeId != null) {
 
-                val placeDetailViewModel: PlaceDetailViewModel = viewModel()
+                val placeDetailViewModel: PlaceDetailViewModel = hiltViewModel()
 
                 PlaceDetailScreen(
                     placeDetailViewModel = placeDetailViewModel,
@@ -217,29 +234,42 @@ fun AppNavigation(
 
         composable(Screen.Splash.route) {
 
-            val splashViewModel: SplashViewModel = viewModel()
+            val splashViewModel: SplashViewModel = hiltViewModel()
 
             SplashScreen(
                 splashViewModel = splashViewModel,
-
+                onAuthenticated = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Splash.route) {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
+                },
                 onLoginClick = {
-                    navController.navigate(Screen.Login.route)
+                    navController.navigate(Screen.Login.route){
+                        popUpTo(0) {inclusive = true}
+                    }
                 },
 
                 onSignUpClick = {
-                    navController.navigate(Screen.SignUp.route)
+                    navController.navigate(Screen.SignUp.route){
+                        popUpTo(0) {inclusive = true}
+
+                    }
                 }
             )
         }
 
         composable(Screen.Login.route) {
 
-            val loginViewModel: LoginViewModel = viewModel()
+            val loginViewModel: LoginViewModel = hiltViewModel()
 
             LoginScreen(
                 loginViewModel = loginViewModel,
 
                 onLoginClick = {
+                    appNavigationViewModel.syncAuthenticatedUser()
                     navController.navigate(
                         Screen.Home.route
                     )
@@ -261,7 +291,7 @@ fun AppNavigation(
 
         composable(Screen.Notifications.route) {
 
-            val notificationsViewModel: NotificationsViewModel = viewModel()
+            val notificationsViewModel: NotificationsViewModel = hiltViewModel()
 
             NotificationsScreen(
                 notificationsViewModel = notificationsViewModel,
@@ -276,33 +306,32 @@ fun AppNavigation(
 
         composable(Screen.Home.route) {
 
-            val homeViewModel: HomeViewModel = viewModel()
+            val homeViewModel: HomeViewModel = hiltViewModel()
 
             HomeScreen(
                 homeViewModel = homeViewModel,
-
-                onNotificationsClick = {
-                    navController.navigate(
-                        Screen.Notifications.route
-                    )
-                },
-
+                savedPlaces = savedPlaces,
                 onPlaceClick = { placeId ->
                     navController.navigate(
                         Screen.PlaceDetail.createRoute(placeId)
                     )
+                },
+
+                onSaveClick = { place ->
+                    appNavigationViewModel.toggleSavedPlace(place)
                 }
             )
         }
 
         composable(Screen.SignUp.route) {
 
-            val signUpViewModel: SignUpViewModel = viewModel()
+            val signUpViewModel: SignUpViewModel = hiltViewModel()
 
             SignUpScreen(
                 signUpViewModel = signUpViewModel,
 
                 onSignUpClick = {
+                    appNavigationViewModel.syncAuthenticatedUser()
                     navController.navigate(
                         Screen.Home.route
                     ) {
@@ -334,7 +363,7 @@ fun AppNavigation(
 
             if (placeId != null) {
 
-                val newReviewViewModel: NewReviewViewModel = viewModel()
+                val newReviewViewModel: NewReviewViewModel = hiltViewModel()
 
                 NewReviewScreen(
                     newReviewViewModel = newReviewViewModel,

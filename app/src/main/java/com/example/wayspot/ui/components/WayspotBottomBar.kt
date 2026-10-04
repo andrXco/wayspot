@@ -15,12 +15,14 @@ import com.example.wayspot.R
 import com.example.wayspot.navigation.Screen
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Describe un destino disponible en la barra de navegación principal. */
 data class BottomNavItem(
     val route: String,
     val icon: ImageVector,
     val labelRes: Int
 )
 
+/** Barra de navegación global que refleja la ruta activa y delega el cambio de destino. */
 @Composable
 fun WayspotBottomBar(
     currentRoute: String,

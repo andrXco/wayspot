@@ -11,4 +11,5 @@ import androidx.compose.ui.tooling.preview.Preview
     uiMode = Configuration.UI_MODE_NIGHT_YES,
     showBackground = true
 )
+/** Agrupa las previsualizaciones de teléfono en temas claro y oscuro. */
 annotation class WayspotMultiPreview

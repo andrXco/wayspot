@@ -1,15 +1,21 @@
 package com.example.wayspot.ui.screens.splash
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -20,15 +26,26 @@ import com.example.wayspot.ui.screens.splash.components.SplashBackground
 import com.example.wayspot.ui.screens.splash.components.SplashBrandingSection
 import com.example.wayspot.ui.screens.splash.components.SplashDestinationChipsSection
 import com.example.wayspot.ui.theme.WayspotTheme
+import kotlinx.coroutines.delay
 
+/** Resuelve la ruta inicial de sesión y prepara los colores adaptados al tema para la bienvenida. */
 @Composable
 fun SplashScreen(
     splashViewModel: SplashViewModel,
+    onAuthenticated: () -> Unit,
     onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by splashViewModel.uiState.collectAsState()
+    val navigateHome by splashViewModel.navigateHome.collectAsState()
+
+    LaunchedEffect(navigateHome) {
+        if (navigateHome) {
+            splashViewModel.onNavigationHandled()
+            onAuthenticated()
+        }
+    }
 
     val isDarkTheme = isSystemInDarkTheme()
     val colorScheme = MaterialTheme.colorScheme
@@ -73,6 +90,7 @@ fun SplashScreen(
             primaryColor = primaryColor,
             onPrimaryColor = onPrimaryColor,
             accentColor = accentColor,
+            entranceOverlayColor = colorScheme.scrim,
             backgroundOverlay = backgroundOverlay,
             onLoginClick = onLoginClick,
             onSignUpClick = onSignUpClick,
@@ -81,24 +99,51 @@ fun SplashScreen(
     }
 }
 
+/** Presenta el fondo, la animación de entrada y las acciones de acceso de la bienvenida. */
 @Composable
 fun SplashContent(
     foregroundColor: Color,
     primaryColor: Color,
     onPrimaryColor: Color,
     accentColor: Color,
+    entranceOverlayColor: Color,
     backgroundOverlay: Brush,
     onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    animateEntrance: Boolean = true
 ) {
+    val revealProgress = remember(animateEntrance) {
+        Animatable(if (animateEntrance) 0f else 1f)
+    }
+
+    LaunchedEffect(animateEntrance) {
+        if (animateEntrance) {
+            delay(SPLASH_REVEAL_DELAY_MS)
+            revealProgress.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(
+                    durationMillis = SPLASH_REVEAL_DURATION_MS,
+                    easing = FastOutSlowInEasing
+                )
+            )
+        } else {
+            revealProgress.snapTo(1f)
+        }
+    }
+
     SplashBackground(
         backgroundOverlay = backgroundOverlay,
+        entranceOverlayColor = entranceOverlayColor,
+        entranceOverlayAlpha = (1f - revealProgress.value) * INITIAL_DARK_OVERLAY_ALPHA,
+        contentAlpha = INITIAL_CONTENT_ALPHA +
+            (1f - INITIAL_CONTENT_ALPHA) * revealProgress.value,
         modifier = modifier.fillMaxSize()
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .statusBarsPadding()
                 .padding(
                     horizontal = 24.dp,
                     vertical = 24.dp
@@ -146,6 +191,7 @@ private fun SplashScreenPreview() {
             primaryColor = colorScheme.primary,
             onPrimaryColor = colorScheme.onPrimary,
             accentColor = colorScheme.tertiaryContainer,
+            entranceOverlayColor = colorScheme.scrim,
             backgroundOverlay = Brush.verticalGradient(
                 colors = listOf(
                     colorScheme.scrim,
@@ -153,7 +199,13 @@ private fun SplashScreenPreview() {
                 )
             ),
             onLoginClick = {},
-            onSignUpClick = {}
+            onSignUpClick = {},
+            animateEntrance = false
         )
     }
 }
+
+private const val SPLASH_REVEAL_DELAY_MS = 300L
+private const val SPLASH_REVEAL_DURATION_MS = 700
+private const val INITIAL_DARK_OVERLAY_ALPHA = 0.32f
+private const val INITIAL_CONTENT_ALPHA = 0.58f

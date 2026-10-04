@@ -1,5 +1,6 @@
 package com.example.wayspot.navigation
 
+/** Fuente única de las rutas del `NavHost` y de la construcción de destinos con argumentos. */
 sealed class Screen(val route: String) {
 
     object Splash : Screen("splash")

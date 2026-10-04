@@ -12,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -22,9 +23,16 @@ import com.example.wayspot.R
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.auth.components.AuthHeader
 import com.example.wayspot.ui.screens.auth.login.components.LoginActionsSection
+import com.example.wayspot.ui.screens.auth.login.components.LoginErrorDialog
 import com.example.wayspot.ui.screens.auth.login.components.LoginFormSection
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/**
+ * Adaptador de Compose para el inicio de sesión.
+ *
+ * Observa el estado del ViewModel, delega la interacción en sus eventos y consume la navegación
+ * exitosa antes de emitir la función externa de navegación.
+ */
 @Composable
 fun LoginScreen(
     loginViewModel: LoginViewModel,
@@ -35,6 +43,16 @@ fun LoginScreen(
     onGoogleClick: () -> Unit = {}
 ) {
     val state by loginViewModel.uiState.collectAsState()
+    val navigateToHome by loginViewModel.navigateToHome.collectAsState()
+    val mostrarMensajeError by loginViewModel.mostrarMensajeError.collectAsState()
+    val mensajeError by loginViewModel.mensajeError.collectAsState()
+
+    LaunchedEffect(navigateToHome) {
+        if (navigateToHome) {
+            onLoginClick()
+            loginViewModel.onNavigationHandled()
+        }
+    }
 
     LoginContent(
         usuario = state.usuario,
@@ -46,10 +64,13 @@ fun LoginScreen(
             loginViewModel.updateContrasena(it)
         },
         passwordVisible = state.passwordVisible,
+        mostrarMensajeError = mostrarMensajeError,
+        mensajeError = mensajeError,
+        onDismissError = loginViewModel::dismissError,
         onTogglePasswordVisibility = {
             loginViewModel.togglePasswordVisibility()
         },
-        onLoginClick = onLoginClick,
+        onLoginClick = loginViewModel::signIn,
         onSignUpClick = onSignUpClick,
         onForgotPasswordClick = onForgotPasswordClick,
         onGoogleClick = onGoogleClick,
@@ -57,6 +78,7 @@ fun LoginScreen(
     )
 }
 
+/** Contenido sin dependencia del ViewModel, apto para previsualizaciones y pruebas de interfaz. */
 @Composable
 fun LoginContent(
     usuario: String,
@@ -64,6 +86,9 @@ fun LoginContent(
     contrasena: String,
     onContrasenaChange: (String) -> Unit,
     passwordVisible: Boolean,
+    mostrarMensajeError: Boolean,
+    mensajeError: String,
+    onDismissError: () -> Unit,
     onTogglePasswordVisibility: () -> Unit,
     onLoginClick: () -> Unit,
     onSignUpClick: () -> Unit,
@@ -71,6 +96,13 @@ fun LoginContent(
     onGoogleClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    if (mostrarMensajeError) {
+        LoginErrorDialog(
+            mensajeError = mensajeError,
+            onDismissRequest = onDismissError
+        )
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -117,6 +149,9 @@ private fun LoginPreview() {
             contrasena = "",
             onContrasenaChange = {},
             passwordVisible = false,
+            mostrarMensajeError = false,
+            mensajeError = "",
+            onDismissError = {},
             onTogglePasswordVisibility = {},
             onLoginClick = {},
             onSignUpClick = {},

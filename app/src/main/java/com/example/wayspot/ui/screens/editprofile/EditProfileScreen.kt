@@ -34,6 +34,7 @@ import com.example.wayspot.ui.screens.editprofile.components.EditProfileHeader
 import com.example.wayspot.ui.screens.editprofile.components.EditProfileNotificationsSection
 import com.example.wayspot.ui.theme.WayspotTheme
 
+/** Adapta el estado de edición a la interfaz y coordina el selector de foto y la navegación atrás. */
 @Composable
 fun EditProfileScreen(
     editProfileViewModel: EditProfileViewModel,
@@ -41,29 +42,34 @@ fun EditProfileScreen(
     onBackClick: () -> Unit,
     onSaveClick: (UserProfile) -> Unit,
     onDeleteAccountConfirmed: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onAvatarUploaded: (String) -> Unit = {}
 ) {
-
     val state by editProfileViewModel.uiState.collectAsState()
 
     LaunchedEffect(profile) {
         editProfileViewModel.loadProfile(profile)
     }
 
+    LaunchedEffect(state.uploadedAvatarUrl) {
+        state.uploadedAvatarUrl?.let { uploadedAvatarUrl ->
+            onAvatarUploaded(uploadedAvatarUrl)
+            editProfileViewModel.consumeUploadedAvatar()
+        }
+    }
+
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { selectedUri ->
         if (selectedUri != null) {
-            editProfileViewModel.updateAvatarUrl(
-                selectedUri.toString()
-            )
+            editProfileViewModel.uploadAvatar(selectedUri)
         }
     }
 
     BackHandler {
         if (state.isDeleteConfirmationVisible) {
             editProfileViewModel.hideDeleteConfirmation()
-        } else {
+        } else if (!state.isUploadingAvatar) {
             onBackClick()
         }
     }
@@ -71,6 +77,9 @@ fun EditProfileScreen(
     EditProfileContent(
         initials = state.initials,
         avatarUrl = state.avatarUrl,
+        selectedAvatarUri = state.selectedAvatarUri,
+        isUploadingAvatar = state.isUploadingAvatar,
+        avatarUploadErrorMessage = state.avatarUploadErrorMessage,
         username = state.username,
         onUsernameChange = {
             editProfileViewModel.updateUsername(it)
@@ -98,7 +107,11 @@ fun EditProfileScreen(
             editProfileViewModel.updateReceivedLikesEnabled(it)
         },
         isSaveEnabled = state.isSaveEnabled,
-        onBackClick = onBackClick,
+        onBackClick = {
+            if (!state.isUploadingAvatar) {
+                onBackClick()
+            }
+        },
         onChangePhotoClick = {
             photoPickerLauncher.launch(
                 PickVisualMediaRequest(
@@ -107,7 +120,9 @@ fun EditProfileScreen(
             )
         },
         onDeleteAccountClick = {
-            editProfileViewModel.showDeleteConfirmation()
+            if (!state.isUploadingAvatar) {
+                editProfileViewModel.showDeleteConfirmation()
+            }
         },
         onSaveClick = {
             editProfileViewModel.profileForSaving()?.let(onSaveClick)
@@ -124,10 +139,14 @@ fun EditProfileScreen(
     )
 }
 
+/** Ensambla las secciones sin estado del formulario, las acciones y la confirmación de eliminación. */
 @Composable
 fun EditProfileContent(
     initials: String,
     avatarUrl: String?,
+    selectedAvatarUri: android.net.Uri?,
+    isUploadingAvatar: Boolean,
+    avatarUploadErrorMessage: String?,
     username: String,
     onUsernameChange: (String) -> Unit,
     email: String,
@@ -161,6 +180,7 @@ fun EditProfileContent(
         ) {
             EditProfileHeader(
                 onBackClick = onBackClick,
+                isBackEnabled = !isUploadingAvatar,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -174,7 +194,10 @@ fun EditProfileContent(
                 item(key = "avatar") {
                     EditProfileAvatarSection(
                         avatarUrl = avatarUrl,
+                        selectedAvatarUri = selectedAvatarUri,
                         initials = initials,
+                        isUploadingAvatar = isUploadingAvatar,
+                        avatarUploadErrorMessage = avatarUploadErrorMessage,
                         onChangePhotoClick = onChangePhotoClick
                     )
                 }
@@ -208,6 +231,7 @@ fun EditProfileContent(
                 item(key = "danger_zone") {
                     EditProfileDangerZone(
                         onDeleteAccountClick = onDeleteAccountClick,
+                        isDeleteEnabled = !isUploadingAvatar,
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 }
@@ -238,6 +262,9 @@ private fun EditProfileScreenPreview() {
         EditProfileContent(
             initials = profile.initials,
             avatarUrl = profile.avatarUrl,
+            selectedAvatarUri = null,
+            isUploadingAvatar = false,
+            avatarUploadErrorMessage = null,
             username = profile.username,
             onUsernameChange = {},
             email = profile.email,
