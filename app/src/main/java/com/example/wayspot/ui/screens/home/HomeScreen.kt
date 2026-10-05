@@ -90,8 +90,8 @@ fun HomeContent(
                 context.getString(review.authorNameRes),
                 context.getString(review.authorHandleRes),
                 context.getString(review.bodyRes),
-                context.getString(place.tituloRes),
-                context.getString(place.ubicacionRes)
+                place.title,
+                place.location
             )
         )
     }
@@ -120,7 +120,6 @@ fun HomeContent(
         }
         item(key = HomeSectionKey.FEATURED) {
             HomeFeaturedPlanCarousel(
-                plans = state.featuredPlans,
                 places = state.places,
                 activePlanIndex = state.activeFeaturedPlanIndex,
                 likeCounts = state.featuredLikeCounts,
@@ -129,7 +128,8 @@ fun HomeContent(
                 onPreviousClick = onPreviousFeaturedPlanClick,
                 onNextClick = onNextFeaturedPlanClick,
                 onLikeClick = onFeaturedLikeClick,
-                onSaveClick = onSaveClick,
+                //onSaveClick = onSaveClick,
+                onSaveClick = {},
                 onPlaceClick = onPlaceClick,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
@@ -165,7 +165,8 @@ fun HomeContent(
                         onExpandClick = { onReviewExpandClick(review.id) },
                         onCommentClick = { onReviewCommentClick(review.id) },
                         onShareClick = { onReviewShareClick(review.id) },
-                        onSaveClick = { onSaveClick(place) },
+                        //onSaveClick = { onSaveClick(place) },
+                        onSaveClick = {},
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 }
@@ -196,7 +197,7 @@ private fun HomeScreenPreview() {
                     categoryId = selectedCategory
                 ),
                 reviews = PreviewData.homeReviews,
-                places = PreviewDataPopular.listPlaces,
+                places = emptyList(),
                 featuredLikeCounts = PreviewData.homeFeaturedPlans.associate { plan ->
                     plan.id to plan.initialLikeCount
                 },

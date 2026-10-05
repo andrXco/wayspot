@@ -14,14 +14,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
-import com.example.wayspot.data.model.Review
+import com.example.wayspot.data.model.ReviewInfo
 import com.example.wayspot.data.model.UserProfile
+
 
 /** Organiza la cabecera del perfil, sus accesos y el historial de reseñas en una lista con claves estables. */
 @Composable
 fun ProfileContent(
     user: UserProfile,
-    reviews: List<Review>,
+    reviews: List<ReviewInfo>,
     onEditProfileClick: () -> Unit,
     onSavedPlacesClick: () -> Unit,
     onSignOutClick: () -> Unit,
@@ -100,7 +101,7 @@ fun ProfileContent(
         items(
             items = reviews,
             key = {
-                it.placeTitle + it.fecha + it.usuario
+                it.id
             }
         ) { review ->
             ProfileReviewItem(
@@ -108,17 +109,6 @@ fun ProfileContent(
                 modifier = Modifier.fillMaxWidth()
             )
         }
-
-        item {
-            ProfileSignOutButton(
-                onClick = onSignOutClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = 32.dp,
-                        vertical = 16.dp
-                    )
-            )
-        }
     }
 }
+

@@ -32,38 +32,45 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
-import com.example.wayspot.data.model.Place
-import com.example.wayspot.data.local.PreviewDataPopular
+import com.example.wayspot.data.model.PlaceInfo
+import com.example.wayspot.ui.components.WayspotImage
 import com.example.wayspot.ui.theme.Blanco
 import com.example.wayspot.ui.theme.Carbon
 import com.example.wayspot.ui.theme.WayspotTheme
-import com.example.wayspot.ui.components.WayspotImage
 
 /** Portada borde a borde que separa la imagen de fondo de los controles protegidos por el inset superior. */
 @Composable
 fun PlaceDetailHero(
-    place: Place,
+    place: PlaceInfo,
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = modifier.height(336.dp)) {
+    Box(
+        modifier = modifier.height(336.dp)
+    ) {
         WayspotImage(
-            imageModel = place.imagen ?: R.drawable.post_card_machu_pichu,
+            imageModel = place.imageUrl
+                ?: R.drawable.post_card_machu_pichu,
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
             placeholderResId = R.drawable.branding_logo_claro_wayspot
         )
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        colors = listOf(Blanco.copy(alpha = 0f), Carbon.copy(alpha = 0.68f))
+                        colors = listOf(
+                            Blanco.copy(alpha = 0f),
+                            Carbon.copy(alpha = 0.68f)
+                        )
                     )
                 )
         )
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -74,31 +81,41 @@ fun PlaceDetailHero(
             DetailActionButton(
                 onClick = onBackClick,
                 icon = Icons.Default.ChevronLeft,
-                contentDescription = stringResource(R.string.back_button_content_description)
+                contentDescription = stringResource(
+                    R.string.back_button_content_description
+                )
             )
+
             DetailActionButton(
                 onClick = onSaveClick,
                 icon = Icons.Default.BookmarkBorder,
-                contentDescription = stringResource(R.string.bookmark_content_description)
+                contentDescription = stringResource(
+                    R.string.bookmark_content_description
+                )
             )
         }
+
         Column(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(horizontal = 24.dp, vertical = 28.dp)
+                .padding(
+                    horizontal = 24.dp,
+                    vertical = 28.dp
+                )
         ) {
             Text(
                 text = stringResource(
                     R.string.place_category_and_country,
-                    stringResource(place.categoriaRes),
-                    stringResource(place.ubicacionRes)
+                    place.category,
+                    place.location
                 ),
                 color = Blanco,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold
             )
+
             Text(
-                text = stringResource(place.tituloRes),
+                text = place.title,
                 color = Blanco,
                 fontSize = 30.sp,
                 fontWeight = FontWeight.ExtraBold
@@ -112,7 +129,15 @@ fun PlaceDetailHero(
 fun PlaceDetailHeroPreview() {
     WayspotTheme {
         PlaceDetailHero(
-            place = PreviewDataPopular.samplePlaces1,
+            place = PlaceInfo(
+                id = "1",
+                title = "Monserrate",
+                category = "Turismo",
+                location = "Bogotá, Colombia",
+                rating = 4.7,
+                imageUrl = null,
+                description = "Lugar turístico ubicado en Bogotá"
+            ),
             onBackClick = {},
             onSaveClick = {}
         )
@@ -131,7 +156,9 @@ private fun DetailActionButton(
         shape = RoundedCornerShape(12.dp),
         color = Blanco.copy(alpha = 0.9f)
     ) {
-        IconButton(onClick = onClick) {
+        IconButton(
+            onClick = onClick
+        ) {
             Icon(
                 imageVector = icon,
                 contentDescription = contentDescription,

@@ -25,6 +25,7 @@ fun ProfileScreen(
 
     LaunchedEffect(userProfile) {
         profileViewModel.loadProfile(userProfile)
+        profileViewModel.loadReviews("1")
     }
 
     state.userProfile?.let { profile ->
@@ -48,7 +49,7 @@ private fun ProfileScreenPreview() {
     WayspotTheme {
         ProfileContent(
             user = PreviewData.userProfile,
-            reviews = PreviewData.listReviews,
+            reviews = emptyList(),
             onEditProfileClick = {},
             onSavedPlacesClick = {},
             onSignOutClick = {}
