@@ -109,6 +109,18 @@ fun ProfileContent(
                 modifier = Modifier.fillMaxWidth()
             )
         }
+
+        item {
+            ProfileSignOutButton(
+                onClick = onSignOutClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 32.dp,
+                        vertical = 16.dp
+                    )
+            )
+        }
     }
 }
 

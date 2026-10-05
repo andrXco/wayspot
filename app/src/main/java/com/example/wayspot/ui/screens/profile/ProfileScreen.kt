@@ -23,7 +23,7 @@ fun ProfileScreen(
 ) {
     val state by profileViewModel.uiState.collectAsState()
 
-    LaunchedEffect(userProfile) {
+    LaunchedEffect(Unit) {
         profileViewModel.loadProfile(userProfile)
         profileViewModel.loadReviews("1")
     }

@@ -15,9 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.wayspot.R
 import com.example.wayspot.data.local.PreviewData
-import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.data.model.HomeCategoryId
 import com.example.wayspot.data.model.HomeRules
 import com.example.wayspot.data.model.Place
@@ -30,6 +28,10 @@ import com.example.wayspot.ui.screens.home.components.HomeReviewCard
 import com.example.wayspot.ui.screens.home.components.HomeReviewsEmptyState
 import com.example.wayspot.ui.screens.home.components.HomeReviewsHeader
 import com.example.wayspot.ui.theme.WayspotTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
 
 /** Adaptador de inicio entre [HomeViewModel], lugares guardados compartidos y contenido sin estado. */
 @Composable
@@ -46,21 +48,45 @@ fun HomeScreen(
         homeViewModel.updateSavedPlaces(savedPlaces)
     }
 
-    HomeContent(
-        state = state,
-        onSearchQueryChange = homeViewModel::updateSearchQuery,
-        onCategoryClick = homeViewModel::selectCategory,
-        onPreviousFeaturedPlanClick = homeViewModel::showPreviousFeaturedPlan,
-        onNextFeaturedPlanClick = homeViewModel::showNextFeaturedPlan,
-        onFeaturedLikeClick = homeViewModel::toggleFeaturedLike,
-        onReviewLikeClick = homeViewModel::toggleReviewLike,
-        onReviewExpandClick = homeViewModel::toggleReviewExpanded,
-        onReviewCommentClick = homeViewModel::registerReviewComment,
-        onReviewShareClick = homeViewModel::toggleReviewShared,
-        onSaveClick = onSaveClick,
-        onPlaceClick = onPlaceClick,
-        modifier = modifier
-    )
+    when {
+        state.isLoading -> {
+            Box(
+                modifier = modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
+        state.errorMessage != null -> {
+            Box(
+                modifier = modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = state.errorMessage ?: ""
+                )
+            }
+        }
+
+        else -> {
+            HomeContent(
+                state = state,
+                onSearchQueryChange = homeViewModel::updateSearchQuery,
+                onCategoryClick = homeViewModel::selectCategory,
+                onPreviousFeaturedPlanClick = homeViewModel::showPreviousFeaturedPlan,
+                onNextFeaturedPlanClick = homeViewModel::showNextFeaturedPlan,
+                onFeaturedLikeClick = homeViewModel::toggleFeaturedLike,
+                onReviewLikeClick = homeViewModel::toggleReviewLike,
+                onReviewExpandClick = homeViewModel::toggleReviewExpanded,
+                onReviewCommentClick = homeViewModel::registerReviewComment,
+                onReviewShareClick = homeViewModel::toggleReviewShared,
+                onSaveClick = onSaveClick,
+                onPlaceClick = onPlaceClick,
+                modifier = modifier
+            )
+        }
+    }
 }
 
 /** Renderiza las secciones de inicio a partir del estado recibido y propaga todas las acciones. */
@@ -128,7 +154,6 @@ fun HomeContent(
                 onPreviousClick = onPreviousFeaturedPlanClick,
                 onNextClick = onNextFeaturedPlanClick,
                 onLikeClick = onFeaturedLikeClick,
-                //onSaveClick = onSaveClick,
                 onSaveClick = {},
                 onPlaceClick = onPlaceClick,
                 modifier = Modifier.padding(horizontal = 16.dp)
@@ -165,7 +190,6 @@ fun HomeContent(
                         onExpandClick = { onReviewExpandClick(review.id) },
                         onCommentClick = { onReviewCommentClick(review.id) },
                         onShareClick = { onReviewShareClick(review.id) },
-                        //onSaveClick = { onSaveClick(place) },
                         onSaveClick = {},
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )

@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.update
 import androidx.lifecycle.viewModelScope
 import com.example.wayspot.data.repository.PlaceRepository
 import kotlinx.coroutines.launch
-import android.util.Log
+
 
 /**
  * Carga el contenido de inicio y transforma las interacciones del carrusel y las reseñas en
@@ -55,44 +55,37 @@ class HomeViewModel @Inject constructor(
                 }
             )
         }
-        /*
+
         viewModelScope.launch {
-            val result = placeRepository.getPlaces()
 
-            if (result.isSuccess) {
-                val places = result.getOrNull()
-
-                if (places != null) {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            places = places
-                        )
-                    }
-                }
+            _uiState.update { currentState ->
+                currentState.copy(
+                    isLoading = true,
+                    errorMessage = null
+                )
             }
-        }
-    }
-*/
-        viewModelScope.launch {
+
             val result = placeRepository.getPlaces()
 
             if (result.isSuccess) {
                 val places = result.getOrNull()
 
-                Log.d("HomeViewModel", "Places recibidos: $places")
-
                 if (places != null) {
                     _uiState.update { currentState ->
                         currentState.copy(
-                            places = places
+                            places = places,
+                            isLoading = false,
+                            errorMessage = null
                         )
                     }
                 }
             } else {
-                Log.e(
-                    "HomeViewModel",
-                    "Error obteniendo places: ${result.exceptionOrNull()?.message}"
-                )
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        isLoading = false,
+                        errorMessage = result.exceptionOrNull()?.message
+                    )
+                }
             }
         }
     }

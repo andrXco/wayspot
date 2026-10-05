@@ -23,5 +23,7 @@ data class HomeState(
     val expandedReviewIds: Set<String> = emptySet(),
     val commentedReviewIds: Set<String> = emptySet(),
     val sharedReviewIds: Set<String> = emptySet(),
-    val savedPlaceIds: Set<String> = emptySet()
+    val savedPlaceIds: Set<String> = emptySet(),
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null
 )
