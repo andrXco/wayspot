@@ -19,7 +19,9 @@ class PlaceRepository @Inject constructor(
 
             Result.success(placesInfo)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(
+                Exception("No se pudieron cargar los lugares")
+            )
         }
     }
 
