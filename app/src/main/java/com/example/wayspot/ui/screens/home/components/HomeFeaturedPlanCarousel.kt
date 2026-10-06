@@ -45,8 +45,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
-import com.example.wayspot.data.model.HomeFeaturedPlan
-import com.example.wayspot.data.model.Place
+import com.example.wayspot.data.model.PlaceInfo
 import com.example.wayspot.ui.components.WayspotImage
 
 /**
@@ -55,8 +54,7 @@ import com.example.wayspot.ui.components.WayspotImage
  */
 @Composable
 fun HomeFeaturedPlanCarousel(
-    plans: List<HomeFeaturedPlan>,
-    places: List<Place>,
+    places: List<PlaceInfo>,
     activePlanIndex: Int,
     likeCounts: Map<String, Int>,
     likedPlanIds: Set<String>,
@@ -64,14 +62,13 @@ fun HomeFeaturedPlanCarousel(
     onPreviousClick: () -> Unit,
     onNextClick: () -> Unit,
     onLikeClick: (String) -> Unit,
-    onSaveClick: (Place) -> Unit,
+    onSaveClick: (PlaceInfo) -> Unit,
     onPlaceClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val plan = plans.getOrNull(activePlanIndex) ?: return  // EXPLICACION DE ESTAS VARIABLES GETORNULLL ??
-    val place = places.firstOrNull { candidate -> candidate.id == plan.placeId } ?: return // IGUALMENTE CON EL FIRSTORNULL
-    val placeTitle = stringResource(place.tituloRes)
-    val isLiked = plan.id in likedPlanIds
+    val place = places.getOrNull(activePlanIndex) ?: return
+    val placeTitle = place.title
+    val isLiked = place.id in likedPlanIds
     val isSaved = place.id in savedPlaceIds
     val imageContentColor = if (isSystemInDarkTheme()) {
         MaterialTheme.colorScheme.onPrimaryContainer
@@ -98,7 +95,7 @@ fun HomeFeaturedPlanCarousel(
                     .clickable { onPlaceClick(place.id) }
             ) {
                 WayspotImage(
-                    imageModel = place.imagen ?: R.drawable.post_card_machu_pichu,
+                    imageModel = place.imageUrl ?: R.drawable.post_card_machu_pichu,
                     contentDescription = stringResource(
                         R.string.home_featured_image_content_description,
                         placeTitle
@@ -129,13 +126,13 @@ fun HomeFeaturedPlanCarousel(
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ) {
                     Text(
-                        text = stringResource(plan.badgeRes),
+                        text = place.category,
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.ExtraBold
                     )
                 }
-                if (plans.size > 1) {
+                if (places.size > 1) {
                     CarouselControl(
                         image = Icons.Rounded.ChevronLeft,
                         contentDescriptionRes = R.string.home_featured_previous_content_description,
@@ -169,7 +166,7 @@ fun HomeFeaturedPlanCarousel(
                             overflow = TextOverflow.Ellipsis
                         )
                         Text(
-                            text = stringResource(place.ubicacionRes),
+                            text = place.location,
                             color = imageContentColor.copy(alpha = 0.86f),
                             style = MaterialTheme.typography.bodySmall,
                             maxLines = 1,
@@ -223,12 +220,12 @@ fun HomeFeaturedPlanCarousel(
                             placeTitle
                         ),
                         tint = if (isLiked) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.onSurfaceVariant,
-                        onClick = { onLikeClick(plan.id) }
+                        onClick = { onLikeClick(place.id) }
                     )
                     Text(
                         text = stringResource(
                             R.string.home_review_action_count,
-                            likeCounts[plan.id] ?: plan.initialLikeCount
+                            likeCounts[place.id] ?: 0
                         ),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.bodySmall
@@ -262,7 +259,7 @@ fun HomeFeaturedPlanCarousel(
                     )
                 }
                 HomeCarouselDots(
-                    count = plans.size,
+                    count = places.size,
                     activeIndex = activePlanIndex,
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
