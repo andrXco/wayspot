@@ -1,15 +1,18 @@
 package com.example.wayspot.navigation
 
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.wayspot.R
 import com.example.wayspot.ui.screens.auth.forgotpassword.ForgotPasswordScreen
 import com.example.wayspot.ui.screens.auth.login.LoginScreen
 import com.example.wayspot.ui.screens.auth.login.LoginViewModel
@@ -47,6 +50,7 @@ fun AppNavigation(
     modifier: Modifier = Modifier
 ) {
 
+    val context = LocalContext.current
     val appNavigationViewModel: AppNavigationViewModel = hiltViewModel()
 
     val appNavigationState by appNavigationViewModel.uiState.collectAsState()
@@ -294,13 +298,7 @@ fun AppNavigation(
             val notificationsViewModel: NotificationsViewModel = hiltViewModel()
 
             NotificationsScreen(
-                notificationsViewModel = notificationsViewModel,
-
-                onBackClick = {
-                    navController.navigate(
-                        Screen.Home.route
-                    )
-                }
+                notificationsViewModel = notificationsViewModel
             )
         }
 
@@ -354,6 +352,8 @@ fun AppNavigation(
             arguments = listOf(
                 navArgument("placeId") {
                     type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
                 }
             )
         ) { backStackEntry ->
@@ -361,21 +361,23 @@ fun AppNavigation(
             val placeId =
                 backStackEntry.arguments?.getString("placeId")
 
-            if (placeId != null) {
+            val newReviewViewModel: NewReviewViewModel = hiltViewModel()
 
-                val newReviewViewModel: NewReviewViewModel = hiltViewModel()
-
-                NewReviewScreen(
-                    newReviewViewModel = newReviewViewModel,
-                    placeId = placeId,
-
-                    onBackClick = {
-                        navController.navigate(
-                            Screen.PlaceDetail.createRoute(placeId)
-                        )
-                    }
-                )
-            }
+            NewReviewScreen(
+                newReviewViewModel = newReviewViewModel,
+                placeId = placeId,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onPublishReview = {
+                    Toast.makeText(
+                        context,
+                        R.string.new_review_publish_confirmation,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }

@@ -27,30 +27,23 @@ import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.newreview.components.NewReviewHeader
 import com.example.wayspot.ui.screens.newreview.components.ReviewBottomAction
 import com.example.wayspot.ui.screens.newreview.components.ReviewEditorSection
+import com.example.wayspot.ui.screens.newreview.components.ReviewPlaceSummaryCard
 import com.example.wayspot.ui.theme.WayspotTheme
 
 /** Conecta el borrador con el editor y coordina la selección de fotografías del sistema. */
 @Composable
 fun NewReviewScreen(
     newReviewViewModel: NewReviewViewModel,
-    placeId: String,
+    placeId: String?,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
-    initialDraft: ReviewDraft? = null,
-    onSaveDraft: (ReviewDraft) -> Unit = {},
     onPublishReview: (ReviewDraft) -> Unit = {}
 ) {
     val state by newReviewViewModel.uiState.collectAsState()
 
-    LaunchedEffect(placeId, initialDraft) {
-        newReviewViewModel.loadReview(
-            placeId = placeId,
-            initialDraft = initialDraft
-        )
+    LaunchedEffect(placeId) {
+        newReviewViewModel.loadReview(placeId)
     }
-
-    val place = state.place ?: return
-    val reviewDraft = state.reviewDraft ?: return
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
@@ -70,8 +63,13 @@ fun NewReviewScreen(
     )
 
     NewReviewContent(
-        place = place,
-        reviewDraft = reviewDraft,
+        places = state.places,
+        selectedPlace = state.place,
+        reviewDraft = state.reviewDraft,
+
+        onPlaceSelected = {
+            newReviewViewModel.selectPlace(it)
+        },
 
         onRatingSelected = {
             newReviewViewModel.updateRating(it)
@@ -100,10 +98,6 @@ fun NewReviewScreen(
         isPublishEnabled = state.isPublishEnabled,
         onBackClick = onBackClick,
 
-        onSaveDraftClick = {
-            newReviewViewModel.draftForSaving()?.let(onSaveDraft)
-        },
-
         onPublishClick = {
             newReviewViewModel.draftForPublishing()?.let(onPublishReview)
         },
@@ -115,8 +109,10 @@ fun NewReviewScreen(
 /** Presenta el editor de reseña como composición sin estado de encabezado, contenido y acción final. */
 @Composable
 fun NewReviewContent(
-    place: Place,
-    reviewDraft: ReviewDraft,
+    places: List<Place>,
+    selectedPlace: Place?,
+    reviewDraft: ReviewDraft?,
+    onPlaceSelected: (String) -> Unit,
     onRatingSelected: (Int) -> Unit,
     onTitleChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
@@ -124,7 +120,6 @@ fun NewReviewContent(
     onRemovePhotoClick: (String) -> Unit,
     isPublishEnabled: Boolean,
     onBackClick: () -> Unit,
-    onSaveDraftClick: () -> Unit,
     onPublishClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -136,18 +131,10 @@ fun NewReviewContent(
     ) {
         NewReviewHeader(
             onBackClick = onBackClick,
-            onSaveDraftClick = onSaveDraftClick,
             modifier = Modifier.fillMaxWidth()
         )
 
-        ReviewEditorSection(
-            place = place,
-            reviewDraft = reviewDraft,
-            onRatingSelected = onRatingSelected,
-            onTitleChange = onTitleChange,
-            onDescriptionChange = onDescriptionChange,
-            onAddPhotosClick = onAddPhotosClick,
-            onRemovePhotoClick = onRemovePhotoClick,
+        Column(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
@@ -158,7 +145,28 @@ fun NewReviewContent(
                     horizontal = 16.dp,
                     vertical = 16.dp
                 )
-        )
+        ) {
+            ReviewPlaceSummaryCard(
+                places = places,
+                selectedPlace = selectedPlace,
+                onPlaceSelected = onPlaceSelected,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            if (selectedPlace != null && reviewDraft != null) {
+                ReviewEditorSection(
+                    reviewDraft = reviewDraft,
+                    onRatingSelected = onRatingSelected,
+                    onTitleChange = onTitleChange,
+                    onDescriptionChange = onDescriptionChange,
+                    onAddPhotosClick = onAddPhotosClick,
+                    onRemovePhotoClick = onRemovePhotoClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 24.dp)
+                )
+            }
+        }
 
         ReviewBottomAction(
             isEnabled = isPublishEnabled,
@@ -175,8 +183,10 @@ private fun NewReviewScreenPreview() {
 
     WayspotTheme {
         NewReviewContent(
-            place = PreviewDataPopular.samplePlaces1,
+            places = PreviewDataPopular.listPlaces,
+            selectedPlace = PreviewDataPopular.samplePlaces1,
             reviewDraft = reviewDraft,
+            onPlaceSelected = {},
             onRatingSelected = {},
             onTitleChange = {},
             onDescriptionChange = {},
@@ -184,7 +194,6 @@ private fun NewReviewScreenPreview() {
             onRemovePhotoClick = {},
             isPublishEnabled = false,
             onBackClick = {},
-            onSaveDraftClick = {},
             onPublishClick = {}
         )
     }

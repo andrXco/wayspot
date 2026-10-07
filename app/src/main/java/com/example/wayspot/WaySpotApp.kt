@@ -41,6 +41,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.wayspot.navigation.AppNavigation
 import com.example.wayspot.navigation.Screen
+import com.example.wayspot.ui.components.WayspotAddReviewButton
 import com.example.wayspot.ui.components.WayspotBottomBar
 import com.example.wayspot.ui.theme.WayspotTheme
 
@@ -155,6 +156,17 @@ fun WaySpotApp(
                         }
                     )
                 }
+            },
+            floatingActionButton = {
+                if (currentRoute != null && currentRoute in bottomBarRoutes) {
+                    WayspotAddReviewButton(
+                        onClick = {
+                            navController.navigate(
+                                Screen.NewReview.createRoute()
+                            )
+                        }
+                    )
+                }
             }
         ) { innerPadding ->
             Box(
@@ -178,6 +190,7 @@ fun WaySpotApp(
 private val bottomBarRoutes = setOf(
     Screen.Home.route,
     Screen.Explore.route,
+    Screen.Notifications.route,
     Screen.Profile.route
 )
 

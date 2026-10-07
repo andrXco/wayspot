@@ -18,31 +18,25 @@ class NewReviewViewModel @Inject constructor() : ViewModel() {
 
     val uiState: StateFlow<NewReviewState> = _uiState
 
-    fun loadReview(
-        placeId: String,
-        initialDraft: ReviewDraft?
-    ) {
-        val place = PreviewDataPopular.listPlaces.find { candidate ->
-            candidate.id == placeId
-        }
-
-        if (place == null) {
-            _uiState.value = NewReviewState()
-            return
-        }
-
-        val validInitialDraft = ReviewRules.normalizeDraft(
-            draft = initialDraft?.takeIf { draft ->
-                draft.placeId == placeId
-            } ?: ReviewRules.emptyDraft(placeId),
-            placeId = placeId
-        )
-
+    fun loadReview(placeId: String?) {
+        val places = PreviewDataPopular.listPlaces
         _uiState.update { currentState ->
-            currentState.copy(
-                place = place,
-                reviewDraft = validInitialDraft,
-                isPublishEnabled = ReviewRules.canPublish(validInitialDraft)
+            if (placeId == null) {
+                currentState.copy(places = places)
+            } else {
+                selectPlace(
+                    currentState = currentState.copy(places = places),
+                    placeId = placeId
+                )
+            }
+        }
+    }
+
+    fun selectPlace(placeId: String) {
+        _uiState.update { currentState ->
+            selectPlace(
+                currentState = currentState,
+                placeId = placeId
             )
         }
     }
@@ -103,11 +97,33 @@ class NewReviewViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun draftForSaving(): ReviewDraft? = _uiState.value.reviewDraft
-
     fun draftForPublishing(): ReviewDraft? = _uiState.value.reviewDraft?.let(
         ReviewRules::prepareForPublish
     )
+
+    private fun selectPlace(
+        currentState: NewReviewState,
+        placeId: String
+    ): NewReviewState {
+        val place = currentState.places.find { candidate ->
+            candidate.id == placeId
+        } ?: return currentState
+
+        if (
+            currentState.place?.id == placeId &&
+            currentState.reviewDraft?.placeId == placeId
+        ) {
+            return currentState
+        }
+
+        val reviewDraft = ReviewRules.emptyDraft(placeId)
+
+        return currentState.copy(
+            place = place,
+            reviewDraft = reviewDraft,
+            isPublishEnabled = ReviewRules.canPublish(reviewDraft)
+        )
+    }
 
     private fun updateDraft(transform: (ReviewDraft) -> ReviewDraft) {
         _uiState.update { currentState ->

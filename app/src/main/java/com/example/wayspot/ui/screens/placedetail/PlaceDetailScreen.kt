@@ -9,9 +9,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.data.model.PlaceInfo
 import com.example.wayspot.data.model.ReviewInfo
+import com.example.wayspot.data.model.toPlaceInfo
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.placedetail.components.PlaceDetailBody
 import com.example.wayspot.ui.screens.placedetail.components.PlaceDetailHero
@@ -31,11 +33,14 @@ fun PlaceDetailScreen(
 ) {
     val state by placeDetailViewModel.uiState.collectAsState()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(placeId) {
         placeDetailViewModel.loadPlace(placeId)
     }
 
-    val place = state.place
+    val context = LocalContext.current
+    val place = state.place ?: state.fallbackPlace?.toPlaceInfo(
+        context::getString
+    )
 
     if (place != null) {
         PlaceDetailContent(

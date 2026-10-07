@@ -83,6 +83,7 @@
     <string name="star_content_description">Estrella</string>
     <string name="nav_home">Inicio</string>
     <string name="nav_explore">Explorar</string>
+    <string name="nav_add_review">Añadir reseña</string>
     <string name="nav_profile">Perfil</string>
     <string name="profile_content_description">Perfil de usuario</string>
 
@@ -268,7 +269,8 @@
 
     <!-- New Review Screen Strings -->
     <string name="new_review_title">Nueva reseña</string>
-    <string name="new_review_draft">Borrador</string>
+    <string name="new_review_select_place">Selecciona un lugar</string>
+    <string name="new_review_publish_confirmation">Reseña preparada correctamente</string>
     <string name="new_review_experience_question">¿Cómo fue tu experiencia?</string>
     <string name="new_review_rating_1">Mala</string>
     <string name="new_review_rating_2">Regular</string>
@@ -289,7 +291,6 @@
     <string name="new_review_current_rating_content_description">Calificación actual: %1$d de %2$d estrellas</string>
     <string name="new_review_selected_photo_content_description">Foto seleccionada %1$d</string>
     <string name="new_review_remove_photo_content_description">Eliminar foto %1$d</string>
-    <string name="new_review_save_draft_content_description">Guardar borrador</string>
     <string name="place_parque_guell_title">Parque Güell</string>
     <string name="place_parque_guell_location">Barcelona, España</string>
     <string name="place_parque_guell_duration">2 - 3 horas</string>
