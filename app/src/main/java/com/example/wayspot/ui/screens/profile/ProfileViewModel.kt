@@ -25,19 +25,15 @@ class ProfileViewModel @Inject constructor(
     val uiState: StateFlow<ProfileState> = _uiState
 
     fun loadReviews(userId: String) {
+        _uiState.update { it.copy(isLoading = true, errorMessage = null) }
         viewModelScope.launch {
             val result = userRepository.getReviewsByUserId(userId)
-
-            if (result.isSuccess) {
-                val reviews = result.getOrNull()
-
-                if (reviews != null) {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            reviews = reviews
-                        )
-                    }
-                }
+            _uiState.update { currentState ->
+                currentState.copy(
+                    reviews = result.getOrNull().orEmpty(),
+                    isLoading = false,
+                    errorMessage = result.exceptionOrNull()?.message
+                )
             }
         }
     }

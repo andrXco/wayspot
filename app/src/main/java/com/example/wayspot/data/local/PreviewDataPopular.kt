@@ -4,9 +4,20 @@ import com.example.wayspot.R
 import com.example.wayspot.data.model.PlaceDetail
 import com.example.wayspot.data.model.PlaceReview
 import com.example.wayspot.data.model.Place
+import com.example.wayspot.data.model.PlaceInfo
 
 /** Catálogo local de lugares y detalles usado por las pantallas de exploración y sus previsualizaciones. */
 object PreviewDataPopular {
+
+    val previewPlaceInfo = PlaceInfo(
+        id = "1",
+        title = "Monserrate",
+        category = "Turismo",
+        location = "Bogotá, Colombia",
+        rating = 4.7,
+        imageUrl = null,
+        description = "Lugar turístico de Bogotá"
+    )
 
     val cerroMonserrate = Place(
         id = "cerro_monserrate",

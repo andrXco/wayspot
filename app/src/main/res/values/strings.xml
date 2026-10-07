@@ -270,7 +270,7 @@
     <!-- New Review Screen Strings -->
     <string name="new_review_title">Nueva reseña</string>
     <string name="new_review_select_place">Selecciona un lugar</string>
-    <string name="new_review_publish_confirmation">Reseña preparada correctamente</string>
+    <string name="new_review_publish_confirmation">Reseña guardada correctamente</string>
     <string name="new_review_experience_question">¿Cómo fue tu experiencia?</string>
     <string name="new_review_rating_1">Mala</string>
     <string name="new_review_rating_2">Regular</string>
@@ -342,8 +342,8 @@
     <string name="home_featured_save_content_description">Guardar %1$s</string>
     <string name="home_featured_unsave_content_description">Quitar %1$s de guardados</string>
     <string name="home_reviews_title">Últimas reseñas</string>
-    <string name="home_reviews_subtitle">de personas que sigues</string>
-    <string name="home_reviews_empty">No encontramos reseñas para esta búsqueda.</string>
+    <string name="home_reviews_subtitle">de la comunidad</string>
+    <string name="home_reviews_empty">Aún no hay reseñas para mostrar. Puedes publicar la primera.</string>
     <string name="home_review_valentina_name">Valentina García</string>
     <string name="home_review_valentina_handle">@valentina_viaja</string>
     <string name="home_review_valentina_initials">V</string>
@@ -411,4 +411,19 @@
     <string name="place_paseo_costero_price">Gratuito</string>
     <string name="place_paseo_costero_altitude">5 m</string>
     <string name="place_paseo_costero_description">Un recorrido junto al mar con senderos, vistas abiertas y paradas para descubrir la costa caribeña.</string>
+    <string name="review_comments_count">%1$d comentarios</string>
+    <string name="review_comments_title">Comentarios</string>
+    <string name="review_comments_empty">Aún no hay comentarios.</string>
+    <string name="review_comment_hint">Escribe un comentario</string>
+    <string name="review_comment_publish">Publicar comentario</string>
+    <string name="review_rating_value">Calificación: %1$d de 5</string>
+    <string name="review_edit">Editar</string>
+    <string name="review_delete">Eliminar</string>
+    <string name="review_save_changes">Guardar cambios</string>
+    <string name="review_edit_title">Editar reseña</string>
+    <string name="review_delete_confirm_title">Eliminar reseña</string>
+    <string name="review_delete_confirm_body">¿Quieres eliminar esta reseña y sus comentarios?</string>
+    <string name="review_cancel">Cancelar</string>
+    <string name="review_edit_forbidden">No puedes editar esta reseña.</string>
+    <string name="profile_reviews_empty">Este usuario aún no tiene reseñas.</string>
 </resources>

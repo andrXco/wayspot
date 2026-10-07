@@ -30,7 +30,8 @@ import com.example.wayspot.ui.theme.WayspotTheme
 @Composable
 fun NewReviewHeader(
     onBackClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isEditing: Boolean = false
 ) {
     Column(
         modifier = modifier
@@ -74,7 +75,7 @@ fun NewReviewHeader(
             }
 
             Text(
-                text = stringResource(R.string.new_review_title),
+                text = stringResource(if (isEditing) R.string.review_edit_title else R.string.new_review_title),
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = 12.dp),

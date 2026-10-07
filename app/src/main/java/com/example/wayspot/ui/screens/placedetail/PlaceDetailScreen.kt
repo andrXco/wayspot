@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -18,6 +19,8 @@ import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.placedetail.components.PlaceDetailBody
 import com.example.wayspot.ui.screens.placedetail.components.PlaceDetailHero
 import com.example.wayspot.ui.theme.WayspotTheme
+import com.example.wayspot.ui.screens.placedetail.components.PlaceReviewCard
+import com.example.wayspot.ui.screens.placedetail.components.RecentReviewsHeader
 
 /** Sincroniza el argumento de ruta con el ViewModel y muestra el contenido solo cuando hay lugar. */
 @Composable
@@ -29,7 +32,7 @@ fun PlaceDetailScreen(
     onSaveClick: () -> Unit = {},
     onShareClick: () -> Unit = {},
     onWriteReviewClick: () -> Unit = {},
-    onSeeAllReviewsClick: () -> Unit = {}
+    onReviewClick: (String) -> Unit = {}
 ) {
     val state by placeDetailViewModel.uiState.collectAsState()
 
@@ -50,7 +53,7 @@ fun PlaceDetailScreen(
             onSaveClick = onSaveClick,
             onShareClick = onShareClick,
             onWriteReviewClick = onWriteReviewClick,
-            onSeeAllReviewsClick = onSeeAllReviewsClick,
+            onReviewClick = onReviewClick,
             modifier = modifier
         )
     }
@@ -65,7 +68,7 @@ fun PlaceDetailContent(
     onSaveClick: () -> Unit,
     onShareClick: () -> Unit,
     onWriteReviewClick: () -> Unit,
-    onSeeAllReviewsClick: () -> Unit,
+    onReviewClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -84,12 +87,20 @@ fun PlaceDetailContent(
         item {
             PlaceDetailBody(
                 place = place,
-                reviews = reviews,
                 onShareClick = onShareClick,
                 onWriteReviewClick = onWriteReviewClick,
-                onSeeAllReviewsClick = onSeeAllReviewsClick,
                 modifier = Modifier.fillMaxWidth()
             )
+        }
+        if (reviews.isNotEmpty()) {
+            item(key = "reviews-header") { RecentReviewsHeader() }
+            items(reviews, key = { it.id }) { review ->
+                PlaceReviewCard(
+                    review = review,
+                    onClick = { onReviewClick(review.id) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
     }
 }
@@ -113,7 +124,7 @@ private fun PlaceDetailScreenPreview() {
             onSaveClick = {},
             onShareClick = {},
             onWriteReviewClick = {},
-            onSeeAllReviewsClick = {}
+            onReviewClick = {}
         )
     }
 }

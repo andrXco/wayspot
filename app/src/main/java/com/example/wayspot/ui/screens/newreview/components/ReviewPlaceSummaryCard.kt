@@ -30,23 +30,21 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
 import com.example.wayspot.data.local.PreviewDataPopular
-import com.example.wayspot.data.model.Place
+import com.example.wayspot.data.model.PlaceInfo
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.theme.WayspotTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReviewPlaceSummaryCard(
-    places: List<Place>,
-    selectedPlace: Place?,
+    places: List<PlaceInfo>,
+    selectedPlace: PlaceInfo?,
     onPlaceSelected: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
     val selectPlaceText = stringResource(R.string.new_review_select_place)
-    val selectedPlaceTitle = selectedPlace?.let { place ->
-        stringResource(place.tituloRes)
-    }.orEmpty()
+    val selectedPlaceTitle = selectedPlace?.title.orEmpty()
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -90,7 +88,7 @@ fun ReviewPlaceSummaryCard(
                     text = {
                         Column {
                             Text(
-                                text = stringResource(place.tituloRes),
+                                text = place.title,
                                 color = MaterialTheme.colorScheme.onSurface,
                                 style = MaterialTheme.typography.bodyLarge,
                                 fontWeight = FontWeight.SemiBold,
@@ -98,7 +96,7 @@ fun ReviewPlaceSummaryCard(
                                 overflow = TextOverflow.Ellipsis
                             )
                             Text(
-                                text = stringResource(place.ubicacionRes),
+                                text = place.location,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 style = MaterialTheme.typography.bodySmall,
                                 maxLines = 1,
@@ -130,8 +128,8 @@ fun ReviewPlaceSummaryCard(
 private fun ReviewPlaceSummaryCardPreview() {
     WayspotTheme {
         ReviewPlaceSummaryCard(
-            places = PreviewDataPopular.listPlaces,
-            selectedPlace = PreviewDataPopular.samplePlaces1,
+            places = listOf(PreviewDataPopular.previewPlaceInfo),
+            selectedPlace = PreviewDataPopular.previewPlaceInfo,
             onPlaceSelected = {},
             modifier = Modifier.padding(16.dp)
         )

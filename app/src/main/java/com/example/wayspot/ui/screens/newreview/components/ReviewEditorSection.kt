@@ -17,8 +17,6 @@ fun ReviewEditorSection(
     onRatingSelected: (Int) -> Unit,
     onTitleChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
-    onAddPhotosClick: () -> Unit,
-    onRemovePhotoClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -35,12 +33,6 @@ fun ReviewEditorSection(
             onTitleChange = onTitleChange,
             description = reviewDraft.description,
             onDescriptionChange = onDescriptionChange,
-            modifier = Modifier.fillMaxWidth()
-        )
-        ReviewPhotoSection(
-            photoUris = reviewDraft.photoUris,
-            onAddPhotosClick = onAddPhotosClick,
-            onRemovePhotoClick = onRemovePhotoClick,
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(8.dp))

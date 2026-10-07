@@ -29,9 +29,19 @@ sealed class Screen(val route: String) {
         }
     }
 
-    object NewReview : Screen("new_review?placeId={placeId}") {
+    object ReviewDetail : Screen("review_detail/{reviewId}") {
+        fun createRoute(reviewId: String) = "review_detail/$reviewId"
+    }
+
+    object PublicProfile : Screen("public_profile/{userId}") {
+        fun createRoute(userId: String) = "public_profile/$userId"
+    }
+
+    object NewReview : Screen("new_review?placeId={placeId}&reviewId={reviewId}") {
         fun createRoute(placeId: String? = null): String {
             return placeId?.let { "new_review?placeId=$it" } ?: "new_review"
         }
+
+        fun createEditRoute(reviewId: String) = "new_review?reviewId=$reviewId"
     }
 }

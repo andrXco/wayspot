@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.model.UserProfile
+import com.example.wayspot.data.model.BackendSession
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.profile.components.ProfileContent
 import com.example.wayspot.ui.theme.WayspotTheme
@@ -19,25 +20,29 @@ fun ProfileScreen(
     onSignOut: () -> Unit,
     modifier: Modifier = Modifier,
     onEditProfileClick: () -> Unit = {},
-    onSavedPlacesClick: () -> Unit = {}
+    onSavedPlacesClick: () -> Unit = {},
+    onReviewClick: (String) -> Unit = {}
 ) {
     val state by profileViewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
         profileViewModel.loadProfile(userProfile)
-        profileViewModel.loadReviews("1")
+        profileViewModel.loadReviews(BackendSession.USER_ID)
     }
 
     state.userProfile?.let { profile ->
         ProfileContent(
             user = profile,
             reviews = state.reviews,
+            isLoading = state.isLoading,
+            errorMessage = state.errorMessage,
             onEditProfileClick = onEditProfileClick,
             onSavedPlacesClick = onSavedPlacesClick,
             onSignOutClick = {
                 profileViewModel.signOut()
                 onSignOut()
             },
+            onReviewClick = onReviewClick,
             modifier = modifier
         )
     }
@@ -52,7 +57,8 @@ private fun ProfileScreenPreview() {
             reviews = emptyList(),
             onEditProfileClick = {},
             onSavedPlacesClick = {},
-            onSignOutClick = {}
+            onSignOutClick = {},
+            onReviewClick = {}
         )
     }
 }

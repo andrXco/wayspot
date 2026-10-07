@@ -36,6 +36,11 @@ import com.example.wayspot.ui.screens.newreview.NewReviewViewModel
 import com.example.wayspot.ui.screens.profile.ProfileViewModel
 import com.example.wayspot.ui.screens.notifications.NotificationsViewModel
 import com.example.wayspot.ui.screens.placedetail.PlaceDetailViewModel
+import com.example.wayspot.ui.screens.reviewdetail.ReviewDetailScreen
+import com.example.wayspot.ui.screens.reviewdetail.ReviewDetailViewModel
+import com.example.wayspot.ui.screens.publicprofile.PublicProfileScreen
+import com.example.wayspot.ui.screens.publicprofile.PublicProfileViewModel
+import com.example.wayspot.data.model.BackendSession
 import com.example.wayspot.ui.screens.splash.SplashViewModel
 
 /**
@@ -166,6 +171,10 @@ fun AppNavigation(
                     )
                 },
 
+                onReviewClick = { reviewId ->
+                    navController.navigate(Screen.ReviewDetail.createRoute(reviewId))
+                },
+
                 onSignOut = {
                     appNavigationViewModel.resetUserProfile()
                     navController.navigate(Screen.Login.route) {
@@ -231,6 +240,9 @@ fun AppNavigation(
                         navController.navigate(
                             Screen.NewReview.createRoute(placeId)
                         )
+                    },
+                    onReviewClick = { reviewId ->
+                        navController.navigate(Screen.ReviewDetail.createRoute(reviewId))
                     }
                 )
             }
@@ -314,10 +326,59 @@ fun AppNavigation(
                         Screen.PlaceDetail.createRoute(placeId)
                     )
                 },
+                onReviewClick = { reviewId ->
+                    navController.navigate(Screen.ReviewDetail.createRoute(reviewId))
+                },
+                onAuthorClick = { userId ->
+                    navController.navigate(
+                        if (userId == BackendSession.USER_ID) Screen.Profile.route
+                        else Screen.PublicProfile.createRoute(userId)
+                    )
+                },
 
                 onSaveClick = { place ->
                     appNavigationViewModel.toggleSavedPlace(place)
                 }
+            )
+        }
+
+        composable(
+            route = Screen.ReviewDetail.route,
+            arguments = listOf(navArgument("reviewId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val reviewId = backStackEntry.arguments?.getString("reviewId") ?: return@composable
+            val viewModel: ReviewDetailViewModel = hiltViewModel()
+            ReviewDetailScreen(
+                viewModel = viewModel,
+                reviewId = reviewId,
+                onBackClick = { navController.popBackStack() },
+                onAuthorClick = { userId ->
+                    navController.navigate(
+                        if (userId == BackendSession.USER_ID) Screen.Profile.route
+                        else Screen.PublicProfile.createRoute(userId)
+                    )
+                },
+                onEditClick = { id -> navController.navigate(Screen.NewReview.createEditRoute(id)) },
+                onDeleted = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Home.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
+        composable(
+            route = Screen.PublicProfile.route,
+            arguments = listOf(navArgument("userId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId") ?: return@composable
+            val viewModel: PublicProfileViewModel = hiltViewModel()
+            PublicProfileScreen(
+                viewModel = viewModel,
+                userId = userId,
+                onBackClick = { navController.popBackStack() },
+                onReviewClick = { id -> navController.navigate(Screen.ReviewDetail.createRoute(id)) }
             )
         }
 
@@ -354,18 +415,25 @@ fun AppNavigation(
                     type = NavType.StringType
                     nullable = true
                     defaultValue = null
+                },
+                navArgument("reviewId") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
                 }
             )
         ) { backStackEntry ->
 
             val placeId =
                 backStackEntry.arguments?.getString("placeId")
+            val reviewId = backStackEntry.arguments?.getString("reviewId")
 
             val newReviewViewModel: NewReviewViewModel = hiltViewModel()
 
             NewReviewScreen(
                 newReviewViewModel = newReviewViewModel,
                 placeId = placeId,
+                reviewId = reviewId,
                 onBackClick = {
                     navController.popBackStack()
                 },
@@ -375,7 +443,10 @@ fun AppNavigation(
                         R.string.new_review_publish_confirmation,
                         Toast.LENGTH_SHORT
                     ).show()
-                    navController.popBackStack()
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Home.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 }
             )
         }

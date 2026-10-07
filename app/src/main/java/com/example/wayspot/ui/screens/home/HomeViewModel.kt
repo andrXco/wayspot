@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import androidx.lifecycle.viewModelScope
 import com.example.wayspot.data.repository.PlaceRepository
+import com.example.wayspot.data.repository.ReviewRepository
 import kotlinx.coroutines.launch
 
 
@@ -22,7 +23,8 @@ import kotlinx.coroutines.launch
  */
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val placeRepository: PlaceRepository
+    private val placeRepository: PlaceRepository,
+    private val reviewRepository: ReviewRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeState())
@@ -30,6 +32,10 @@ class HomeViewModel @Inject constructor(
 
     init {
         loadHome()
+    }
+
+    fun refresh() {
+        if (!_uiState.value.isLoading) loadHome()
     }
 
     private fun loadHome() {
@@ -43,16 +49,12 @@ class HomeViewModel @Inject constructor(
                     plans = PreviewData.homeFeaturedPlans,
                     categoryId = selectedCategory
                 ),
-                reviews = PreviewData.homeReviews,
+                reviews = emptyList(),
                 featuredLikeCounts = PreviewData.homeFeaturedPlans.associate { plan ->
                     plan.id to plan.initialLikeCount
                 },
-                reviewLikeCounts = PreviewData.homeReviews.associate { review ->
-                    review.id to review.initialLikeCount
-                },
-                reviewCommentCounts = PreviewData.homeReviews.associate { review ->
-                    review.id to review.initialCommentCount
-                }
+                reviewLikeCounts = emptyMap(),
+                reviewCommentCounts = emptyMap()
             )
         }
 
@@ -71,11 +73,13 @@ class HomeViewModel @Inject constructor(
                 val places = result.getOrNull()
 
                 if (places != null) {
+                    val feedResult = reviewRepository.getFeed(places)
                     _uiState.update { currentState ->
                         currentState.copy(
                             places = places,
+                            reviews = feedResult.getOrNull().orEmpty(),
                             isLoading = false,
-                            errorMessage = null
+                            errorMessage = feedResult.exceptionOrNull()?.message
                         )
                     }
                 }

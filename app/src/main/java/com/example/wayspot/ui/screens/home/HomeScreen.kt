@@ -24,7 +24,7 @@ import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.home.components.HomeCategoryChips
 import com.example.wayspot.ui.screens.home.components.HomeFeaturedPlanCarousel
 import com.example.wayspot.ui.screens.home.components.HomeIntroSection
-import com.example.wayspot.ui.screens.home.components.HomeReviewCard
+import com.example.wayspot.ui.screens.home.components.RemoteReviewCard
 import com.example.wayspot.ui.screens.home.components.HomeReviewsEmptyState
 import com.example.wayspot.ui.screens.home.components.HomeReviewsHeader
 import com.example.wayspot.ui.theme.WayspotTheme
@@ -39,6 +39,8 @@ fun HomeScreen(
     homeViewModel: HomeViewModel,
     savedPlaces: List<SavedPlace>,
     onPlaceClick: (String) -> Unit,
+    onReviewClick: (String) -> Unit,
+    onAuthorClick: (String) -> Unit,
     onSaveClick: (Place) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -46,6 +48,10 @@ fun HomeScreen(
 
     LaunchedEffect(savedPlaces) {
         homeViewModel.updateSavedPlaces(savedPlaces)
+    }
+
+    LaunchedEffect(Unit) {
+        homeViewModel.refresh()
     }
 
     when {
@@ -79,10 +85,12 @@ fun HomeScreen(
                 onFeaturedLikeClick = homeViewModel::toggleFeaturedLike,
                 onReviewLikeClick = homeViewModel::toggleReviewLike,
                 onReviewExpandClick = homeViewModel::toggleReviewExpanded,
-                onReviewCommentClick = homeViewModel::registerReviewComment,
+                onReviewCommentClick = onReviewClick,
                 onReviewShareClick = homeViewModel::toggleReviewShared,
                 onSaveClick = onSaveClick,
                 onPlaceClick = onPlaceClick,
+                onReviewClick = onReviewClick,
+                onAuthorClick = onAuthorClick,
                 modifier = modifier
             )
         }
@@ -104,20 +112,21 @@ fun HomeContent(
     onReviewShareClick: (String) -> Unit,
     onSaveClick: (Place) -> Unit,
     onPlaceClick: (String) -> Unit,
+    onReviewClick: (String) -> Unit,
+    onAuthorClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val placesById = state.places.associateBy { place -> place.id }
     val visibleReviews = state.reviews.filter { review ->
-        val place = placesById[review.placeId] ?: return@filter false
         HomeRules.matchesSearch(
             query = state.searchQuery,
             candidates = listOf(
-                context.getString(review.authorNameRes),
-                context.getString(review.authorHandleRes),
-                context.getString(review.bodyRes),
-                place.title,
-                place.location
+                review.author.name,
+                review.author.username,
+                review.review.title,
+                review.review.description,
+                review.place.title,
+                review.place.location
             )
         )
     }
@@ -173,27 +182,15 @@ fun HomeContent(
         } else {
             items(
                 items = visibleReviews,
-                key = { review -> review.id }
+                key = { review -> review.review.id }
             ) { review ->
-                placesById[review.placeId]?.let { place ->
-                    HomeReviewCard(
-                        review = review,
-                        place = place,
-                        likeCount = state.reviewLikeCounts[review.id] ?: review.initialLikeCount,
-                        commentCount = state.reviewCommentCounts[review.id] ?: review.initialCommentCount,
-                        isLiked = review.id in state.likedReviewIds,
-                        isExpanded = review.id in state.expandedReviewIds,
-                        isShared = review.id in state.sharedReviewIds,
-                        isSaved = place.id in state.savedPlaceIds,
-                        onPlaceClick = { onPlaceClick(place.id) },
-                        onLikeClick = { onReviewLikeClick(review.id) },
-                        onExpandClick = { onReviewExpandClick(review.id) },
-                        onCommentClick = { onReviewCommentClick(review.id) },
-                        onShareClick = { onReviewShareClick(review.id) },
-                        onSaveClick = {},
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-                }
+                RemoteReviewCard(
+                    item = review,
+                    onReviewClick = { onReviewClick(review.review.id) },
+                    onAuthorClick = { onAuthorClick(review.author.id) },
+                    onPlaceClick = { onPlaceClick(review.place.id) },
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
             }
         }
     }
@@ -220,17 +217,13 @@ private fun HomeScreenPreview() {
                     plans = PreviewData.homeFeaturedPlans,
                     categoryId = selectedCategory
                 ),
-                reviews = PreviewData.homeReviews,
+                reviews = emptyList(),
                 places = emptyList(),
                 featuredLikeCounts = PreviewData.homeFeaturedPlans.associate { plan ->
                     plan.id to plan.initialLikeCount
                 },
-                reviewLikeCounts = PreviewData.homeReviews.associate { review ->
-                    review.id to review.initialLikeCount
-                },
-                reviewCommentCounts = PreviewData.homeReviews.associate { review ->
-                    review.id to review.initialCommentCount
-                }
+                reviewLikeCounts = emptyMap(),
+                reviewCommentCounts = emptyMap()
             ),
             onSearchQueryChange = {},
             onCategoryClick = {},
@@ -242,7 +235,9 @@ private fun HomeScreenPreview() {
             onReviewCommentClick = {},
             onReviewShareClick = {},
             onSaveClick = {},
-            onPlaceClick = {}
+            onPlaceClick = {},
+            onReviewClick = {},
+            onAuthorClick = {}
         )
     }
 }
