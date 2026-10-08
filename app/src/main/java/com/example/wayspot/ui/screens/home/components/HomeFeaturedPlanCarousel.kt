@@ -46,7 +46,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
 import com.example.wayspot.data.model.PlaceInfo
+import com.example.wayspot.data.local.PreviewDataPopular
+import com.example.wayspot.data.model.toPlaceInfo
 import com.example.wayspot.ui.components.WayspotImage
+import com.example.wayspot.ui.preview.WayspotMultiPreview
+import com.example.wayspot.ui.theme.WayspotTheme
 
 /**
  * Presenta el plan destacado activo y delega al padre el desplazamiento, los favoritos y el
@@ -269,7 +273,6 @@ fun HomeFeaturedPlanCarousel(
         }
     }
 }
-
 @Composable
 private fun CarouselControl(
     image: ImageVector,
@@ -338,6 +341,31 @@ private fun HomeCarouselDots(
                             MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
                         }
                     )
+            )
+        }
+    }
+}
+
+@WayspotMultiPreview
+@Composable
+private fun HomeFeaturedPlanCarouselPreview() {
+    val samplePlaces = PreviewDataPopular.listPlaces.map { place ->
+        place.toPlaceInfo { stringResource(it) }
+    }
+    WayspotTheme {
+        Surface {
+            HomeFeaturedPlanCarousel(
+                places = samplePlaces,
+                activePlanIndex = 0,
+                likeCounts = emptyMap(),
+                likedPlanIds = emptySet(),
+                savedPlaceIds = emptySet(),
+                onPreviousClick = {},
+                onNextClick = {},
+                onLikeClick = {},
+                onSaveClick = {},
+                onPlaceClick = {},
+                modifier = Modifier.padding(16.dp)
             )
         }
     }
