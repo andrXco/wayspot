@@ -106,4 +106,29 @@ class AppNavigationViewModel @Inject constructor(
             )
         }
     }
+
+    fun notifyCommentPublished(reviewId: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                commentRefreshReviewId = reviewId,
+                commentRefreshVersion = currentState.commentRefreshVersion + 1
+            )
+        }
+    }
+
+    fun consumeCommentRefresh(reviewId: String, version: Int) {
+        _uiState.update { currentState ->
+            if (
+                currentState.commentRefreshReviewId == reviewId &&
+                currentState.commentRefreshVersion == version
+            ) {
+                currentState.copy(
+                    commentRefreshReviewId = null,
+                    commentRefreshVersion = 0
+                )
+            } else {
+                currentState
+            }
+        }
+    }
 }

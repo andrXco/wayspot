@@ -38,9 +38,11 @@ import com.example.wayspot.ui.screens.notifications.NotificationsViewModel
 import com.example.wayspot.ui.screens.placedetail.PlaceDetailViewModel
 import com.example.wayspot.ui.screens.reviewdetail.ReviewDetailScreen
 import com.example.wayspot.ui.screens.reviewdetail.ReviewDetailViewModel
+import com.example.wayspot.ui.screens.reviewcomment.ReviewCommentScreen
+import com.example.wayspot.ui.screens.reviewcomment.ReviewCommentViewModel
 import com.example.wayspot.ui.screens.publicprofile.PublicProfileScreen
 import com.example.wayspot.ui.screens.publicprofile.PublicProfileViewModel
-import com.example.wayspot.data.model.BackendSession
+import com.example.wayspot.data.dto.BackendSession
 import com.example.wayspot.ui.screens.splash.SplashViewModel
 
 /**
@@ -329,6 +331,9 @@ fun AppNavigation(
                 onReviewClick = { reviewId ->
                     navController.navigate(Screen.ReviewDetail.createRoute(reviewId))
                 },
+                onReviewCommentClick = { reviewId ->
+                    navController.navigate(Screen.ReviewComment.createRoute(reviewId))
+                },
                 onAuthorClick = { userId ->
                     navController.navigate(
                         if (userId == BackendSession.USER_ID) Screen.Profile.route
@@ -352,6 +357,12 @@ fun AppNavigation(
                 viewModel = viewModel,
                 reviewId = reviewId,
                 onBackClick = { navController.popBackStack() },
+                onCommentClick = { id ->
+                    navController.navigate(Screen.ReviewComment.createRoute(id))
+                },
+                commentsRefreshReviewId = appNavigationState.commentRefreshReviewId,
+                commentsRefreshVersion = appNavigationState.commentRefreshVersion,
+                onCommentsRefreshConsumed = appNavigationViewModel::consumeCommentRefresh,
                 onAuthorClick = { userId ->
                     navController.navigate(
                         if (userId == BackendSession.USER_ID) Screen.Profile.route
@@ -364,6 +375,23 @@ fun AppNavigation(
                         popUpTo(Screen.Home.route) { inclusive = true }
                         launchSingleTop = true
                     }
+                }
+            )
+        }
+
+        composable(
+            route = Screen.ReviewComment.route,
+            arguments = listOf(navArgument("reviewId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val reviewId = backStackEntry.arguments?.getString("reviewId") ?: return@composable
+            val viewModel: ReviewCommentViewModel = hiltViewModel()
+            ReviewCommentScreen(
+                viewModel = viewModel,
+                reviewId = reviewId,
+                onBackClick = { navController.popBackStack() },
+                onPublished = { publishedReviewId ->
+                    appNavigationViewModel.notifyCommentPublished(publishedReviewId)
+                    navController.popBackStack()
                 }
             )
         }

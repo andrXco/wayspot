@@ -17,6 +17,9 @@ import com.example.wayspot.data.model.UserStats
 
 /** Fuente centralizada de datos locales para previsualizaciones y flujos de interfaz no remotos. */
 object PreviewData {
+    const val reviewCommentPreviewReviewId = "preview-review"
+    val reviewCommentDraft = "El recorrido fue muy agradable y las recomendaciones me sirvieron mucho."
+
     val savedPlaces = listOf(
         SavedPlace(
             place = PreviewDataPopular.playaBlanca,

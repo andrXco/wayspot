@@ -24,7 +24,7 @@ import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.home.components.HomeCategoryChips
 import com.example.wayspot.ui.screens.home.components.HomeFeaturedPlanCarousel
 import com.example.wayspot.ui.screens.home.components.HomeIntroSection
-import com.example.wayspot.ui.screens.home.components.RemoteReviewCard
+import com.example.wayspot.ui.screens.home.components.HomeReviewCard
 import com.example.wayspot.ui.screens.home.components.HomeReviewsEmptyState
 import com.example.wayspot.ui.screens.home.components.HomeReviewsHeader
 import com.example.wayspot.ui.theme.WayspotTheme
@@ -40,6 +40,7 @@ fun HomeScreen(
     savedPlaces: List<SavedPlace>,
     onPlaceClick: (String) -> Unit,
     onReviewClick: (String) -> Unit,
+    onReviewCommentClick: (String) -> Unit,
     onAuthorClick: (String) -> Unit,
     onSaveClick: (Place) -> Unit,
     modifier: Modifier = Modifier
@@ -85,7 +86,7 @@ fun HomeScreen(
                 onFeaturedLikeClick = homeViewModel::toggleFeaturedLike,
                 onReviewLikeClick = homeViewModel::toggleReviewLike,
                 onReviewExpandClick = homeViewModel::toggleReviewExpanded,
-                onReviewCommentClick = onReviewClick,
+                onReviewCommentClick = onReviewCommentClick,
                 onReviewShareClick = homeViewModel::toggleReviewShared,
                 onSaveClick = onSaveClick,
                 onPlaceClick = onPlaceClick,
@@ -184,11 +185,19 @@ fun HomeContent(
                 items = visibleReviews,
                 key = { review -> review.review.id }
             ) { review ->
-                RemoteReviewCard(
+                HomeReviewCard(
                     item = review,
+                    likeCount = state.reviewLikeCounts[review.review.id] ?: 0,
+                    isLiked = review.review.id in state.likedReviewIds,
+                    isExpanded = review.review.id in state.expandedReviewIds,
+                    isShared = review.review.id in state.sharedReviewIds,
                     onReviewClick = { onReviewClick(review.review.id) },
-                    onAuthorClick = { onAuthorClick(review.author.id) },
+                    onAuthorClick = { onAuthorClick(review.author.id.toString()) },
                     onPlaceClick = { onPlaceClick(review.place.id) },
+                    onLikeClick = { onReviewLikeClick(review.review.id) },
+                    onExpandClick = { onReviewExpandClick(review.review.id) },
+                    onCommentClick = { onReviewCommentClick(review.review.id) },
+                    onShareClick = { onReviewShareClick(review.review.id) },
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
             }
@@ -222,8 +231,7 @@ private fun HomeScreenPreview() {
                 featuredLikeCounts = PreviewData.homeFeaturedPlans.associate { plan ->
                     plan.id to plan.initialLikeCount
                 },
-                reviewLikeCounts = emptyMap(),
-                reviewCommentCounts = emptyMap()
+                reviewLikeCounts = emptyMap()
             ),
             onSearchQueryChange = {},
             onCategoryClick = {},

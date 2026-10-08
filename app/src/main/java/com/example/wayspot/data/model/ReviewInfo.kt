@@ -6,6 +6,5 @@ data class ReviewInfo(
     val title: String,
     val description: String,
     val userId: String,
-    val placeId: String,
-    val commentCount: Int = 0
+    val placeId: String
 )

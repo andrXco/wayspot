@@ -3,7 +3,6 @@ package com.example.wayspot.ui.screens.reviewdetail
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
@@ -18,9 +17,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.example.wayspot.R
-import com.example.wayspot.data.model.BackendSession
+import com.example.wayspot.data.dto.BackendSession
 import com.example.wayspot.ui.preview.WayspotMultiPreview
-import com.example.wayspot.ui.screens.reviewdetail.components.ReviewCommentForm
 import com.example.wayspot.ui.screens.reviewdetail.components.ReviewCommentItem
 import com.example.wayspot.ui.screens.reviewdetail.components.ReviewDetailHeader
 import com.example.wayspot.ui.theme.WayspotTheme
@@ -30,6 +28,10 @@ fun ReviewDetailScreen(
     viewModel: ReviewDetailViewModel,
     reviewId: String,
     onBackClick: () -> Unit,
+    onCommentClick: (String) -> Unit,
+    commentsRefreshReviewId: String?,
+    commentsRefreshVersion: Int,
+    onCommentsRefreshConsumed: (String, Int) -> Unit,
     onAuthorClick: (String) -> Unit,
     onEditClick: (String) -> Unit,
     onDeleted: () -> Unit,
@@ -37,19 +39,24 @@ fun ReviewDetailScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     LaunchedEffect(reviewId) { viewModel.loadReview(reviewId) }
+    LaunchedEffect(reviewId, commentsRefreshReviewId, commentsRefreshVersion) {
+        if (reviewId == commentsRefreshReviewId && commentsRefreshVersion > 0) {
+            viewModel.loadReview(reviewId)
+            onCommentsRefreshConsumed(reviewId, commentsRefreshVersion)
+        }
+    }
     LaunchedEffect(state.isDeleted) {
         if (state.isDeleted) onDeleted()
     }
     ReviewDetailContent(
         state = state,
         onBackClick = onBackClick,
+        onCommentClick = { onCommentClick(reviewId) },
         onAuthorClick = onAuthorClick,
         onEditClick = { onEditClick(reviewId) },
         onDeleteClick = viewModel::requestDelete,
         onConfirmDelete = viewModel::deleteReview,
         onDismissDelete = viewModel::dismissDelete,
-        onCommentChange = viewModel::updateCommentDraft,
-        onPublishComment = viewModel::publishComment,
         modifier = modifier
     )
 }
@@ -58,16 +65,15 @@ fun ReviewDetailScreen(
 fun ReviewDetailContent(
     state: ReviewDetailState,
     onBackClick: () -> Unit,
+    onCommentClick: () -> Unit,
     onAuthorClick: (String) -> Unit,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onConfirmDelete: () -> Unit,
     onDismissDelete: () -> Unit,
-    onCommentChange: (String) -> Unit,
-    onPublishComment: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.fillMaxSize().imePadding()) {
+    Column(modifier = modifier.fillMaxSize()) {
         TextButton(onClick = onBackClick) { Text(stringResource(R.string.volver)) }
         if (state.isLoading) CircularProgressIndicator()
         state.errorMessage?.let { Text(it, color = MaterialTheme.colorScheme.error) }
@@ -94,19 +100,16 @@ fun ReviewDetailContent(
                     items(state.comments, key = { it.id }) { comment ->
                         ReviewCommentItem(
                             comment = comment,
-                            onAuthorClick = { onAuthorClick(comment.author.id) }
+                            onAuthorClick = { onAuthorClick(comment.author.id.toString()) }
                         )
                     }
                 }
+                item(key = "comments-action") {
+                    TextButton(onClick = onCommentClick) {
+                        Text(stringResource(R.string.review_comment_add_action))
+                    }
+                }
             }
-        }
-        if (state.review != null) {
-            ReviewCommentForm(
-                draft = state.commentDraft,
-                isPosting = state.isPosting,
-                onDraftChange = onCommentChange,
-                onPublishClick = onPublishComment
-            )
         }
     }
     if (state.showDeleteConfirmation) {
@@ -131,13 +134,12 @@ private fun ReviewDetailScreenPreview() {
         ReviewDetailContent(
             state = ReviewDetailState(),
             onBackClick = {},
+            onCommentClick = {},
             onAuthorClick = {},
             onEditClick = {},
             onDeleteClick = {},
             onConfirmDelete = {},
-            onDismissDelete = {},
-            onCommentChange = {},
-            onPublishComment = {}
+            onDismissDelete = {}
         )
     }
 }

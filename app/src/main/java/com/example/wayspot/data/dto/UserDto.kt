@@ -1,7 +1,5 @@
 package com.example.wayspot.data.dto
 
-import com.example.wayspot.data.model.BackendUser
-
 data class UserDto(
     val id: Int,
     val name: String,
@@ -11,11 +9,6 @@ data class UserDto(
     val avatarUrl: String?
 )
 
-fun UserDto.toBackendUser() = BackendUser(
-    id = id.toString(),
-    name = name,
-    username = username,
-    bio = bio,
-    location = location,
-    avatarUrl = avatarUrl
-)
+object BackendSession {
+    const val USER_ID = "1"
+}

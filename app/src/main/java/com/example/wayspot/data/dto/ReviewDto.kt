@@ -8,8 +8,7 @@ data class ReviewDto(
     val title: String,
     val description: String,
     val userId: Int,
-    val placeId: Int,
-    val commentCount: Int = 0
+    val placeId: Int
 )
 
 data class SaveReviewDto(
@@ -27,7 +26,6 @@ fun ReviewDto.toReviewInfo(): ReviewInfo {
         title = title,
         description = description,
         userId = userId.toString(),
-        placeId = placeId.toString(),
-        commentCount = commentCount
+        placeId = placeId.toString()
     )
 }

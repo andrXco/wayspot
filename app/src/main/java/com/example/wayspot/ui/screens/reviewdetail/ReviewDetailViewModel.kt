@@ -2,7 +2,7 @@ package com.example.wayspot.ui.screens.reviewdetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.wayspot.data.model.BackendSession
+import com.example.wayspot.data.dto.BackendSession
 import com.example.wayspot.data.repository.PlaceRepository
 import com.example.wayspot.data.repository.ReviewRepository
 import com.example.wayspot.data.repository.UserRepository
@@ -30,7 +30,7 @@ class ReviewDetailViewModel @Inject constructor(
                 _uiState.update { it.copy(isLoading = false, errorMessage = reviewResult.exceptionOrNull()?.message) }
                 return@launch
             }
-            val review = reviewResult.getOrThrow()
+            val review = reviewResult.getOrNull() ?: return@launch
             val place = placeRepository.getPlaceById(review.placeId)
             val author = userRepository.getUserById(review.userId)
             val comments = reviewRepository.getComments(id)
@@ -45,32 +45,6 @@ class ReviewDetailViewModel @Inject constructor(
                         ?: author.exceptionOrNull()?.message
                         ?: comments.exceptionOrNull()?.message
                 )
-            }
-        }
-    }
-
-    fun updateCommentDraft(value: String) {
-        _uiState.update { it.copy(commentDraft = value) }
-    }
-
-    fun publishComment() {
-        val reviewId = _uiState.value.review?.id ?: return
-        val content = _uiState.value.commentDraft.trim()
-        if (content.isEmpty() || _uiState.value.isPosting) return
-        _uiState.update { it.copy(isPosting = true, errorMessage = null) }
-        viewModelScope.launch {
-            val result = reviewRepository.createComment(reviewId, content)
-            _uiState.update {
-                if (result.isSuccess) {
-                    it.copy(
-                        comments = it.comments + result.getOrThrow(),
-                        commentDraft = "",
-                        isPosting = false,
-                        review = it.review?.copy(commentCount = it.comments.size + 1)
-                    )
-                } else {
-                    it.copy(isPosting = false, errorMessage = result.exceptionOrNull()?.message)
-                }
             }
         }
     }

@@ -13,13 +13,12 @@ import org.junit.Test
 
 class ReviewIntegrationMappingTest {
     @Test
-    fun reviewDtoKeepsBackendIdsAndCommentCount() {
-        val info = ReviewDto(12, 4, "Visita", "Muy bien", 1, 7, 3).toReviewInfo()
+    fun reviewDtoKeepsBackendIds() {
+        val info = ReviewDto(12, 4, "Visita", "Muy bien", 1, 7).toReviewInfo()
 
         assertEquals("12", info.id)
         assertEquals("1", info.userId)
         assertEquals("7", info.placeId)
-        assertEquals(3, info.commentCount)
     }
 
     @Test
@@ -28,7 +27,7 @@ class ReviewIntegrationMappingTest {
         val comment = CommentDto(5, "De acuerdo", 12, 2, author).toReviewComment()
 
         assertEquals("12", comment.reviewId)
-        assertEquals("2", comment.author.id)
+        assertEquals(2, comment.author.id)
         assertEquals("Ana", comment.author.name)
     }
 

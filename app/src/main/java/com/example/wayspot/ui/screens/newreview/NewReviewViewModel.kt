@@ -3,7 +3,7 @@ package com.example.wayspot.ui.screens.newreview
 import androidx.lifecycle.ViewModel
 import com.example.wayspot.R
 import androidx.lifecycle.viewModelScope
-import com.example.wayspot.data.model.BackendSession
+import com.example.wayspot.data.dto.BackendSession
 import com.example.wayspot.data.model.ReviewDraft
 import com.example.wayspot.data.model.ReviewRules
 import com.example.wayspot.data.repository.PlaceRepository
@@ -34,14 +34,14 @@ class NewReviewViewModel @Inject constructor(
                 _uiState.update { it.copy(isLoading = false, errorMessage = placesResult.exceptionOrNull()?.message) }
                 return@launch
             }
-            val places = placesResult.getOrThrow()
+            val places = placesResult.getOrNull() ?: return@launch
             val existing = reviewId?.let { id ->
                 val result = reviewRepository.getReviewById(id)
                 if (result.isFailure) {
                     _uiState.update { it.copy(isLoading = false, errorMessage = result.exceptionOrNull()?.message) }
                     return@launch
                 }
-                result.getOrThrow()
+                result.getOrNull()
             }
             if (existing != null && existing.userId != BackendSession.USER_ID) {
                 _uiState.update { it.copy(isLoading = false, errorResId = R.string.review_edit_forbidden) }

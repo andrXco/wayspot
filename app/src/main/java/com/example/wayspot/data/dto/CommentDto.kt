@@ -16,5 +16,5 @@ fun CommentDto.toReviewComment() = ReviewComment(
     id = id.toString(),
     content = content,
     reviewId = reviewId.toString(),
-    author = user.toBackendUser()
+    author = user
 )

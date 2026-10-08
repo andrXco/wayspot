@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
-import com.example.wayspot.data.model.BackendUser
+import com.example.wayspot.data.dto.UserDto
 import com.example.wayspot.data.model.PlaceInfo
 import com.example.wayspot.data.model.ReviewInfo
 
@@ -21,7 +21,7 @@ import com.example.wayspot.data.model.ReviewInfo
 fun ReviewDetailHeader(
     review: ReviewInfo,
     place: PlaceInfo?,
-    author: BackendUser?,
+    author: UserDto?,
     canManage: Boolean,
     onAuthorClick: () -> Unit,
     onEditClick: () -> Unit,

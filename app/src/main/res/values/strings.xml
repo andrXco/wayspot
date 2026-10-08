@@ -416,6 +416,11 @@
     <string name="review_comments_empty">Aún no hay comentarios.</string>
     <string name="review_comment_hint">Escribe un comentario</string>
     <string name="review_comment_publish">Publicar comentario</string>
+    <string name="review_comment_screen_title">Nuevo comentario</string>
+    <string name="review_comment_screen_prompt">Comparte tu experiencia con esta reseña.</string>
+    <string name="review_comment_publishing">Publicando comentario</string>
+    <string name="review_comment_publish_error">No se pudo publicar el comentario. Inténtalo de nuevo.</string>
+    <string name="review_comment_add_action">Escribir un comentario</string>
     <string name="review_rating_value">Calificación: %1$d de 5</string>
     <string name="review_edit">Editar</string>
     <string name="review_delete">Eliminar</string>
