@@ -41,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -445,11 +446,12 @@ private fun HomeReviewAction(
 @Composable
 private fun HomeReviewCardPreview() {
     val review = PreviewData.homeReviews.first()
+    val context = LocalContext.current
     WayspotTheme {
         Surface {
             HomeReviewCard(
                 review = review,
-                place = PreviewDataPopular.cerroMonserrate.toPlaceInfo { stringResource(it) },
+                place = PreviewDataPopular.cerroMonserrate.toPlaceInfo { context.getString(it) },
                 likeCount = review.initialLikeCount,
                 commentCount = review.initialCommentCount,
                 isLiked = true,
