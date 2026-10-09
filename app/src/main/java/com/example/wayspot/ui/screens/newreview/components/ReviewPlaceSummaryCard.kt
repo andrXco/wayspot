@@ -1,109 +1,123 @@
 package com.example.wayspot.ui.screens.newreview.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
 import com.example.wayspot.data.local.PreviewDataPopular
-import com.example.wayspot.data.model.Place
+import com.example.wayspot.data.model.PlaceInfo
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.theme.WayspotTheme
-import com.example.wayspot.ui.components.WayspotImage
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReviewPlaceSummaryCard(
-    place: Place,
+    places: List<PlaceInfo>,
+    selectedPlace: PlaceInfo?,
+    onPlaceSelected: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .heightIn(min = 84.dp),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.22f),
-            contentColor = MaterialTheme.colorScheme.onSurface
-        ),
-        border = BorderStroke(
-            width = 1.dp,
-            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.28f)
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    var expanded by remember { mutableStateOf(false) }
+    val selectPlaceText = stringResource(R.string.new_review_select_place)
+    val selectedPlaceTitle = selectedPlace?.title.orEmpty()
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { shouldExpand ->
+            expanded = shouldExpand && places.isNotEmpty()
+        },
+        modifier = modifier.fillMaxWidth()
     ) {
-        Row(
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            WayspotImage(
-                imageModel = place.imagen,
-                contentDescription = stringResource(
-                    R.string.new_review_place_image_content_description,
-                    stringResource(place.tituloRes)
-                ),
-                modifier = Modifier
-                    .size(58.dp)
-                    .clip(RoundedCornerShape(12.dp)),
-                contentScale = ContentScale.Crop,
-                placeholderResId = R.drawable.branding_logo_wayspot,
-                errorResId = R.drawable.branding_logo_wayspot,
-                fallbackResId = R.drawable.branding_logo_wayspot
-            )
-
-            Spacer(modifier = Modifier.width(12.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = stringResource(place.tituloRes),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+        OutlinedTextField(
+            value = selectedPlaceTitle,
+            onValueChange = {},
+            readOnly = true,
+            placeholder = {
+                Text(text = selectPlaceText)
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Filled.LocationOn,
+                    contentDescription = null
                 )
+            },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+            },
+            modifier = Modifier
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                .fillMaxWidth()
+                .semantics {
+                    contentDescription = selectPlaceText
+                },
+            shape = RoundedCornerShape(16.dp),
+            singleLine = true
+        )
 
-                Row(
-                    modifier = Modifier.padding(top = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.LocationOn,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = stringResource(place.ubicacionRes),
-                        color = MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Medium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            places.forEach { place ->
+                DropdownMenuItem(
+                    text = {
+                        Column {
+                            Text(
+                                text = place.title,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.SemiBold,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(
+                                text = place.location,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = MaterialTheme.typography.bodySmall,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    },
+                    onClick = {
+                        expanded = false
+                        onPlaceSelected(place.id)
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Filled.LocationOn,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    },
+                    modifier = Modifier.padding(vertical = 2.dp)
+                )
             }
         }
     }
@@ -114,7 +128,9 @@ fun ReviewPlaceSummaryCard(
 private fun ReviewPlaceSummaryCardPreview() {
     WayspotTheme {
         ReviewPlaceSummaryCard(
-            place = PreviewDataPopular.samplePlaces1,
+            places = listOf(PreviewDataPopular.previewPlaceInfo),
+            selectedPlace = PreviewDataPopular.previewPlaceInfo,
+            onPlaceSelected = {},
             modifier = Modifier.padding(16.dp)
         )
     }

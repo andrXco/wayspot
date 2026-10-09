@@ -23,17 +23,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
 import com.example.wayspot.data.model.PlaceInfo
-import com.example.wayspot.data.model.ReviewInfo
 import com.example.wayspot.ui.theme.WayspotTheme
 
 /** Cuerpo del detalle con metadatos, descripción y reseñas. */
 @Composable
 fun PlaceDetailBody(
     place: PlaceInfo,
-    reviews: List<ReviewInfo>,
     onShareClick: () -> Unit,
     onWriteReviewClick: () -> Unit,
-    onSeeAllReviewsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -71,16 +68,6 @@ fun PlaceDetailBody(
                 onClick = onWriteReviewClick
             )
 
-            if (reviews.isNotEmpty()) {
-                Spacer(
-                    modifier = Modifier.height(24.dp)
-                )
-
-                RecentReviewsSection(
-                    reviews = reviews,
-                    onSeeAllClick = onSeeAllReviewsClick
-                )
-            }
         }
     }
 }
@@ -152,19 +139,8 @@ private fun PlaceDetailBodyPreview() {
                 imageUrl = null,
                 description = "Lugar turístico ubicado en Bogotá"
             ),
-            reviews = listOf(
-                ReviewInfo(
-                    id = "1",
-                    rating = 5,
-                    title = "Excelente lugar",
-                    description = "Una experiencia muy buena y con una gran vista.",
-                    userId = "1",
-                    placeId = "1"
-                )
-            ),
             onShareClick = {},
-            onWriteReviewClick = {},
-            onSeeAllReviewsClick = {}
+            onWriteReviewClick = {}
         )
     }
 }

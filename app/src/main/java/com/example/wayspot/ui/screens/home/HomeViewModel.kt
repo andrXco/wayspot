@@ -6,6 +6,7 @@ import com.example.wayspot.data.model.HomeCategoryId
 import com.example.wayspot.data.model.HomeRules
 import com.example.wayspot.data.model.SavedPlace
 import com.example.wayspot.data.model.SavedPlacesRules
+import com.example.wayspot.data.model.ReviewFeedItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,6 +14,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import androidx.lifecycle.viewModelScope
 import com.example.wayspot.data.repository.PlaceRepository
+import com.example.wayspot.data.repository.ReviewRepository
+import com.example.wayspot.data.repository.UserRepository
 import kotlinx.coroutines.launch
 
 
@@ -22,18 +25,20 @@ import kotlinx.coroutines.launch
  */
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val placeRepository: PlaceRepository
+    private val placeRepository: PlaceRepository,
+    private val reviewRepository: ReviewRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeState())
     val uiState: StateFlow<HomeState> = _uiState
 
-    init {
-        loadHome()
+    fun refresh() {
+        if (!_uiState.value.isLoading) loadHome()
     }
 
     private fun loadHome() {
-        val selectedCategory = HomeCategoryId.NATURE
+        val selectedCategory = _uiState.value.selectedCategory ?: HomeCategoryId.NATURE
 
         _uiState.update { currentState ->
             currentState.copy(
@@ -43,49 +48,53 @@ class HomeViewModel @Inject constructor(
                     plans = PreviewData.homeFeaturedPlans,
                     categoryId = selectedCategory
                 ),
-                reviews = PreviewData.homeReviews,
+                reviews = emptyList(),
                 featuredLikeCounts = PreviewData.homeFeaturedPlans.associate { plan ->
                     plan.id to plan.initialLikeCount
                 },
-                reviewLikeCounts = PreviewData.homeReviews.associate { review ->
-                    review.id to review.initialLikeCount
-                },
-                reviewCommentCounts = PreviewData.homeReviews.associate { review ->
-                    review.id to review.initialCommentCount
-                }
+                reviewLikeCounts = emptyMap(),
+                isLoading = true,
+                errorMessage = null
             )
         }
 
         viewModelScope.launch {
 
-            _uiState.update { currentState ->
-                currentState.copy(
-                    isLoading = true,
-                    errorMessage = null
-                )
+            val placesResult = placeRepository.getPlaces()
+            val reviewsResult = reviewRepository.getReviews()
+            val usersResult = userRepository.getUsers()
+
+            val error = placesResult.exceptionOrNull()
+                ?: reviewsResult.exceptionOrNull()
+                ?: usersResult.exceptionOrNull()
+            if (error != null) {
+                _uiState.update { currentState ->
+                    currentState.copy(isLoading = false, errorMessage = error.message)
+                }
+                return@launch
             }
 
-            val result = placeRepository.getPlaces()
+            val places = placesResult.getOrNull().orEmpty()
+            val reviews = reviewsResult.getOrNull().orEmpty()
+            val users = usersResult.getOrNull().orEmpty()
+            val feed = mutableListOf<ReviewFeedItem>()
 
-            if (result.isSuccess) {
-                val places = result.getOrNull()
+            for (index in reviews.size - 1 downTo 0) {
+                val review = reviews[index]
+                val place = places.find { it.id == review.placeId }
+                val author = users.find { it.id.toString() == review.userId }
+                if (place != null && author != null) {
+                    feed.add(ReviewFeedItem(review, place, author))
+                }
+            }
 
-                if (places != null) {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            places = places,
-                            isLoading = false,
-                            errorMessage = null
-                        )
-                    }
-                }
-            } else {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        isLoading = false,
-                        errorMessage = result.exceptionOrNull()?.message
-                    )
-                }
+            _uiState.update { currentState ->
+                currentState.copy(
+                    places = places,
+                    reviews = feed,
+                    isLoading = false,
+                    errorMessage = null
+                )
             }
         }
     }
@@ -162,22 +171,6 @@ class HomeViewModel @Inject constructor(
                 currentState.copy(
                     expandedReviewIds = currentState.expandedReviewIds.toggle(reviewId)
                 )
-            }
-        }
-
-        fun registerReviewComment(reviewId: String) {
-            _uiState.update { currentState ->
-                if (reviewId in currentState.commentedReviewIds) {
-                    currentState
-                } else {
-                    currentState.copy(
-                        commentedReviewIds = currentState.commentedReviewIds + reviewId,
-                        reviewCommentCounts = currentState.reviewCommentCounts.withAdjustedCount(
-                            id = reviewId,
-                            delta = 1
-                        )
-                    )
-                }
             }
         }
 

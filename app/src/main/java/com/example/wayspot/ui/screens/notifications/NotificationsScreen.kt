@@ -34,14 +34,12 @@ import com.example.wayspot.ui.theme.WayspotTheme
 @Composable
 fun NotificationsScreen(
     notificationsViewModel: NotificationsViewModel,
-    onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by notificationsViewModel.uiState.collectAsState()
 
     NotificationsContent(
         notifications = state.notifications,
-        onBackClick = onBackClick,
         modifier = modifier
     )
 }
@@ -50,7 +48,6 @@ fun NotificationsScreen(
 @Composable
 fun NotificationsContent(
     notifications: List<Notification>,
-    onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -60,7 +57,6 @@ fun NotificationsContent(
     ) {
 
         NotificationsHeader(
-            onBackClick = onBackClick,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -199,8 +195,7 @@ private fun NotificationsEmptySection(
 private fun NotificationsScreenPreview() {
     WayspotTheme {
         NotificationsContent(
-            notifications = PreviewData.notifications,
-            onBackClick = {}
+            notifications = PreviewData.notifications
         )
     }
 }

@@ -10,12 +10,16 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.data.model.ReviewInfo
 import com.example.wayspot.data.model.UserProfile
+import androidx.compose.ui.res.stringResource
+import com.example.wayspot.R
 
 
 /** Organiza la cabecera del perfil, sus accesos y el historial de reseñas en una lista con claves estables. */
@@ -26,7 +30,10 @@ fun ProfileContent(
     onEditProfileClick: () -> Unit,
     onSavedPlacesClick: () -> Unit,
     onSignOutClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onReviewClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    isLoading: Boolean = false,
+    errorMessage: String? = null
 ) {
     LazyColumn(
         modifier = modifier
@@ -58,7 +65,7 @@ fun ProfileContent(
                 )
 
                 ProfileStats(
-                    stats = user.stats,
+                    stats = user.stats.copy(reviews = reviews.size),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
@@ -98,6 +105,23 @@ fun ProfileContent(
             )
         }
 
+        if (isLoading) {
+            item(key = "reviews-loading") { CircularProgressIndicator() }
+        }
+        errorMessage?.let { message ->
+            item(key = "reviews-error") {
+                Text(message, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(16.dp))
+            }
+        }
+        if (reviews.isEmpty() && !isLoading && errorMessage == null) {
+            item(key = "reviews-empty") {
+                Text(
+                    text = stringResource(R.string.profile_reviews_empty),
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+        }
+
         items(
             items = reviews,
             key = {
@@ -106,6 +130,7 @@ fun ProfileContent(
         ) { review ->
             ProfileReviewItem(
                 review = review,
+                onClick = { onReviewClick(review.id) },
                 modifier = Modifier.fillMaxWidth()
             )
         }

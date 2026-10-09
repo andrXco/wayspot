@@ -24,7 +24,8 @@ import com.example.wayspot.ui.theme.WayspotTheme
 fun ReviewBottomAction(
     isEnabled: Boolean,
     onPublishClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isEditing: Boolean = false
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -53,7 +54,7 @@ fun ReviewBottomAction(
                 elevation = ButtonDefaults.buttonElevation(defaultElevation = 1.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.new_review_publish),
+                    text = stringResource(if (isEditing) R.string.review_save_changes else R.string.new_review_publish),
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold
                 )

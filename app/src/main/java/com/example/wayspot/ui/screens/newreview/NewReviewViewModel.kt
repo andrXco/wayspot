@@ -1,48 +1,96 @@
 package com.example.wayspot.ui.screens.newreview
 
 import androidx.lifecycle.ViewModel
-import com.example.wayspot.data.local.PreviewDataPopular
+import com.example.wayspot.R
+import androidx.lifecycle.viewModelScope
+import com.example.wayspot.data.dto.BackendSession
 import com.example.wayspot.data.model.ReviewDraft
 import com.example.wayspot.data.model.ReviewRules
+import com.example.wayspot.data.repository.PlaceRepository
+import com.example.wayspot.data.repository.ReviewRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 /** Mantiene el borrador de reseña normalizado y deriva cuándo puede publicarse. */
 @HiltViewModel
-class NewReviewViewModel @Inject constructor() : ViewModel() {
+class NewReviewViewModel @Inject constructor(
+    private val placeRepository: PlaceRepository,
+    private val reviewRepository: ReviewRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(NewReviewState())
 
     val uiState: StateFlow<NewReviewState> = _uiState
 
-    fun loadReview(
-        placeId: String,
-        initialDraft: ReviewDraft?
-    ) {
-        val place = PreviewDataPopular.listPlaces.find { candidate ->
-            candidate.id == placeId
+    fun loadReview(placeId: String?, reviewId: String?) {
+        _uiState.update { it.copy(isLoading = true, errorMessage = null, errorResId = null, editingReviewId = reviewId) }
+        viewModelScope.launch {
+            val placesResult = placeRepository.getPlaces()
+            if (placesResult.isFailure) {
+                _uiState.update { it.copy(isLoading = false, errorMessage = placesResult.exceptionOrNull()?.message) }
+                return@launch
+            }
+            val places = placesResult.getOrNull() ?: return@launch
+            val existing = reviewId?.let { id ->
+                val result = reviewRepository.getReviewById(id)
+                if (result.isFailure) {
+                    _uiState.update { it.copy(isLoading = false, errorMessage = result.exceptionOrNull()?.message) }
+                    return@launch
+                }
+                result.getOrNull()
+            }
+            if (existing != null && existing.userId != BackendSession.USER_ID) {
+                _uiState.update { it.copy(isLoading = false, errorResId = R.string.review_edit_forbidden) }
+                return@launch
+            }
+            val selectedId = existing?.placeId ?: placeId
+            val selectedPlace = places.find { it.id == selectedId }
+            val draft = if (existing != null) {
+                ReviewDraft(existing.placeId, existing.rating, existing.title, existing.description, emptyList())
+            } else {
+                selectedPlace?.let { ReviewRules.emptyDraft(it.id) }
+            }
+            _uiState.update {
+                it.copy(
+                    places = places,
+                    place = selectedPlace,
+                    reviewDraft = draft,
+                    isPublishEnabled = draft?.let(ReviewRules::canPublish) ?: false,
+                    isLoading = false
+                )
+            }
         }
+    }
 
-        if (place == null) {
-            _uiState.value = NewReviewState()
-            return
+    fun publish() {
+        val draft = _uiState.value.reviewDraft?.let(ReviewRules::prepareForPublish) ?: return
+        if (_uiState.value.isPublishing) return
+        _uiState.update { it.copy(isPublishing = true, errorMessage = null, errorResId = null) }
+        viewModelScope.launch {
+            val result = reviewRepository.saveReview(draft, _uiState.value.editingReviewId)
+            _uiState.update {
+                it.copy(
+                    isPublishing = false,
+                    isSaved = result.isSuccess,
+                    errorMessage = result.exceptionOrNull()?.message
+                )
+            }
         }
+    }
 
-        val validInitialDraft = ReviewRules.normalizeDraft(
-            draft = initialDraft?.takeIf { draft ->
-                draft.placeId == placeId
-            } ?: ReviewRules.emptyDraft(placeId),
-            placeId = placeId
-        )
+    fun consumeSaved() {
+        _uiState.update { it.copy(isSaved = false) }
+    }
 
+    fun selectPlace(placeId: String) {
         _uiState.update { currentState ->
-            currentState.copy(
-                place = place,
-                reviewDraft = validInitialDraft,
-                isPublishEnabled = ReviewRules.canPublish(validInitialDraft)
+            selectPlace(
+                currentState = currentState,
+                placeId = placeId
             )
         }
     }
@@ -103,11 +151,33 @@ class NewReviewViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun draftForSaving(): ReviewDraft? = _uiState.value.reviewDraft
-
     fun draftForPublishing(): ReviewDraft? = _uiState.value.reviewDraft?.let(
         ReviewRules::prepareForPublish
     )
+
+    private fun selectPlace(
+        currentState: NewReviewState,
+        placeId: String
+    ): NewReviewState {
+        val place = currentState.places.find { candidate ->
+            candidate.id == placeId
+        } ?: return currentState
+
+        if (
+            currentState.place?.id == placeId &&
+            currentState.reviewDraft?.placeId == placeId
+        ) {
+            return currentState
+        }
+
+        val reviewDraft = ReviewRules.emptyDraft(placeId)
+
+        return currentState.copy(
+            place = place,
+            reviewDraft = reviewDraft,
+            isPublishEnabled = ReviewRules.canPublish(reviewDraft)
+        )
+    }
 
     private fun updateDraft(transform: (ReviewDraft) -> ReviewDraft) {
         _uiState.update { currentState ->

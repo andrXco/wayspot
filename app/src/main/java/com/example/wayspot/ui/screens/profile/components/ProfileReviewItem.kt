@@ -1,6 +1,7 @@
 package com.example.wayspot.ui.screens.profile.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,11 +33,13 @@ import com.example.wayspot.ui.theme.WayspotTheme
 @Composable
 fun ProfileReviewItem(
     review: ReviewInfo,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
+            .clickable(onClick = onClick)
             .padding(
                 horizontal = 16.dp,
                 vertical = 6.dp
@@ -115,7 +118,8 @@ private fun ProfileReviewItemPreview() {
                 description = "La vista desde Monserrate es increíble.",
                 userId = "1",
                 placeId = "1"
-            )
+            ),
+            onClick = {}
         )
     }
 }

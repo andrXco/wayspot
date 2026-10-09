@@ -11,6 +11,14 @@ data class ReviewDto(
     val placeId: Int
 )
 
+data class SaveReviewDto(
+    val rating: Int,
+    val title: String,
+    val description: String,
+    val userId: Int,
+    val placeId: Int
+)
+
 fun ReviewDto.toReviewInfo(): ReviewInfo {
     return ReviewInfo(
         id = id.toString(),

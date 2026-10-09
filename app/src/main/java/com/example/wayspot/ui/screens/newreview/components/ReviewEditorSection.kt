@@ -8,29 +8,21 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.wayspot.data.model.Place
 import com.example.wayspot.data.model.ReviewDraft
 
 /** Reúne las secciones del editor de reseña y mantiene sus cambios elevados al contenedor. */
 @Composable
 fun ReviewEditorSection(
-    place: Place,
     reviewDraft: ReviewDraft,
     onRatingSelected: (Int) -> Unit,
     onTitleChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
-    onAddPhotosClick: () -> Unit,
-    onRemovePhotoClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        ReviewPlaceSummaryCard(
-            place = place,
-            modifier = Modifier.fillMaxWidth()
-        )
         ReviewRatingSection(
             rating = reviewDraft.rating,
             onRatingSelected = onRatingSelected,
@@ -41,12 +33,6 @@ fun ReviewEditorSection(
             onTitleChange = onTitleChange,
             description = reviewDraft.description,
             onDescriptionChange = onDescriptionChange,
-            modifier = Modifier.fillMaxWidth()
-        )
-        ReviewPhotoSection(
-            photoUris = reviewDraft.photoUris,
-            onAddPhotosClick = onAddPhotosClick,
-            onRemovePhotoClick = onRemovePhotoClick,
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(8.dp))
