@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
-import com.example.wayspot.data.dto.BackendSession
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.ui.preview.WayspotMultiPreview
@@ -130,7 +129,7 @@ fun ReviewDetailContent(
                         review = review,
                         place = state.place,
                         author = state.author,
-                        canManage = review.userId == BackendSession.USER_ID,
+                        canManage = review.userId == "1",
                         isDeleting = state.isDeleting,
                         onAuthorClick = { onAuthorClick(review.userId) },
                         onEditClick = onEditClick,

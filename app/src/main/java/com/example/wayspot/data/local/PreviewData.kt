@@ -16,15 +16,15 @@ import com.example.wayspot.data.model.SavedPlace
 import com.example.wayspot.data.model.SavedPlaceList
 import com.example.wayspot.data.model.UserProfile
 import com.example.wayspot.data.model.UserStats
-import com.example.wayspot.data.dto.UserDto
+import com.example.wayspot.data.model.UserInfo
 
 /** Fuente centralizada de datos locales para previsualizaciones y flujos de interfaz no remotos. */
 object PreviewData {
     const val reviewCommentPreviewReviewId = "preview-review"
     val reviewCommentDraft = "El recorrido fue muy agradable y las recomendaciones me sirvieron mucho."
 
-    val reviewDetailAuthor = UserDto(
-        id = 2,
+    val reviewDetailAuthor = UserInfo(
+        id = "2",
         name = "María Polo",
         username = "maria.polo",
         bio = null,
@@ -37,7 +37,7 @@ object PreviewData {
         rating = 5,
         title = "Visita recomendada",
         description = "El paisaje y los senderos son increíbles.",
-        userId = reviewDetailAuthor.id.toString(),
+        userId = reviewDetailAuthor.id,
         placeId = PreviewDataPopular.previewPlaceInfo.id
     )
 
@@ -46,8 +46,8 @@ object PreviewData {
             id = "preview-comment-1",
             content = "El recorrido estaba muy tranquilo por la mañana.",
             reviewId = reviewDetailReview.id,
-            author = UserDto(
-                id = 3,
+            author = UserInfo(
+                id = "3",
                 name = "Juan Pérez",
                 username = "juan.perez",
                 bio = null,
@@ -59,8 +59,8 @@ object PreviewData {
             id = "preview-comment-2",
             content = "Gracias por compartir la recomendación.",
             reviewId = reviewDetailReview.id,
-            author = UserDto(
-                id = 4,
+            author = UserInfo(
+                id = "4",
                 name = "Camila Torres",
                 username = "cami.torres",
                 bio = null,

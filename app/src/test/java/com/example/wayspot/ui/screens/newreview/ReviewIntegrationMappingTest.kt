@@ -23,11 +23,27 @@ class ReviewIntegrationMappingTest {
 
     @Test
     fun commentDtoMapsItsAuthor() {
-        val author = UserDto(2, "Ana", "ana", null, null, null)
-        val comment = CommentDto(5, "De acuerdo", 12, 2, author).toReviewComment()
+        val author = UserDto(
+            id = 2,
+            name = "Ana",
+            username = "ana",
+            email = "ana@wayspot.com",
+            bio = null,
+            location = null,
+            avatarUrl = null
+        )
+
+        val comment = CommentDto(
+            id = 5,
+            content = "De acuerdo",
+            reviewId = 12,
+            userId = 2,
+            createdAt = "2026-10-09T10:00:00.000Z",
+            user = author
+        ).toReviewComment()
 
         assertEquals("12", comment.reviewId)
-        assertEquals(2, comment.author.id)
+        assertEquals("2", comment.author.id)
         assertEquals("Ana", comment.author.name)
     }
 

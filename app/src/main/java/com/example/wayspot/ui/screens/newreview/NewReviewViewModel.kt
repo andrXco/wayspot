@@ -3,7 +3,6 @@ package com.example.wayspot.ui.screens.newreview
 import androidx.lifecycle.ViewModel
 import com.example.wayspot.R
 import androidx.lifecycle.viewModelScope
-import com.example.wayspot.data.dto.BackendSession
 import com.example.wayspot.data.model.ReviewDraft
 import com.example.wayspot.data.model.ReviewRules
 import com.example.wayspot.data.repository.PlaceRepository
@@ -43,7 +42,7 @@ class NewReviewViewModel @Inject constructor(
                 }
                 result.getOrNull()
             }
-            if (existing != null && existing.userId != BackendSession.USER_ID) {
+            if (existing != null && existing.userId != "1") {
                 _uiState.update { it.copy(isLoading = false, errorResId = R.string.review_edit_forbidden) }
                 return@launch
             }

@@ -2,7 +2,6 @@ package com.example.wayspot.ui.screens.reviewdetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.wayspot.data.dto.BackendSession
 import com.example.wayspot.data.repository.PlaceRepository
 import com.example.wayspot.data.repository.ReviewRepository
 import com.example.wayspot.data.repository.UserRepository
@@ -50,7 +49,7 @@ class ReviewDetailViewModel @Inject constructor(
     }
 
     fun requestDelete() {
-        if (_uiState.value.review?.userId == BackendSession.USER_ID) {
+        if (_uiState.value.review?.userId == "1") {
             _uiState.update { it.copy(showDeleteConfirmation = true) }
         }
     }
@@ -61,7 +60,7 @@ class ReviewDetailViewModel @Inject constructor(
 
     fun deleteReview() {
         val review = _uiState.value.review ?: return
-        if (review.userId != BackendSession.USER_ID || _uiState.value.isDeleting) return
+        if (review.userId != "1" || _uiState.value.isDeleting) return
         _uiState.update { it.copy(isDeleting = true, showDeleteConfirmation = false) }
         viewModelScope.launch {
             val result = reviewRepository.deleteReview(review.id)

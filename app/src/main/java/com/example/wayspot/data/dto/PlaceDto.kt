@@ -8,7 +8,7 @@ data class PlaceDto(
     val location: String,
     val rating: Double,
     val imageUrl: String?,
-    val description: String
+    val description: String?
 )
 
 fun PlaceDto.toPlaceInfo(): PlaceInfo {
@@ -19,6 +19,6 @@ fun PlaceDto.toPlaceInfo(): PlaceInfo {
         location = location,
         rating = rating,
         imageUrl = imageUrl,
-        description = description
+        description = description ?: ""
     )
 }

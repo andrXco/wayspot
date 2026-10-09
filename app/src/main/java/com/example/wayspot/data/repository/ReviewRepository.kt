@@ -1,7 +1,6 @@
 package com.example.wayspot.data.repository
 
 import com.example.wayspot.data.datasource.implementation.ReviewRetrofitDataSourceImplementation
-import com.example.wayspot.data.dto.BackendSession
 import com.example.wayspot.data.dto.CreateCommentDto
 import com.example.wayspot.data.dto.SaveReviewDto
 import com.example.wayspot.data.dto.toReviewComment
@@ -40,7 +39,7 @@ class ReviewRepository @Inject constructor(
                 rating = draft.rating,
                 title = draft.title,
                 description = draft.description,
-                userId = BackendSession.USER_ID.toInt(),
+                userId = 1,
                 placeId = draft.placeId.toInt()
             )
             val saved = if (reviewId == null) {
@@ -73,12 +72,16 @@ class ReviewRepository @Inject constructor(
         }
     }
 
-    suspend fun createComment(reviewId: String, content: String): Result<ReviewComment> {
+    suspend fun createComment(
+        reviewId: String,
+        content: String
+    ): Result<ReviewComment> {
         return try {
             val comment = reviewRemoteDataSource.createComment(
                 reviewId,
-                CreateCommentDto(content, BackendSession.USER_ID.toInt())
+                CreateCommentDto(content, 1)
             )
+
             Result.success(comment.toReviewComment())
         } catch (e: Exception) {
             Result.failure(e)

@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.model.UserProfile
-import com.example.wayspot.data.dto.BackendSession
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.profile.components.ProfileContent
 import com.example.wayspot.ui.theme.WayspotTheme
@@ -27,7 +26,7 @@ fun ProfileScreen(
 
     LaunchedEffect(Unit) {
         profileViewModel.loadProfile(userProfile)
-        profileViewModel.loadReviews(BackendSession.USER_ID)
+        profileViewModel.loadReviews("1")
     }
 
     state.userProfile?.let { profile ->
