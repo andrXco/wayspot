@@ -414,6 +414,7 @@
     <string name="review_comments_count">%1$d comentarios</string>
     <string name="review_comments_title">Comentarios</string>
     <string name="review_comments_empty">Aún no hay comentarios.</string>
+    <string name="review_author_avatar_content_description">Foto de perfil de %1$s</string>
     <string name="review_comment_hint">Escribe un comentario</string>
     <string name="review_comment_publish">Publicar comentario</string>
     <string name="review_comment_screen_title">Nuevo comentario</string>
