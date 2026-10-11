@@ -1,5 +1,5 @@
 package com.example.wayspot.data.dto
-import com.example.wayspot.data.model.PlaceInfo
+import com.example.wayspot.data.model.place.PlaceInfo
 
 data class PlaceDto(
     val id: Int,
@@ -33,15 +33,15 @@ fun PlaceDto.toPlaceInfo(): PlaceInfo {
     )
 }
 
-fun PlaceDto.toPlace(): com.example.wayspot.data.model.Place {
-    return com.example.wayspot.data.model.Place(
+fun PlaceDto.toPlace(): com.example.wayspot.data.model.place.Place {
+    return com.example.wayspot.data.model.place.Place(
         id = slug ?: id.toString(),
         tituloRes = 0,
         categoriaRes = 0,
         ubicacionRes = 0,
         rating = rating,
         imagen = imageUrl,
-        detail = com.example.wayspot.data.model.PlaceDetail(
+        detail = com.example.wayspot.data.model.place.PlaceDetail(
             durationRes = 0,
             priceRes = 0,
             altitudeRes = 0,

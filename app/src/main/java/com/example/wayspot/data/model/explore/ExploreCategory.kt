@@ -1,7 +1,8 @@
-package com.example.wayspot.data.model
+package com.example.wayspot.data.model.explore
 
 import androidx.annotation.StringRes
 import com.example.wayspot.R
+import com.example.wayspot.data.model.place.Place
 
 /** Categoría de exploración que relaciona una etiqueta visible con categorías de lugares. */
 data class ExploreCategory(

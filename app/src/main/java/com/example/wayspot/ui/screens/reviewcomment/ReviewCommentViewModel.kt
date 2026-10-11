@@ -2,7 +2,7 @@ package com.example.wayspot.ui.screens.reviewcomment
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.wayspot.data.model.ReviewCommentRules
+import com.example.wayspot.data.model.review.ReviewCommentRules
 import com.example.wayspot.data.repository.ReviewRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject

@@ -25,7 +25,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
-import com.example.wayspot.data.model.EditProfileRules
+import com.example.wayspot.data.model.user.EditProfileRules
 
 /** Agrupa los campos editables del perfil y preserva los límites de texto recibidos. */
 @Composable

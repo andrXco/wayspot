@@ -30,10 +30,10 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
-import com.example.wayspot.data.model.UserInfo
-import com.example.wayspot.data.model.PlaceInfo
-import com.example.wayspot.data.model.ReviewInfo
-import com.example.wayspot.data.model.ReviewRules
+import com.example.wayspot.data.model.user.UserInfo
+import com.example.wayspot.data.model.place.PlaceInfo
+import com.example.wayspot.data.model.review.ReviewInfo
+import com.example.wayspot.data.model.review.ReviewRules
 import com.example.wayspot.ui.components.ProfileAvatar
 
 @Composable

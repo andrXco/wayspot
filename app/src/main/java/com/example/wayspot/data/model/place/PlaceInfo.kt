@@ -1,4 +1,4 @@
-package com.example.wayspot.data.model
+package com.example.wayspot.data.model.place
 
 data class PlaceInfo(
     val id: String,

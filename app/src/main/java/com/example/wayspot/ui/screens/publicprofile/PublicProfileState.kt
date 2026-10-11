@@ -1,7 +1,7 @@
 package com.example.wayspot.ui.screens.publicprofile
 
-import com.example.wayspot.data.model.UserInfo
-import com.example.wayspot.data.model.ReviewInfo
+import com.example.wayspot.data.model.user.UserInfo
+import com.example.wayspot.data.model.review.ReviewInfo
 
 data class PublicProfileState(
     val user: UserInfo? = null,

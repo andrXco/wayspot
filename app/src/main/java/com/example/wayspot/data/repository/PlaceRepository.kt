@@ -3,8 +3,8 @@ package com.example.wayspot.data.repository
 import com.example.wayspot.data.datasource.implementation.PlaceRetrofitDataSourceImplementation
 import com.example.wayspot.data.dto.toPlaceInfo
 import com.example.wayspot.data.dto.toPlace
-import com.example.wayspot.data.model.Place
-import com.example.wayspot.data.model.PlaceInfo
+import com.example.wayspot.data.model.place.Place
+import com.example.wayspot.data.model.place.PlaceInfo
 import javax.inject.Inject
 
 class PlaceRepository @Inject constructor(

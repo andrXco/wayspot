@@ -1,22 +1,22 @@
 package com.example.wayspot.data.local
 
 import com.example.wayspot.R
-import com.example.wayspot.data.model.HomeCategory
-import com.example.wayspot.data.model.HomeCategoryId
-import com.example.wayspot.data.model.HomeFeaturedPlan
-import com.example.wayspot.data.model.HomeReview
-import com.example.wayspot.data.model.Notification
-import com.example.wayspot.data.model.ProfileNotificationPreferences
-import com.example.wayspot.data.model.Review
-import com.example.wayspot.data.model.ReviewComment
-import com.example.wayspot.data.model.ReviewDraft
-import com.example.wayspot.data.model.ReviewInfo
-import com.example.wayspot.data.model.ReviewRules
-import com.example.wayspot.data.model.SavedPlace
-import com.example.wayspot.data.model.SavedPlaceList
-import com.example.wayspot.data.model.UserProfile
-import com.example.wayspot.data.model.UserStats
-import com.example.wayspot.data.model.UserInfo
+import com.example.wayspot.data.model.home.HomeCategory
+import com.example.wayspot.data.model.home.HomeCategoryId
+import com.example.wayspot.data.model.home.HomeFeaturedPlan
+import com.example.wayspot.data.model.home.HomeReview
+import com.example.wayspot.data.model.notification.Notification
+import com.example.wayspot.data.model.user.ProfileNotificationPreferences
+import com.example.wayspot.data.model.review.Review
+import com.example.wayspot.data.model.review.ReviewComment
+import com.example.wayspot.data.model.review.ReviewDraft
+import com.example.wayspot.data.model.review.ReviewInfo
+import com.example.wayspot.data.model.review.ReviewRules
+import com.example.wayspot.data.model.savedplace.SavedPlace
+import com.example.wayspot.data.model.savedplace.SavedPlaceList
+import com.example.wayspot.data.model.user.UserProfile
+import com.example.wayspot.data.model.user.UserStats
+import com.example.wayspot.data.model.user.UserInfo
 
 /** Fuente centralizada de datos locales para previsualizaciones y flujos de interfaz no remotos. */
 object PreviewData {

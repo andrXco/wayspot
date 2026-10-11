@@ -1,7 +1,7 @@
 package com.example.wayspot.ui.screens.newreview
 
-import com.example.wayspot.data.model.PlaceInfo
-import com.example.wayspot.data.model.ReviewDraft
+import com.example.wayspot.data.model.place.PlaceInfo
+import com.example.wayspot.data.model.review.ReviewDraft
 
 /** Estado inmutable del catálogo y la reseña que se encuentra en creación. */
 data class NewReviewState(

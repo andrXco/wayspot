@@ -1,7 +1,7 @@
 package com.example.wayspot.data.dto
 
-import com.example.wayspot.data.model.ReviewComment
-import com.example.wayspot.data.model.UserInfo
+import com.example.wayspot.data.model.review.ReviewComment
+import com.example.wayspot.data.model.user.UserInfo
 
 data class CommentDto(
     val id: Int,

@@ -1,4 +1,4 @@
-package com.example.wayspot.data.model
+package com.example.wayspot.data.model.review
 
 /** Centraliza límites, normalización y condiciones de publicación de una reseña. */
 object ReviewRules {

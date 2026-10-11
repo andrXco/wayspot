@@ -1,7 +1,7 @@
 package com.example.wayspot.navigation
 
-import com.example.wayspot.data.model.SavedPlace
-import com.example.wayspot.data.model.UserProfile
+import com.example.wayspot.data.model.savedplace.SavedPlace
+import com.example.wayspot.data.model.user.UserProfile
 
 /** Estado compartido entre destinos para el perfil activo y sus lugares guardados. */
 data class AppNavigationState(

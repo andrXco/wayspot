@@ -41,8 +41,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
-import com.example.wayspot.data.model.ReviewRules
-import com.example.wayspot.data.model.SavedPlace
+import com.example.wayspot.data.model.review.ReviewRules
+import com.example.wayspot.data.model.savedplace.SavedPlace
 import com.example.wayspot.ui.components.WayspotImage
 
 /** Resume un destino guardado y expone acciones independientes para ver su detalle o retirarlo de la lista. */

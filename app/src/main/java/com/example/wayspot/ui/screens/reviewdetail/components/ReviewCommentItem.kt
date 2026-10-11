@@ -20,7 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
-import com.example.wayspot.data.model.ReviewComment
+import com.example.wayspot.data.model.review.ReviewComment
 import com.example.wayspot.ui.components.ProfileAvatar
 
 @Composable

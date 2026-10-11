@@ -40,8 +40,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
-import com.example.wayspot.data.model.HomeRules
-import com.example.wayspot.data.model.ReviewFeedItem
+import com.example.wayspot.data.model.home.HomeRules
+import com.example.wayspot.data.model.review.ReviewFeedItem
 
 /** Mantiene la estructura visual del feed y recibe la reseña publicada desde el backend. */
 @Composable

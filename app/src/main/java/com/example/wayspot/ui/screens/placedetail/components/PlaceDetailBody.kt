@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Alignment
 import com.example.wayspot.R
-import com.example.wayspot.data.model.PlaceInfo
+import com.example.wayspot.data.model.place.PlaceInfo
 import com.example.wayspot.ui.theme.WayspotTheme
 
 /** Cuerpo del detalle con metadatos, descripción y reseñas. */

@@ -1,9 +1,9 @@
 package com.example.wayspot.ui.screens.reviewdetail
 
-import com.example.wayspot.data.model.UserInfo
-import com.example.wayspot.data.model.PlaceInfo
-import com.example.wayspot.data.model.ReviewComment
-import com.example.wayspot.data.model.ReviewInfo
+import com.example.wayspot.data.model.user.UserInfo
+import com.example.wayspot.data.model.place.PlaceInfo
+import com.example.wayspot.data.model.review.ReviewComment
+import com.example.wayspot.data.model.review.ReviewInfo
 
 data class ReviewDetailState(
     val review: ReviewInfo? = null,

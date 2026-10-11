@@ -1,6 +1,6 @@
 package com.example.wayspot.data.dto
 
-import com.example.wayspot.data.model.UserInfo
+import com.example.wayspot.data.model.user.UserInfo
 
 data class UserDto(
     val id: Int,

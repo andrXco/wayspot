@@ -1,4 +1,6 @@
-package com.example.wayspot.data.model
+package com.example.wayspot.data.model.review
+
+import com.example.wayspot.data.model.user.UserInfo
 
 data class ReviewComment(
     val id: String,

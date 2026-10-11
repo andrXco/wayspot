@@ -1,7 +1,7 @@
 package com.example.wayspot.ui.screens.profile
 
-import com.example.wayspot.data.model.ReviewInfo
-import com.example.wayspot.data.model.UserProfile
+import com.example.wayspot.data.model.review.ReviewInfo
+import com.example.wayspot.data.model.user.UserProfile
 
 
 /** Estado inmutable que reúne el perfil visible y sus reseñas. */

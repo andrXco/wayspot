@@ -1,4 +1,4 @@
-package com.example.wayspot.data.model
+package com.example.wayspot.data.model.review
 
 /** Reglas compartidas para validar y preparar el texto de un comentario. */
 object ReviewCommentRules {

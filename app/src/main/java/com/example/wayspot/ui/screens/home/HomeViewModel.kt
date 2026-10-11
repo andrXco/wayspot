@@ -2,11 +2,11 @@ package com.example.wayspot.ui.screens.home
 
 import androidx.lifecycle.ViewModel
 import com.example.wayspot.data.local.PreviewData
-import com.example.wayspot.data.model.HomeCategoryId
-import com.example.wayspot.data.model.HomeRules
-import com.example.wayspot.data.model.SavedPlace
-import com.example.wayspot.data.model.SavedPlacesRules
-import com.example.wayspot.data.model.ReviewFeedItem
+import com.example.wayspot.data.model.home.HomeCategoryId
+import com.example.wayspot.data.model.home.HomeRules
+import com.example.wayspot.data.model.savedplace.SavedPlace
+import com.example.wayspot.data.model.savedplace.SavedPlacesRules
+import com.example.wayspot.data.model.review.ReviewFeedItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow

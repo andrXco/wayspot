@@ -12,9 +12,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.wayspot.data.model.PlaceInfo
-import com.example.wayspot.data.model.ReviewInfo
-import com.example.wayspot.data.model.toPlaceInfo
+import com.example.wayspot.data.model.place.PlaceInfo
+import com.example.wayspot.data.model.review.ReviewInfo
+import com.example.wayspot.data.model.place.toPlaceInfo
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.placedetail.components.PlaceDetailBody
 import com.example.wayspot.ui.screens.placedetail.components.PlaceDetailHero

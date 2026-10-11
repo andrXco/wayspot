@@ -22,8 +22,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.data.local.PreviewData
-import com.example.wayspot.data.model.ProfileNotificationPreferences
-import com.example.wayspot.data.model.UserProfile
+import com.example.wayspot.data.model.user.ProfileNotificationPreferences
+import com.example.wayspot.data.model.user.UserProfile
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.editprofile.components.EditProfileAvatarSection
 import com.example.wayspot.ui.screens.editprofile.components.EditProfileBottomAction

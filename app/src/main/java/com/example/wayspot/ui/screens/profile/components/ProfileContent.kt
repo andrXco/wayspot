@@ -16,8 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
-import com.example.wayspot.data.model.ReviewInfo
-import com.example.wayspot.data.model.UserProfile
+import com.example.wayspot.data.model.review.ReviewInfo
+import com.example.wayspot.data.model.user.UserProfile
 import androidx.compose.ui.res.stringResource
 import com.example.wayspot.R
 

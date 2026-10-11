@@ -1,6 +1,6 @@
 package com.example.wayspot.data.dto
 
-import com.example.wayspot.data.model.ReviewInfo
+import com.example.wayspot.data.model.review.ReviewInfo
 
 data class ReviewDto(
     val id: Int,

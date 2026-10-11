@@ -21,8 +21,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.local.PreviewDataPopular
-import com.example.wayspot.data.model.PlaceInfo
-import com.example.wayspot.data.model.ReviewDraft
+import com.example.wayspot.data.model.place.PlaceInfo
+import com.example.wayspot.data.model.review.ReviewDraft
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.newreview.components.NewReviewHeader
 import com.example.wayspot.ui.screens.newreview.components.ReviewBottomAction

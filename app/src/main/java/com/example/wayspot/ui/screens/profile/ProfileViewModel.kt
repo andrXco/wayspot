@@ -2,7 +2,7 @@ package com.example.wayspot.ui.screens.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.wayspot.data.model.UserProfile
+import com.example.wayspot.data.model.user.UserProfile
 import com.example.wayspot.data.repository.AuthRepository
 import com.example.wayspot.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

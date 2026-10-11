@@ -9,7 +9,7 @@ import com.example.wayspot.data.dto.toPlaceInfo
 import com.example.wayspot.data.dto.toReviewComment
 import com.example.wayspot.data.dto.toReviewInfo
 import com.example.wayspot.data.dto.toUserInfo
-import com.example.wayspot.data.model.ReviewRules
+import com.example.wayspot.data.model.review.ReviewRules
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue

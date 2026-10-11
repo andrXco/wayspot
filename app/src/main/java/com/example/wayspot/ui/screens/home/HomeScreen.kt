@@ -16,10 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.data.local.PreviewData
-import com.example.wayspot.data.model.HomeCategoryId
-import com.example.wayspot.data.model.HomeRules
-import com.example.wayspot.data.model.Place
-import com.example.wayspot.data.model.SavedPlace
+import com.example.wayspot.data.model.home.HomeCategoryId
+import com.example.wayspot.data.model.home.HomeRules
+import com.example.wayspot.data.model.place.Place
+import com.example.wayspot.data.model.savedplace.SavedPlace
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.home.components.HomeCategoryChips
 import com.example.wayspot.ui.screens.home.components.HomeFeaturedPlanCarousel

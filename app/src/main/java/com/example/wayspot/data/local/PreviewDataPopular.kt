@@ -1,10 +1,10 @@
 package com.example.wayspot.data.local
 
 import com.example.wayspot.R
-import com.example.wayspot.data.model.PlaceDetail
-import com.example.wayspot.data.model.PlaceReview
-import com.example.wayspot.data.model.Place
-import com.example.wayspot.data.model.PlaceInfo
+import com.example.wayspot.data.model.place.PlaceDetail
+import com.example.wayspot.data.model.place.PlaceReview
+import com.example.wayspot.data.model.place.Place
+import com.example.wayspot.data.model.place.PlaceInfo
 
 /** Catálogo local de lugares y detalles usado por las pantallas de exploración y sus previsualizaciones. */
 object PreviewDataPopular {

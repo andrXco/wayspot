@@ -1,6 +1,6 @@
 package com.example.wayspot.ui.screens.reviewcomment
 
-import com.example.wayspot.data.model.ReviewCommentRules
+import com.example.wayspot.data.model.review.ReviewCommentRules
 
 /** Estado renderizable del editor para publicar un comentario en una reseña. */
 data class ReviewCommentState(

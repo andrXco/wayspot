@@ -1,10 +1,10 @@
 package com.example.wayspot.ui.screens.home
 
-import com.example.wayspot.data.model.HomeCategory
-import com.example.wayspot.data.model.HomeCategoryId
-import com.example.wayspot.data.model.HomeFeaturedPlan
-import com.example.wayspot.data.model.ReviewFeedItem
-import com.example.wayspot.data.model.PlaceInfo
+import com.example.wayspot.data.model.home.HomeCategory
+import com.example.wayspot.data.model.home.HomeCategoryId
+import com.example.wayspot.data.model.home.HomeFeaturedPlan
+import com.example.wayspot.data.model.review.ReviewFeedItem
+import com.example.wayspot.data.model.place.PlaceInfo
 
 /** Estado inmutable de la experiencia de inicio, incluidas sus interacciones locales de feed. */
 data class HomeState(

@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import com.example.wayspot.R
 import androidx.lifecycle.viewModelScope
 import com.example.wayspot.data.dto.BackendSession
-import com.example.wayspot.data.model.ReviewDraft
-import com.example.wayspot.data.model.ReviewRules
+import com.example.wayspot.data.model.review.ReviewDraft
+import com.example.wayspot.data.model.review.ReviewRules
 import com.example.wayspot.data.repository.PlaceRepository
 import com.example.wayspot.data.repository.ReviewRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

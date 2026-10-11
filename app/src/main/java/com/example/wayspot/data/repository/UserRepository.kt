@@ -3,8 +3,8 @@ package com.example.wayspot.data.repository
 import com.example.wayspot.data.datasource.implementation.UserRetrofitDataSourceImplementation
 import com.example.wayspot.data.dto.toUserInfo
 import com.example.wayspot.data.dto.toReviewInfo
-import com.example.wayspot.data.model.ReviewInfo
-import com.example.wayspot.data.model.UserInfo
+import com.example.wayspot.data.model.review.ReviewInfo
+import com.example.wayspot.data.model.user.UserInfo
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(

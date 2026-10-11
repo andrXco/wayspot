@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.wayspot.data.model.ReviewDraft
+import com.example.wayspot.data.model.review.ReviewDraft
 
 /** Reúne las secciones del editor de reseña y mantiene sus cambios elevados al contenedor. */
 @Composable

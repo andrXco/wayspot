@@ -22,7 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
-import com.example.wayspot.data.model.ReviewInfo
+import com.example.wayspot.data.model.review.ReviewInfo
 import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable

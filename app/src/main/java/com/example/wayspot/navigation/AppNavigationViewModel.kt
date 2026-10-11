@@ -2,10 +2,10 @@ package com.example.wayspot.navigation
 
 import androidx.lifecycle.ViewModel
 import com.example.wayspot.data.local.PreviewData
-import com.example.wayspot.data.model.Place
-import com.example.wayspot.data.model.SavedPlaceList
-import com.example.wayspot.data.model.SavedPlacesRules
-import com.example.wayspot.data.model.UserProfile
+import com.example.wayspot.data.model.place.Place
+import com.example.wayspot.data.model.savedplace.SavedPlaceList
+import com.example.wayspot.data.model.savedplace.SavedPlacesRules
+import com.example.wayspot.data.model.user.UserProfile
 import com.example.wayspot.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject

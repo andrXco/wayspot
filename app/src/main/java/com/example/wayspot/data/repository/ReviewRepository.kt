@@ -6,9 +6,9 @@ import com.example.wayspot.data.dto.CreateCommentDto
 import com.example.wayspot.data.dto.SaveReviewDto
 import com.example.wayspot.data.dto.toReviewComment
 import com.example.wayspot.data.dto.toReviewInfo
-import com.example.wayspot.data.model.ReviewComment
-import com.example.wayspot.data.model.ReviewDraft
-import com.example.wayspot.data.model.ReviewInfo
+import com.example.wayspot.data.model.review.ReviewComment
+import com.example.wayspot.data.model.review.ReviewDraft
+import com.example.wayspot.data.model.review.ReviewInfo
 import javax.inject.Inject
 
 class ReviewRepository @Inject constructor(

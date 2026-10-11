@@ -4,11 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.data.repository.PlaceRepository
-import com.example.wayspot.data.model.ExploreCategory
-import com.example.wayspot.data.model.ExploreCategoryRules
-import com.example.wayspot.data.model.Place
-import com.example.wayspot.data.model.SavedPlace
-import com.example.wayspot.data.model.SavedPlacesRules
+import com.example.wayspot.data.model.explore.ExploreCategory
+import com.example.wayspot.data.model.explore.ExploreCategoryRules
+import com.example.wayspot.data.model.place.Place
+import com.example.wayspot.data.model.savedplace.SavedPlace
+import com.example.wayspot.data.model.savedplace.SavedPlacesRules
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow

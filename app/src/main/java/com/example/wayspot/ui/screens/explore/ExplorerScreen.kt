@@ -26,11 +26,11 @@ import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.local.PreviewDataPopular
-import com.example.wayspot.data.model.ExploreCategory
-import com.example.wayspot.data.model.ExploreCategoryRules
-import com.example.wayspot.data.model.Place
-import com.example.wayspot.data.model.SavedPlace
-import com.example.wayspot.data.model.SavedPlacesRules
+import com.example.wayspot.data.model.explore.ExploreCategory
+import com.example.wayspot.data.model.explore.ExploreCategoryRules
+import com.example.wayspot.data.model.place.Place
+import com.example.wayspot.data.model.savedplace.SavedPlace
+import com.example.wayspot.data.model.savedplace.SavedPlacesRules
 import com.example.wayspot.ui.components.WayspotSearch
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.explore.components.ExplorerPopularCard
