@@ -63,7 +63,7 @@ fun ReviewDetailHeader(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = review.title,
+                text = review.title.orEmpty(),
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onSurface
             )

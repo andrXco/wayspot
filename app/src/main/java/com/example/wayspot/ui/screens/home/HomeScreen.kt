@@ -124,7 +124,7 @@ fun HomeContent(
             candidates = listOf(
                 review.author.name,
                 review.author.username,
-                review.review.title,
+                review.review.title.orEmpty(),
                 review.review.description,
                 review.place.title,
                 review.place.location

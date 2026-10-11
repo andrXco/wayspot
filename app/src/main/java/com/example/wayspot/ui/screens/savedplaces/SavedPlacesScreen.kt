@@ -45,9 +45,9 @@ fun SavedPlacesScreen(
 
     val localizedSearchTerms = savedPlaces.associate { savedPlace ->
         savedPlace.place.id to listOf(
-            stringResource(savedPlace.place.tituloRes),
-            stringResource(savedPlace.place.ubicacionRes),
-            stringResource(savedPlace.place.categoriaRes)
+            savedPlace.place.titleText ?: stringResource(savedPlace.place.tituloRes),
+            savedPlace.place.locationText ?: stringResource(savedPlace.place.ubicacionRes),
+            savedPlace.place.categoryText ?: stringResource(savedPlace.place.categoriaRes)
         )
     }
 

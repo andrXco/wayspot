@@ -50,7 +50,7 @@ class NewReviewViewModel @Inject constructor(
             val selectedId = existing?.placeId ?: placeId
             val selectedPlace = places.find { it.id == selectedId }
             val draft = if (existing != null) {
-                ReviewDraft(existing.placeId, existing.rating, existing.title, existing.description, emptyList())
+                ReviewDraft(existing.placeId, existing.rating, existing.title.orEmpty(), existing.description, emptyList())
             } else {
                 selectedPlace?.let { ReviewRules.emptyDraft(it.id) }
             }

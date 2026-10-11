@@ -61,7 +61,7 @@ fun ProfileReviewItem(
             modifier = Modifier.padding(14.dp)
         ) {
             Text(
-                text = review.title,
+                text = review.title.orEmpty(),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,

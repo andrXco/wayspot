@@ -96,7 +96,7 @@ fun HomeReviewCard(
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             Text(
-                text = item.review.title,
+                text = item.review.title.orEmpty(),
                 modifier = Modifier.padding(horizontal = 16.dp),
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold

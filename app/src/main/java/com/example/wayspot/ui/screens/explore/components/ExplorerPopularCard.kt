@@ -75,7 +75,7 @@ fun ExplorerPopularCard(
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
-                        text = stringResource(place.categoriaRes),
+                        text = place.categoryText ?: stringResource(place.categoriaRes),
                         color = MaterialTheme.colorScheme.onPrimary,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
@@ -112,7 +112,7 @@ fun ExplorerPopularCard(
                     .padding(horizontal = 12.dp, vertical = 8.dp)
             ) {
                 Text(
-                    text = stringResource(place.tituloRes),
+                    text = place.titleText ?: stringResource(place.tituloRes),
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -131,7 +131,7 @@ fun ExplorerPopularCard(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = stringResource(place.ubicacionRes),
+                        text = place.locationText ?: stringResource(place.ubicacionRes),
                         fontSize = 11.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1

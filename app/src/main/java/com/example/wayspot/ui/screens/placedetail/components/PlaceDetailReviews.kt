@@ -84,7 +84,9 @@ private fun ReviewHeader(
         modifier = modifier.fillMaxWidth()
     ) {
         Text(
-            text = review.title,
+            text = review.title?.takeIf { it.isNotBlank() }
+                ?: review.authorName
+                ?: stringResource(R.string.recent_reviews_title),
             fontWeight = FontWeight.Bold,
             fontSize = 14.sp
         )
@@ -97,6 +99,11 @@ private fun ReviewHeader(
             rating = review.rating,
             size = 13.dp
         )
+        val byline = listOfNotNull(review.authorName, review.reviewDate).joinToString(" · ")
+        if (byline.isNotBlank()) {
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = byline, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+        }
     }
 }
 
