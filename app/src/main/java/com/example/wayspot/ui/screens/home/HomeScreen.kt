@@ -192,7 +192,7 @@ fun HomeContent(
                     isExpanded = review.review.id in state.expandedReviewIds,
                     isShared = review.review.id in state.sharedReviewIds,
                     onReviewClick = { onReviewClick(review.review.id) },
-                    onAuthorClick = { onAuthorClick(review.author.id.toString()) },
+                    onAuthorClick = { onAuthorClick(review.author.id) },
                     onPlaceClick = { onPlaceClick(review.place.id) },
                     onLikeClick = { onReviewLikeClick(review.review.id) },
                     onExpandClick = { onReviewExpandClick(review.review.id) },

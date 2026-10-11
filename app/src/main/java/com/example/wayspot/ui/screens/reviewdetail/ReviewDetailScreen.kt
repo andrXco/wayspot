@@ -157,7 +157,7 @@ fun ReviewDetailContent(
                     items(state.comments, key = { it.id }) { comment ->
                         ReviewCommentItem(
                             comment = comment,
-                            onAuthorClick = { onAuthorClick(comment.author.id.toString()) },
+                            onAuthorClick = { onAuthorClick(comment.author.id) },
                             modifier = Modifier.fillMaxWidth()
                         )
                     }

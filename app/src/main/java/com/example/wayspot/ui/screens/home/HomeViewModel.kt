@@ -82,7 +82,7 @@ class HomeViewModel @Inject constructor(
             for (index in reviews.size - 1 downTo 0) {
                 val review = reviews[index]
                 val place = places.find { it.id == review.placeId }
-                val author = users.find { it.id.toString() == review.userId }
+                val author = users.find { it.id == review.userId }
                 if (place != null && author != null) {
                     feed.add(ReviewFeedItem(review, place, author))
                 }

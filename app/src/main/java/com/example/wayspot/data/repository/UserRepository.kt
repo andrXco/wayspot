@@ -1,28 +1,29 @@
 package com.example.wayspot.data.repository
 
 import com.example.wayspot.data.datasource.implementation.UserRetrofitDataSourceImplementation
-import com.example.wayspot.data.dto.UserDto
+import com.example.wayspot.data.dto.toUserInfo
 import com.example.wayspot.data.dto.toReviewInfo
 import com.example.wayspot.data.model.ReviewInfo
+import com.example.wayspot.data.model.UserInfo
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(
     private val userRemoteDataSource: UserRetrofitDataSourceImplementation
 ) {
 
-    suspend fun getUsers(): Result<List<UserDto>> {
+    suspend fun getUsers(): Result<List<UserInfo>> {
         return try {
             val users = userRemoteDataSource.getUsers()
-            Result.success(users)
+            Result.success(users.map { it.toUserInfo() })
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    suspend fun getUserById(id: String): Result<UserDto> {
+    suspend fun getUserById(id: String): Result<UserInfo> {
         return try {
             val user = userRemoteDataSource.getUserById(id)
-            Result.success(user)
+            Result.success(user.toUserInfo())
         } catch (e: Exception) {
             Result.failure(e)
         }
