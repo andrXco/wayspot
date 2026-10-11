@@ -83,6 +83,7 @@
     <string name="star_content_description">Estrella</string>
     <string name="nav_home">Inicio</string>
     <string name="nav_explore">Explorar</string>
+    <string name="nav_add_review">Añadir reseña</string>
     <string name="nav_profile">Perfil</string>
     <string name="profile_content_description">Perfil de usuario</string>
 
@@ -268,7 +269,8 @@
 
     <!-- New Review Screen Strings -->
     <string name="new_review_title">Nueva reseña</string>
-    <string name="new_review_draft">Borrador</string>
+    <string name="new_review_select_place">Selecciona un lugar</string>
+    <string name="new_review_publish_confirmation">Reseña guardada correctamente</string>
     <string name="new_review_experience_question">¿Cómo fue tu experiencia?</string>
     <string name="new_review_rating_1">Mala</string>
     <string name="new_review_rating_2">Regular</string>
@@ -289,7 +291,6 @@
     <string name="new_review_current_rating_content_description">Calificación actual: %1$d de %2$d estrellas</string>
     <string name="new_review_selected_photo_content_description">Foto seleccionada %1$d</string>
     <string name="new_review_remove_photo_content_description">Eliminar foto %1$d</string>
-    <string name="new_review_save_draft_content_description">Guardar borrador</string>
     <string name="place_parque_guell_title">Parque Güell</string>
     <string name="place_parque_guell_location">Barcelona, España</string>
     <string name="place_parque_guell_duration">2 - 3 horas</string>
@@ -341,8 +342,8 @@
     <string name="home_featured_save_content_description">Guardar %1$s</string>
     <string name="home_featured_unsave_content_description">Quitar %1$s de guardados</string>
     <string name="home_reviews_title">Últimas reseñas</string>
-    <string name="home_reviews_subtitle">de personas que sigues</string>
-    <string name="home_reviews_empty">No encontramos reseñas para esta búsqueda.</string>
+    <string name="home_reviews_subtitle">de la comunidad</string>
+    <string name="home_reviews_empty">Aún no hay reseñas para mostrar. Puedes publicar la primera.</string>
     <string name="home_review_valentina_name">Valentina García</string>
     <string name="home_review_valentina_handle">@valentina_viaja</string>
     <string name="home_review_valentina_initials">V</string>
@@ -410,4 +411,25 @@
     <string name="place_paseo_costero_price">Gratuito</string>
     <string name="place_paseo_costero_altitude">5 m</string>
     <string name="place_paseo_costero_description">Un recorrido junto al mar con senderos, vistas abiertas y paradas para descubrir la costa caribeña.</string>
+    <string name="review_comments_count">%1$d comentarios</string>
+    <string name="review_comments_title">Comentarios</string>
+    <string name="review_comments_empty">Aún no hay comentarios.</string>
+    <string name="review_author_avatar_content_description">Foto de perfil de %1$s</string>
+    <string name="review_comment_hint">Escribe un comentario</string>
+    <string name="review_comment_publish">Publicar comentario</string>
+    <string name="review_comment_screen_title">Nuevo comentario</string>
+    <string name="review_comment_screen_prompt">Comparte tu experiencia con esta reseña.</string>
+    <string name="review_comment_publishing">Publicando comentario</string>
+    <string name="review_comment_publish_error">No se pudo publicar el comentario. Inténtalo de nuevo.</string>
+    <string name="review_comment_add_action">Escribir un comentario</string>
+    <string name="review_rating_value">Calificación: %1$d de 5</string>
+    <string name="review_edit">Editar</string>
+    <string name="review_delete">Eliminar</string>
+    <string name="review_save_changes">Guardar cambios</string>
+    <string name="review_edit_title">Editar reseña</string>
+    <string name="review_delete_confirm_title">Eliminar reseña</string>
+    <string name="review_delete_confirm_body">¿Quieres eliminar esta reseña y sus comentarios?</string>
+    <string name="review_cancel">Cancelar</string>
+    <string name="review_edit_forbidden">No puedes editar esta reseña.</string>
+    <string name="profile_reviews_empty">Este usuario aún no tiene reseñas.</string>
 </resources>

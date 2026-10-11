@@ -3,8 +3,8 @@ package com.example.wayspot.ui.screens.editprofile
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.wayspot.data.model.EditProfileRules
-import com.example.wayspot.data.model.UserProfile
+import com.example.wayspot.data.model.user.EditProfileRules
+import com.example.wayspot.data.model.user.UserProfile
 import com.example.wayspot.data.repository.StorageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject

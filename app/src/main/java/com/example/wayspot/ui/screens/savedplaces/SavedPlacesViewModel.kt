@@ -1,9 +1,9 @@
 package com.example.wayspot.ui.screens.savedplaces
 
 import androidx.lifecycle.ViewModel
-import com.example.wayspot.data.model.SavedPlace
-import com.example.wayspot.data.model.SavedPlaceList
-import com.example.wayspot.data.model.SavedPlacesRules
+import com.example.wayspot.data.model.savedplace.SavedPlace
+import com.example.wayspot.data.model.savedplace.SavedPlaceList
+import com.example.wayspot.data.model.savedplace.SavedPlacesRules
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow

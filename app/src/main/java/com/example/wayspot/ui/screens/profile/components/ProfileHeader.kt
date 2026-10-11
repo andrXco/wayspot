@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
 import com.example.wayspot.data.local.PreviewData
-import com.example.wayspot.data.model.UserProfile
+import com.example.wayspot.data.model.user.UserProfile
 import com.example.wayspot.ui.components.ProfileAvatar
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.theme.WayspotTheme

@@ -1,6 +1,7 @@
 package com.example.wayspot.ui.screens.profile.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.wayspot.data.model.ReviewInfo
+import com.example.wayspot.data.model.review.ReviewInfo
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.theme.EstrellaAmarilla
 import com.example.wayspot.ui.theme.WayspotTheme
@@ -32,11 +33,13 @@ import com.example.wayspot.ui.theme.WayspotTheme
 @Composable
 fun ProfileReviewItem(
     review: ReviewInfo,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
+            .clickable(onClick = onClick)
             .padding(
                 horizontal = 16.dp,
                 vertical = 6.dp
@@ -58,7 +61,7 @@ fun ProfileReviewItem(
             modifier = Modifier.padding(14.dp)
         ) {
             Text(
-                text = review.title,
+                text = review.title.orEmpty(),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -115,7 +118,8 @@ private fun ProfileReviewItemPreview() {
                 description = "La vista desde Monserrate es increíble.",
                 userId = "1",
                 placeId = "1"
-            )
+            ),
+            onClick = {}
         )
     }
 }

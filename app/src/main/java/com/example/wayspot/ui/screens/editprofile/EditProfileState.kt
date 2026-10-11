@@ -1,8 +1,8 @@
 package com.example.wayspot.ui.screens.editprofile
 
 import android.net.Uri
-import com.example.wayspot.data.model.ProfileNotificationPreferences
-import com.example.wayspot.data.model.UserProfile
+import com.example.wayspot.data.model.user.ProfileNotificationPreferences
+import com.example.wayspot.data.model.user.UserProfile
 
 /** Estado inmutable de la edición de perfil, incluida la validación y el diálogo destructivo. */
 data class EditProfileState(

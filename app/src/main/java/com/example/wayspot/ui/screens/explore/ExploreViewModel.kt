@@ -1,24 +1,29 @@
 package com.example.wayspot.ui.screens.explore
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.wayspot.data.local.PreviewDataPopular
-import com.example.wayspot.data.model.ExploreCategory
-import com.example.wayspot.data.model.ExploreCategoryRules
-import com.example.wayspot.data.model.Place
-import com.example.wayspot.data.model.SavedPlace
-import com.example.wayspot.data.model.SavedPlacesRules
+import com.example.wayspot.data.repository.PlaceRepository
+import com.example.wayspot.data.model.explore.ExploreCategory
+import com.example.wayspot.data.model.explore.ExploreCategoryRules
+import com.example.wayspot.data.model.place.Place
+import com.example.wayspot.data.model.savedplace.SavedPlace
+import com.example.wayspot.data.model.savedplace.SavedPlacesRules
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 /**
  * Conserva el catálogo completo internamente y publica la selección filtrada junto con el estado
  * de búsqueda y los identificadores guardados.
  */
 @HiltViewModel
-class ExploreViewModel @Inject constructor() : ViewModel() {
+class ExploreViewModel @Inject constructor(
+    private val placeRepository: PlaceRepository
+) : ViewModel() {
 
     private var allPlaces: List<Place> = emptyList()
 
@@ -41,6 +46,21 @@ class ExploreViewModel @Inject constructor() : ViewModel() {
                     selectedCategory = currentState.selectedCategory
                 )
             )
+        }
+
+        viewModelScope.launch {
+            val result = placeRepository.getExplorePlaces()
+            result.getOrNull()?.let { remotePlaces ->
+                allPlaces = remotePlaces
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        places = ExploreCategoryRules.filterPlaces(
+                            places = remotePlaces,
+                            selectedCategory = currentState.selectedCategory
+                        )
+                    )
+                }
+            }
         }
     }
 

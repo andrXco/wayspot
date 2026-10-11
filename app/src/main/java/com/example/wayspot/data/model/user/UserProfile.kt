@@ -1,4 +1,4 @@
-package com.example.wayspot.data.model
+package com.example.wayspot.data.model.user
 
 /** Perfil visible y editable de una persona usuaria dentro de la aplicación. */
 data class UserProfile(
