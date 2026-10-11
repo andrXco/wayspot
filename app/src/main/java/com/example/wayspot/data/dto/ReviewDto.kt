@@ -1,7 +1,5 @@
 package com.example.wayspot.data.dto
 
-import com.example.wayspot.data.model.review.ReviewInfo
-
 data class ReviewDto(
     val id: Int,
     val rating: Int,
@@ -22,16 +20,3 @@ data class SaveReviewDto(
     val userId: Int,
     val placeId: Int
 )
-
-fun ReviewDto.toReviewInfo(): ReviewInfo {
-    return ReviewInfo(
-        id = id.toString(),
-        rating = rating,
-        title = title,
-        description = description,
-        userId = userId.toString(),
-        placeId = placeId.toString(),
-        reviewDate = reviewDate,
-        authorName = user?.name
-    )
-}

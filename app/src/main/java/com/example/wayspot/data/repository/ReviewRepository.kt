@@ -4,8 +4,8 @@ import com.example.wayspot.data.datasource.implementation.ReviewRetrofitDataSour
 import com.example.wayspot.data.dto.BackendSession
 import com.example.wayspot.data.dto.CreateCommentDto
 import com.example.wayspot.data.dto.SaveReviewDto
-import com.example.wayspot.data.dto.toReviewComment
-import com.example.wayspot.data.dto.toReviewInfo
+import com.example.wayspot.data.mapper.toReviewComment
+import com.example.wayspot.data.mapper.toReviewInfo
 import com.example.wayspot.data.model.review.ReviewComment
 import com.example.wayspot.data.model.review.ReviewDraft
 import com.example.wayspot.data.model.review.ReviewInfo

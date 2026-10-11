@@ -1,8 +1,5 @@
 package com.example.wayspot.data.dto
 
-import com.example.wayspot.data.model.review.ReviewComment
-import com.example.wayspot.data.model.user.UserInfo
-
 data class CommentDto(
     val id: Int,
     val content: String,
@@ -20,19 +17,3 @@ data class CommentAuthorDto(
 )
 
 data class CreateCommentDto(val content: String, val userId: Int)
-
-fun CommentDto.toReviewComment() = ReviewComment(
-    id = id.toString(),
-    content = content,
-    reviewId = reviewId.toString(),
-    author = user.toUserInfo()
-)
-
-fun CommentAuthorDto.toUserInfo() = UserInfo(
-    id = id.toString(),
-    name = name,
-    username = username,
-    bio = null,
-    location = null,
-    avatarUrl = avatarUrl
-)
