@@ -42,7 +42,6 @@ import com.example.wayspot.ui.screens.reviewcomment.ReviewCommentScreen
 import com.example.wayspot.ui.screens.reviewcomment.ReviewCommentViewModel
 import com.example.wayspot.ui.screens.publicprofile.PublicProfileScreen
 import com.example.wayspot.ui.screens.publicprofile.PublicProfileViewModel
-import com.example.wayspot.data.dto.BackendSession
 import com.example.wayspot.ui.screens.splash.SplashViewModel
 
 /**
@@ -336,11 +335,12 @@ fun AppNavigation(
                 },
                 onAuthorClick = { userId ->
                     navController.navigate(
-                        if (userId == BackendSession.USER_ID) Screen.Profile.route
-                        else Screen.PublicProfile.createRoute(userId)
+                        if (userId == appNavigationViewModel.currentUserId)
+                            Screen.Profile.route
+                        else
+                            Screen.PublicProfile.createRoute(userId)
                     )
                 },
-
                 onSaveClick = { place ->
                     appNavigationViewModel.toggleSavedPlace(place)
                 }
@@ -365,8 +365,10 @@ fun AppNavigation(
                 onCommentsRefreshConsumed = appNavigationViewModel::consumeCommentRefresh,
                 onAuthorClick = { userId ->
                     navController.navigate(
-                        if (userId == BackendSession.USER_ID) Screen.Profile.route
-                        else Screen.PublicProfile.createRoute(userId)
+                        if (userId == appNavigationViewModel.currentUserId)
+                            Screen.Profile.route
+                        else
+                            Screen.PublicProfile.createRoute(userId)
                     )
                 },
                 onEditClick = { id -> navController.navigate(Screen.NewReview.createEditRoute(id)) },

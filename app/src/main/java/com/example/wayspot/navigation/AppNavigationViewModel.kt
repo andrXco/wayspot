@@ -38,6 +38,9 @@ class AppNavigationViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(AppNavigationState())
     val uiState: StateFlow<AppNavigationState> = _uiState
+    val currentUserId: String?
+        get() = authRepository.currentUser?.uid
+
 
     init {
         loadInitialData()

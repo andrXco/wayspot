@@ -2,7 +2,6 @@ package com.example.wayspot.ui.screens.placedetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.data.repository.PlaceRepository
 import com.example.wayspot.data.repository.ReviewRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
 
 @HiltViewModel
 class PlaceDetailViewModel @Inject constructor(
@@ -22,16 +22,13 @@ class PlaceDetailViewModel @Inject constructor(
 
     val uiState: StateFlow<PlaceDetailState> = _uiState
 
-    fun loadPlace(placeId: String) {
 
-        val fallbackPlace = PreviewDataPopular.listPlaces.find { place ->
-            place.id == placeId
-        }
+    fun loadPlace(placeId: String) {
 
         _uiState.update { currentState ->
             currentState.copy(
                 place = null,
-                fallbackPlace = fallbackPlace,
+                fallbackPlace = null,
                 reviews = emptyList()
             )
         }

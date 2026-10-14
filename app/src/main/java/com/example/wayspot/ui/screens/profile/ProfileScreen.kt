@@ -28,6 +28,11 @@ fun ProfileScreen(
         profileViewModel.loadProfile(userProfile)
     }
 
+    LaunchedEffect(Unit) {
+        profileViewModel.loadReviews()
+    }
+
+
 
     state.userProfile?.let { profile ->
         ProfileContent(

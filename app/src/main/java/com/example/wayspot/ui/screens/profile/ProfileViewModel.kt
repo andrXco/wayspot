@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.wayspot.data.model.user.UserProfile
 import com.example.wayspot.data.repository.AuthRepository
-import com.example.wayspot.data.repository.UserRepository
+import com.example.wayspot.data.repository.ReviewRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,20 +14,43 @@ import kotlinx.coroutines.launch
 
 
 /** Expone los datos del perfil y delega el cierre de sesión al repositorio de autenticación. */
+
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val userRepository: UserRepository
+    private val reviewRepository: ReviewRepository
 ) : ViewModel() {
+
 
     private val _uiState = MutableStateFlow(ProfileState())
 
     val uiState: StateFlow<ProfileState> = _uiState
 
-    fun loadReviews(userId: String) {
-        _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+
+    fun loadReviews() {
+        val userId = authRepository.currentUser?.uid
+
+        if (userId == null) {
+            _uiState.update {
+                it.copy(
+                    reviews = emptyList(),
+                    isLoading = false,
+                    errorMessage = "Usuario no autenticado"
+                )
+            }
+            return
+        }
+
+        _uiState.update {
+            it.copy(
+                isLoading = true,
+                errorMessage = null
+            )
+        }
+
         viewModelScope.launch {
-            val result = userRepository.getReviewsByUserId(userId)
+            val result = reviewRepository.getReviewsByUserId(userId)
+
             _uiState.update { currentState ->
                 currentState.copy(
                     reviews = result.getOrNull().orEmpty(),
