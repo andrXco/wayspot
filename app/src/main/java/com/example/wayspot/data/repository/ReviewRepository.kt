@@ -3,9 +3,7 @@ package com.example.wayspot.data.repository
 import com.example.wayspot.data.datasource.implementation.ReviewRetrofitDataSourceImplementation
 import com.example.wayspot.data.dto.BackendSession
 import com.example.wayspot.data.dto.CreateCommentDto
-import com.example.wayspot.data.dto.SaveReviewDto
 import com.example.wayspot.data.mapper.toReviewComment
-import com.example.wayspot.data.mapper.toReviewInfo
 import com.example.wayspot.data.model.review.ReviewComment
 import com.example.wayspot.data.model.review.ReviewDraft
 import com.example.wayspot.data.model.review.ReviewInfo
@@ -25,7 +23,7 @@ class ReviewRepository @Inject constructor(
 
     suspend fun getReviews(): Result<List<ReviewInfo>> {
         return try {
-            val reviews = reviewRemoteDataSource.getReviews()
+            val reviews = reviewFirestoreDataSource.getReviews()
             val reviewsInfo = reviews.map { it.toReviewInfo() }
             Result.success(reviewsInfo)
         } catch (e: Exception) {
@@ -103,27 +101,6 @@ class ReviewRepository @Inject constructor(
 
             Result.success(updatedReview.toReviewInfo())
 
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-
-    suspend fun saveReview(draft: ReviewDraft, reviewId: String? = null): Result<ReviewInfo> {
-        return try {
-            val body = SaveReviewDto(
-                rating = draft.rating,
-                title = draft.title,
-                description = draft.description,
-                userId = BackendSession.USER_ID.toInt(),
-                placeId = draft.placeId.toInt()
-            )
-            val saved = if (reviewId == null) {
-                reviewRemoteDataSource.createReview(body)
-            } else {
-                reviewRemoteDataSource.updateReview(reviewId, body)
-            }
-            Result.success(saved.toReviewInfo())
         } catch (e: Exception) {
             Result.failure(e)
         }

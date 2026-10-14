@@ -8,7 +8,6 @@ import com.example.wayspot.data.dto.UserDto
 
 import com.example.wayspot.data.mapper.toPlaceInfo
 import com.example.wayspot.data.mapper.toReviewComment
-import com.example.wayspot.data.mapper.toReviewInfo
 
 import com.example.wayspot.data.model.review.ReviewRules
 import org.junit.Assert.assertEquals

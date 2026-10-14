@@ -3,12 +3,10 @@ package com.example.wayspot.data.mapper
 import com.example.wayspot.data.dto.CommentAuthorDto
 import com.example.wayspot.data.dto.CommentDto
 import com.example.wayspot.data.dto.PlaceDto
-import com.example.wayspot.data.dto.ReviewDto
 import com.example.wayspot.data.model.place.Place
 import com.example.wayspot.data.model.place.PlaceDetail
 import com.example.wayspot.data.model.place.PlaceInfo
 import com.example.wayspot.data.model.review.ReviewComment
-import com.example.wayspot.data.model.review.ReviewInfo
 import com.example.wayspot.data.model.user.UserInfo
 
 fun PlaceDto.toPlaceInfo() = PlaceInfo(
@@ -48,17 +46,6 @@ fun PlaceDto.toPlace() = Place(
     titleText = title,
     categoryText = category,
     locationText = location
-)
-
-fun ReviewDto.toReviewInfo() = ReviewInfo(
-    id = id.toString(),
-    rating = rating,
-    title = title,
-    description = description,
-    userId = userId.toString(),
-    placeId = placeId.toString(),
-    reviewDate = reviewDate,
-    authorName = user?.name
 )
 
 fun CommentDto.toReviewComment() = ReviewComment(

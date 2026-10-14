@@ -12,9 +12,8 @@ data class ReviewFirestoreDto(
     val placeId: String = "",
     val reviewDate: String? = null,
     val authorName: String? = null
-) {
-
-    fun toReviewInfo(): ReviewInfo {
+) : ReviewDtoGeneric() {
+    override fun toReviewInfo(): ReviewInfo {
         return ReviewInfo(
             id = id,
             rating = rating,
