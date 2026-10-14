@@ -21,6 +21,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.model.user.ProfileNotificationPreferences
 import com.example.wayspot.data.model.user.UserProfile
@@ -46,6 +48,7 @@ fun EditProfileScreen(
     onAvatarUploaded: (String) -> Unit = {}
 ) {
     val state by editProfileViewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(profile) {
         editProfileViewModel.loadProfile(profile)
@@ -124,8 +127,20 @@ fun EditProfileScreen(
                 editProfileViewModel.showDeleteConfirmation()
             }
         },
+
         onSaveClick = {
-            editProfileViewModel.profileForSaving()?.let(onSaveClick)
+            editProfileViewModel.saveProfile { result ->
+                if (result.isSuccess) {
+                    result.getOrNull()?.let(onSaveClick)
+                } else {
+                    Toast.makeText(
+                        context,
+                        result.exceptionOrNull()?.message
+                            ?: "No se pudo actualizar el perfil",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
         },
         isDeleteConfirmationVisible = state.isDeleteConfirmationVisible,
         onDeleteConfirmationDismiss = {

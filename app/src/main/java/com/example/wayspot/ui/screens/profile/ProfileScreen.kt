@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.model.user.UserProfile
-import com.example.wayspot.data.dto.BackendSession
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.profile.components.ProfileContent
 import com.example.wayspot.ui.theme.WayspotTheme
@@ -25,10 +24,10 @@ fun ProfileScreen(
 ) {
     val state by profileViewModel.uiState.collectAsState()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(userProfile) {
         profileViewModel.loadProfile(userProfile)
-        profileViewModel.loadReviews(BackendSession.USER_ID)
     }
+
 
     state.userProfile?.let { profile ->
         ProfileContent(

@@ -3,6 +3,7 @@ package com.example.wayspot.ui.screens.auth.signup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.wayspot.data.repository.AuthRepository
+import com.example.wayspot.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,10 +17,13 @@ import kotlinx.coroutines.launch
  *
  * Publica navegación y error como eventos separados para que la pantalla los consuma y restablezca.
  */
+
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
+
 
     private val _uiState = MutableStateFlow(SignUpState())
 
@@ -41,6 +45,16 @@ class SignUpViewModel @Inject constructor(
             )
         }
     }
+
+
+    fun updateNombreCompleto(input: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                nombreCompleto = input
+            )
+        }
+    }
+
 
     fun updateCorreo(input: String) {
         _uiState.update { currentState ->
@@ -94,14 +108,53 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
+
     fun signUp() {
         viewModelScope.launch {
+
+            if (_uiState.value.nombre.isEmpty() ||
+                _uiState.value.nombreCompleto.isEmpty()
+            ) {
+                _mensajeError.value = "Completa el nombre y el nombre de usuario"
+                _mostrarMensajeError.value = true
+                return@launch
+            }
+
             val result = authRepository.signUp(
                 email = _uiState.value.correo,
                 password = _uiState.value.contrasena
             )
+
             if (result.isSuccess) {
-                _navigateToHome.value = true
+                try {
+                    val userId = authRepository.currentUser?.uid
+                        ?: throw Exception("No se pudo obtener el usuario actual")
+
+                    val registerResult = userRepository.registerUser(
+                        username = _uiState.value.nombre,
+                        name = _uiState.value.nombreCompleto,
+                        country = null,
+                        bio = null,
+                        userId = userId
+                    )
+
+                    if (registerResult.isSuccess) {
+                        _navigateToHome.value = true
+                    } else {
+                        _mensajeError.value =
+                            registerResult.exceptionOrNull()?.message
+                                ?: "Error al guardar el usuario en Firestore"
+
+                        _mostrarMensajeError.value = true
+                    }
+
+                } catch (e: Exception) {
+                    _mensajeError.value =
+                        e.message ?: "Error al obtener el usuario actual"
+
+                    _mostrarMensajeError.value = true
+                }
+
             } else {
                 _mensajeError.value =
                     result.exceptionOrNull()?.message ?: "Error al registrarse"
@@ -110,6 +163,7 @@ class SignUpViewModel @Inject constructor(
             }
         }
     }
+
 
     fun onNavigationHandled() {
         _navigateToHome.value = false

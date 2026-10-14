@@ -24,5 +24,6 @@ data class EditProfileState(
             likesReceived = false
         ),
     val isSaveEnabled: Boolean = false,
+    val isSaving: Boolean = false,
     val isDeleteConfirmationVisible: Boolean = false
 )

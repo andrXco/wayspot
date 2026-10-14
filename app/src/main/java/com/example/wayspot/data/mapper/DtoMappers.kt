@@ -4,7 +4,6 @@ import com.example.wayspot.data.dto.CommentAuthorDto
 import com.example.wayspot.data.dto.CommentDto
 import com.example.wayspot.data.dto.PlaceDto
 import com.example.wayspot.data.dto.ReviewDto
-import com.example.wayspot.data.dto.UserDto
 import com.example.wayspot.data.model.place.Place
 import com.example.wayspot.data.model.place.PlaceDetail
 import com.example.wayspot.data.model.place.PlaceInfo
@@ -75,14 +74,5 @@ fun CommentAuthorDto.toUserInfo() = UserInfo(
     username = username,
     bio = null,
     location = null,
-    avatarUrl = avatarUrl
-)
-
-fun UserDto.toUserInfo() = UserInfo(
-    id = id.toString(),
-    name = name,
-    username = username,
-    bio = bio,
-    location = location,
     avatarUrl = avatarUrl
 )
