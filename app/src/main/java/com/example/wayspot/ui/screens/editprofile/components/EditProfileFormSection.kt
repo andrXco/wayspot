@@ -76,6 +76,7 @@ fun EditProfileFormSection(
         EditProfileTextField(
             value = email,
             onValueChange = onEmailChange,
+            enabled = false,
             leadingIcon = Icons.Outlined.Email,
             leadingIconContentDescription = stringResource(
                 R.string.edit_profile_email_icon_content_description
@@ -142,6 +143,7 @@ fun EditProfileFormSection(
 private fun EditProfileFieldLabel(
     text: String,
     modifier: Modifier = Modifier
+
 ) {
     Text(
         text = text,
@@ -162,11 +164,13 @@ private fun EditProfileTextField(
     singleLine: Boolean = true,
     minLines: Int = 1,
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    enabled: Boolean = true,
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
+        enabled = enabled,
         modifier = modifier.fillMaxWidth(),
         leadingIcon = leadingIcon?.let { icon ->
             {
