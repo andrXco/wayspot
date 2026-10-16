@@ -111,7 +111,8 @@ fun WaySpotApp(
         val useDarkStatusBarIcons = when (currentRoute) {
             Screen.Splash.route -> false
             Screen.PlaceDetail.route -> false
-            Screen.Profile.route -> MaterialTheme.colorScheme.primary.luminance() > 0.5f
+            Screen.Profile.route, Screen.PublicProfile.route ->
+                MaterialTheme.colorScheme.primary.luminance() > 0.5
             else -> MaterialTheme.colorScheme.background.luminance() > 0.5f
         }
         val useDarkNavigationBarIcons = when (currentRoute) {
@@ -194,11 +195,14 @@ private val bottomBarRoutes = setOf(
     Screen.Profile.route
 )
 
+
 private val edgeToEdgeRoutes = setOf(
     Screen.Splash.route,
     Screen.PlaceDetail.route,
-    Screen.Profile.route
+    Screen.Profile.route,
+    Screen.PublicProfile.route
 )
+
 
 private const val SYSTEM_SPLASH_EXIT_DURATION_MS = 450L
 

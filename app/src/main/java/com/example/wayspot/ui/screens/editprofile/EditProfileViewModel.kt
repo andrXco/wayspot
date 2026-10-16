@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.wayspot.data.model.user.EditProfileRules
 import com.example.wayspot.data.model.user.UserProfile
 import com.example.wayspot.data.repository.StorageRepository
+import com.example.wayspot.data.repository.AuthRepository
+import com.example.wayspot.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,10 +16,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /** Coordina la edición del perfil y aplica las reglas compartidas antes de exponer el estado. */
+
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(
-    private val storageRepository: StorageRepository
+    private val storageRepository: StorageRepository,
+    private val authRepository: AuthRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
+
 
     private val _uiState = MutableStateFlow(EditProfileState())
     val uiState: StateFlow<EditProfileState> = _uiState
@@ -98,10 +104,26 @@ class EditProfileViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val result = storageRepository.uploadProfileImage(uri)
-            val uploadedUrl = result.getOrNull()
 
+            val storageResult = storageRepository.uploadProfileImage(uri)
+            val uploadedUrl = storageResult.getOrNull()
+
+            val result = if (uploadedUrl != null) {
+                val userId = authRepository.currentUser?.uid
+
+                if (userId != null) {
+                    userRepository.updateUserAvatar(userId, uploadedUrl)
+                } else {
+                    Result.failure(Exception("Usuario no autenticado"))
+                }
+            } else {
+                Result.failure(
+                    storageResult.exceptionOrNull()
+                        ?: Exception("No se pudo subir la foto de perfil")
+                )
+            }
             if (result.isSuccess && uploadedUrl != null) {
+
                 _uiState.update { currentState ->
                     withValidation(
                         currentState.copy(
@@ -183,6 +205,66 @@ class EditProfileViewModel @Inject constructor(
         }
     }
 
+    fun saveProfile(
+        onResult: (Result<UserProfile>) -> Unit
+    ) {
+        if (_uiState.value.isSaving) return
+        val updatedProfile = profileForSaving()
+
+        if (updatedProfile == null) {
+            onResult(Result.failure(Exception("Datos del perfil no válidos")))
+            return
+        }
+
+        val firebaseUser = authRepository.currentUser
+
+        if (firebaseUser == null) {
+            onResult(Result.failure(Exception("Usuario no autenticado")))
+            return
+        }
+
+        if (updatedProfile.email != firebaseUser.email.orEmpty()) {
+            onResult(Result.failure(Exception("La edición del correo aún no está disponible")))
+            return
+        }
+
+        _uiState.update { currentState ->
+            withValidation(
+                currentState.copy(isSaving = true)
+            )
+        }
+
+        viewModelScope.launch {
+            val result = userRepository.updateUser(
+                name = updatedProfile.name,
+                username = updatedProfile.username,
+                country = updatedProfile.location,
+                bio = updatedProfile.bio,
+                userId = firebaseUser.uid,
+                avatarUrl = updatedProfile.avatarUrl
+            )
+
+
+            _uiState.update { currentState ->
+                withValidation(
+                    currentState.copy(isSaving = false)
+                )
+            }
+
+
+            if (result.isSuccess) {
+                onResult(Result.success(updatedProfile))
+            } else {
+                onResult(
+                    Result.failure(
+                        result.exceptionOrNull()
+                            ?: Exception("No se pudo actualizar el perfil")
+                    )
+                )
+            }
+        }
+    }
+
     fun profileForSaving(): UserProfile? {
         val currentState = _uiState.value
         val originalProfile = currentState.originalProfile
@@ -203,10 +285,12 @@ class EditProfileViewModel @Inject constructor(
     }
 
     private fun withValidation(state: EditProfileState): EditProfileState = state.copy(
-        isSaveEnabled = !state.isUploadingAvatar && EditProfileRules.canSave(
-            username = state.username,
-            email = state.email,
-            location = state.location
+        isSaveEnabled = !state.isUploadingAvatar &&
+                !state.isSaving &&
+                EditProfileRules.canSave(
+                    username = state.username,
+                    email = state.email,
+                    location = state.location
+                )
         )
-    )
 }

@@ -14,6 +14,8 @@ import kotlinx.coroutines.launch
 class PublicProfileViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
+
+
     private val _uiState = MutableStateFlow(PublicProfileState())
     val uiState: StateFlow<PublicProfileState> = _uiState
 
@@ -22,7 +24,12 @@ class PublicProfileViewModel @Inject constructor(
         viewModelScope.launch {
             val user = userRepository.getUserById(id)
             if (user.isFailure) {
-                _uiState.update { it.copy(isLoading = false, errorMessage = user.exceptionOrNull()?.message) }
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = user.exceptionOrNull()?.message
+                    )
+                }
                 return@launch
             }
             val reviews = userRepository.getReviewsByUserId(id)

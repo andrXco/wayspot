@@ -22,6 +22,8 @@ import com.example.wayspot.ui.screens.auth.components.AuthTextField
 /** Sección sin estado que reúne los campos y la validación visual de coincidencia de contraseñas. */
 @Composable
 internal fun SignUpFormSection(
+    fullName: String,
+    onFullNameChange: (String) -> Unit,
     username: String,
     onUsernameChange: (String) -> Unit,
     email: String,
@@ -38,6 +40,17 @@ internal fun SignUpFormSection(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
+
+        AuthTextField(
+            value = fullName,
+            onValueChange = onFullNameChange,
+            label = stringResource(R.string.label_full_name),
+            placeholder = stringResource(R.string.user_name_sample),
+            leadingIcon = Icons.Outlined.Person,
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+        )
+
         AuthTextField(
             value = username,
             onValueChange = onUsernameChange,
@@ -101,6 +114,9 @@ internal fun SignUpFormSection(
             password = password,
             modifier = Modifier.fillMaxWidth()
         )
+
+        FormFieldSpacer()
+
     }
 }
 
@@ -108,3 +124,5 @@ internal fun SignUpFormSection(
 private fun FormFieldSpacer() {
     Spacer(modifier = Modifier.height(14.dp))
 }
+
+

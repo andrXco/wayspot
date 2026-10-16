@@ -1,25 +1,30 @@
 package com.example.wayspot.data.repository
 
-import com.example.wayspot.data.datasource.implementation.ReviewRetrofitDataSourceImplementation
-import com.example.wayspot.data.dto.BackendSession
-import com.example.wayspot.data.dto.CreateCommentDto
-import com.example.wayspot.data.dto.SaveReviewDto
-import com.example.wayspot.data.mapper.toReviewComment
-import com.example.wayspot.data.mapper.toReviewInfo
 import com.example.wayspot.data.model.review.ReviewComment
 import com.example.wayspot.data.model.review.ReviewDraft
 import com.example.wayspot.data.model.review.ReviewInfo
+import com.example.wayspot.data.datasource.implementation.firestore.ReviewFirestoreDataSourceImplementation
+import com.example.wayspot.data.dto.CreateCommentDto
+import com.example.wayspot.data.dto.ReviewUserDto
+import com.example.wayspot.data.dto.SaveReviewDto
+import com.example.wayspot.data.dto.CommentFirestoreUserDto
 import javax.inject.Inject
 
 class ReviewRepository @Inject constructor(
-    private val reviewRemoteDataSource: ReviewRetrofitDataSourceImplementation
+    private val reviewFirestoreDataSource: ReviewFirestoreDataSourceImplementation,
+    private val authRepository: AuthRepository,
+    private val userRepository: UserRepository
 ) {
-
     suspend fun getReviews(): Result<List<ReviewInfo>> {
         return try {
-            val reviews = reviewRemoteDataSource.getReviews()
-            val reviewsInfo = reviews.map { it.toReviewInfo() }
+            val reviews = reviewFirestoreDataSource.getReviews()
+
+            val reviewsInfo = reviews.map {
+                it.toReviewInfo()
+            }
+
             Result.success(reviewsInfo)
+
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -27,28 +32,86 @@ class ReviewRepository @Inject constructor(
 
     suspend fun getReviewById(id: String): Result<ReviewInfo> {
         return try {
-            val review = reviewRemoteDataSource.getReviewById(id)
+            val review = reviewFirestoreDataSource.getReviewById(id)
+
             Result.success(review.toReviewInfo())
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    suspend fun saveReview(draft: ReviewDraft, reviewId: String? = null): Result<ReviewInfo> {
+
+    suspend fun createReviewInFirestore(
+        draft: ReviewDraft
+    ): Result<ReviewInfo> {
         return try {
-            val body = SaveReviewDto(
+            val userId = authRepository.currentUser?.uid
+                ?: throw Exception("Usuario no autenticado")
+
+            val userResult = userRepository.getUserById(userId)
+
+            val user = userResult.getOrNull()
+                ?: throw Exception("No se pudo obtener el perfil del usuario")
+
+            val reviewDto = SaveReviewDto(
                 rating = draft.rating,
                 title = draft.title,
                 description = draft.description,
-                userId = BackendSession.USER_ID.toInt(),
-                placeId = draft.placeId.toInt()
+                userId = userId,
+                placeId = draft.placeId,
+                user = ReviewUserDto(
+                    name = user.name,
+                    username = user.username,
+                    avatarUrl = user.avatarUrl
+                )
+
             )
-            val saved = if (reviewId == null) {
-                reviewRemoteDataSource.createReview(body)
-            } else {
-                reviewRemoteDataSource.updateReview(reviewId, body)
+
+
+            val savedReview = reviewFirestoreDataSource.createReview(
+                reviewDto
+            )
+
+            Result.success(savedReview.toReviewInfo())
+
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
+    suspend fun updateReviewInFirestore(
+        draft: ReviewDraft,
+        reviewId: String
+    ): Result<ReviewInfo> {
+        return try {
+            val userId = authRepository.currentUser?.uid
+                ?: throw Exception("Usuario no autenticado")
+
+            val originalReview = reviewFirestoreDataSource.getReviewById(
+                reviewId
+            )
+
+            if (originalReview.userId != userId) {
+                throw Exception("No puedes editar una reseña de otro usuario")
             }
-            Result.success(saved.toReviewInfo())
+
+            val reviewDto = SaveReviewDto(
+                rating = draft.rating,
+                title = draft.title,
+                description = draft.description,
+                userId = originalReview.userId,
+                placeId = originalReview.placeId,
+                user = originalReview.user
+            )
+
+            val updatedReview = reviewFirestoreDataSource.updateReview(
+                reviewId,
+                reviewDto
+            )
+
+            Result.success(updatedReview.toReviewInfo())
+
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -56,42 +119,143 @@ class ReviewRepository @Inject constructor(
 
     suspend fun deleteReview(id: String): Result<Unit> {
         return try {
-            reviewRemoteDataSource.deleteReview(id)
+            val userId = authRepository.currentUser?.uid
+                ?: throw Exception("Usuario no autenticado")
+
+            val review = reviewFirestoreDataSource.getReviewById(id)
+
+            if (review.userId != userId) {
+                throw Exception("No puedes eliminar una reseña de otro usuario")
+            }
+
+            reviewFirestoreDataSource.deleteReview(id)
+
             Result.success(Unit)
+
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    suspend fun getComments(reviewId: String): Result<List<ReviewComment>> {
+    suspend fun getComments(
+        reviewId: String
+    ): Result<List<ReviewComment>> {
         return try {
-            val comments = reviewRemoteDataSource.getComments(reviewId)
-            val commentsInfo = comments.map { it.toReviewComment() }
-            Result.success(commentsInfo)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    suspend fun createComment(reviewId: String, content: String): Result<ReviewComment> {
-        return try {
-            val comment = reviewRemoteDataSource.createComment(
-                reviewId,
-                CreateCommentDto(content, BackendSession.USER_ID.toInt())
+            val comments = reviewFirestoreDataSource.getComments(
+                reviewId
             )
-            Result.success(comment.toReviewComment())
+
+            val commentsInfo = comments.map { commentDto ->
+                commentDto.toReviewComment()
+            }
+
+            val needsUserFallback = commentsInfo.any { comment ->
+                comment.author.name.isBlank() ||
+                        comment.author.username.isBlank() ||
+                        comment.author.avatarUrl.isNullOrBlank()
+            }
+
+            val users = if (needsUserFallback) {
+                userRepository.getUsers()
+                    .getOrNull()
+                    .orEmpty()
+            } else {
+                emptyList()
+            }
+
+            val updatedComments = commentsInfo.map { comment ->
+                val user = users.find {
+                    it.id == comment.author.id
+                }
+
+                if (user != null) {
+                    comment.copy(
+                        author = comment.author.copy(
+                            name = if (comment.author.name.isNotBlank()) {
+                                comment.author.name
+                            } else {
+                                user.name
+                            },
+                            username = if (comment.author.username.isNotBlank()) {
+                                comment.author.username
+                            } else {
+                                user.username
+                            },
+                            avatarUrl = if (!comment.author.avatarUrl.isNullOrBlank()) {
+                                comment.author.avatarUrl
+                            } else {
+                                user.avatarUrl
+                            }
+                        )
+                    )
+                } else {
+                    comment
+                }
+            }
+
+            Result.success(updatedComments)
+
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    suspend fun getReviewsByPlaceId(placeId: String): Result<List<ReviewInfo>> {
+
+    suspend fun createComment(
+        reviewId: String,
+        content: String
+    ): Result<ReviewComment> {
         return try {
-            val reviews = reviewRemoteDataSource.getReviewsByPlaceId(placeId)
-            val reviewsInfo = reviews.map { it.toReviewInfo() }
-            Result.success(reviewsInfo)
+            val userId = authRepository.currentUser?.uid
+                ?: throw Exception("Usuario no autenticado")
+
+            val userResult = userRepository.getUserById(userId)
+
+            val user = userResult.getOrNull()
+                ?: throw Exception("No se pudo obtener el perfil del usuario")
+
+
+            val commentDto = CreateCommentDto(
+                content = content,
+                userId = userId,
+                user = CommentFirestoreUserDto(
+                    name = user.name,
+                    username = user.username,
+                    avatarUrl = user.avatarUrl
+                )
+            )
+
+
+            val savedComment = reviewFirestoreDataSource.createComment(
+                reviewId,
+                commentDto
+            )
+
+            Result.success(savedComment.toReviewComment())
+
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
+
+
+    suspend fun getReviewsByPlaceId(
+        placeId: String
+    ): Result<List<ReviewInfo>> {
+        return try {
+            val reviews = reviewFirestoreDataSource.getReviewsByPlaceId(
+                placeId
+            )
+
+            val reviewsInfo = reviews.map {
+                it.toReviewInfo()
+            }
+
+            Result.success(reviewsInfo)
+
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
 }

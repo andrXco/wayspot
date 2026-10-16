@@ -5,10 +5,9 @@ import com.example.wayspot.data.dto.CommentDto
 import com.example.wayspot.data.dto.PlaceDto
 import com.example.wayspot.data.dto.ReviewDto
 import com.example.wayspot.data.dto.UserDto
-import com.example.wayspot.data.dto.toPlaceInfo
-import com.example.wayspot.data.dto.toReviewComment
-import com.example.wayspot.data.dto.toReviewInfo
-import com.example.wayspot.data.dto.toUserInfo
+
+import com.example.wayspot.data.mapper.toPlaceInfo
+
 import com.example.wayspot.data.model.review.ReviewRules
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -46,7 +45,16 @@ class ReviewIntegrationMappingTest {
 
     @Test
     fun placeDtoMapsNullDescriptionToEmptyText() {
-        val place = PlaceDto(7, "Mirador", "Naturaleza", "Bogotá", 4.5, null, null)
+
+        val place = PlaceDto(
+            id = 7,
+            title = "Mirador",
+            category = "Naturaleza",
+            location = "Bogotá",
+            rating = 4.5,
+            imageUrl = null,
+            description = null
+        )
 
         assertEquals("", place.toPlaceInfo().description)
     }

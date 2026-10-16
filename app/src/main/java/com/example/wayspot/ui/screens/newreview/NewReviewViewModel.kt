@@ -3,11 +3,11 @@ package com.example.wayspot.ui.screens.newreview
 import androidx.lifecycle.ViewModel
 import com.example.wayspot.R
 import androidx.lifecycle.viewModelScope
-import com.example.wayspot.data.dto.BackendSession
 import com.example.wayspot.data.model.review.ReviewDraft
 import com.example.wayspot.data.model.review.ReviewRules
 import com.example.wayspot.data.repository.PlaceRepository
 import com.example.wayspot.data.repository.ReviewRepository
+import com.example.wayspot.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,10 +16,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /** Mantiene el borrador de reseña normalizado y deriva cuándo puede publicarse. */
+
 @HiltViewModel
 class NewReviewViewModel @Inject constructor(
     private val placeRepository: PlaceRepository,
-    private val reviewRepository: ReviewRepository
+    private val reviewRepository: ReviewRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(NewReviewState())
@@ -43,10 +45,19 @@ class NewReviewViewModel @Inject constructor(
                 }
                 result.getOrNull()
             }
-            if (existing != null && existing.userId != BackendSession.USER_ID) {
-                _uiState.update { it.copy(isLoading = false, errorResId = R.string.review_edit_forbidden) }
+
+            if (existing != null &&
+                existing.userId != authRepository.currentUser?.uid
+            ) {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorResId = R.string.review_edit_forbidden
+                    )
+                }
                 return@launch
             }
+
             val selectedId = existing?.placeId ?: placeId
             val selectedPlace = places.find { it.id == selectedId }
             val draft = if (existing != null) {
@@ -67,11 +78,32 @@ class NewReviewViewModel @Inject constructor(
     }
 
     fun publish() {
-        val draft = _uiState.value.reviewDraft?.let(ReviewRules::prepareForPublish) ?: return
+        val draft = _uiState.value.reviewDraft
+            ?.let(ReviewRules::prepareForPublish) ?: return
+
         if (_uiState.value.isPublishing) return
-        _uiState.update { it.copy(isPublishing = true, errorMessage = null, errorResId = null) }
+
+        _uiState.update {
+            it.copy(
+                isPublishing = true,
+                errorMessage = null,
+                errorResId = null
+            )
+        }
+
         viewModelScope.launch {
-            val result = reviewRepository.saveReview(draft, _uiState.value.editingReviewId)
+            val editingReviewId = _uiState.value.editingReviewId
+
+
+            val result = if (editingReviewId == null) {
+                reviewRepository.createReviewInFirestore(draft)
+            } else {
+                reviewRepository.updateReviewInFirestore(
+                    draft,
+                    editingReviewId
+                )
+            }
+
             _uiState.update {
                 it.copy(
                     isPublishing = false,

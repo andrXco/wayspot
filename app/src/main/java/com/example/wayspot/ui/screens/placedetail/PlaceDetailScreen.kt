@@ -85,8 +85,9 @@ fun PlaceDetailContent(
         }
 
         item {
+
             PlaceDetailBody(
-                place = place,
+                place = place.copy(reviewCount = reviews.size),
                 onShareClick = onShareClick,
                 onWriteReviewClick = onWriteReviewClick,
                 modifier = Modifier.fillMaxWidth()

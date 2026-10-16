@@ -7,6 +7,7 @@ import com.example.wayspot.data.model.home.HomeRules
 import com.example.wayspot.data.model.savedplace.SavedPlace
 import com.example.wayspot.data.model.savedplace.SavedPlacesRules
 import com.example.wayspot.data.model.review.ReviewFeedItem
+import com.example.wayspot.data.model.user.UserInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,33 +59,86 @@ class HomeViewModel @Inject constructor(
             )
         }
 
+
         viewModelScope.launch {
 
             val placesResult = placeRepository.getPlaces()
             val reviewsResult = reviewRepository.getReviews()
-            val usersResult = userRepository.getUsers()
+
+            val reviews = reviewsResult.getOrNull().orEmpty()
+
+
+            val needsUserFallback = reviews.any {
+                it.authorName.isNullOrBlank() ||
+                        it.authorUsername.isNullOrBlank() ||
+                        it.authorAvatarUrl.isNullOrBlank()
+            }
+
+            val usersResult = if (needsUserFallback) {
+                userRepository.getUsers()
+            } else {
+                Result.success(emptyList<UserInfo>())
+            }
+
+            val needsUserData = reviews.any {
+                it.authorName.isNullOrBlank() ||
+                        it.authorUsername.isNullOrBlank()
+            }
 
             val error = placesResult.exceptionOrNull()
                 ?: reviewsResult.exceptionOrNull()
-                ?: usersResult.exceptionOrNull()
+                ?: if (needsUserData) usersResult.exceptionOrNull() else null
+
             if (error != null) {
                 _uiState.update { currentState ->
-                    currentState.copy(isLoading = false, errorMessage = error.message)
+                    currentState.copy(
+                        isLoading = false,
+                        errorMessage = error.message
+                    )
                 }
                 return@launch
             }
 
             val places = placesResult.getOrNull().orEmpty()
-            val reviews = reviewsResult.getOrNull().orEmpty()
             val users = usersResult.getOrNull().orEmpty()
             val feed = mutableListOf<ReviewFeedItem>()
 
             for (index in reviews.size - 1 downTo 0) {
                 val review = reviews[index]
-                val place = places.find { it.id == review.placeId }
-                val author = users.find { it.id == review.userId }
+
+                val place = places.find {
+                    it.id == review.placeId
+                }
+
+
+                val storedAuthor = users.find {
+                    it.id == review.userId
+                }
+
+                val author = if (
+                    !review.authorName.isNullOrBlank() &&
+                    !review.authorUsername.isNullOrBlank()
+                ) {
+                    UserInfo(
+                        id = review.userId,
+                        name = review.authorName,
+                        username = review.authorUsername,
+                        bio = null,
+                        location = null,
+                        avatarUrl = review.authorAvatarUrl
+                            ?.takeIf { it.isNotBlank() }
+                            ?: storedAuthor?.avatarUrl
+                    )
+
+                } else {
+                    storedAuthor
+                }
+
+
                 if (place != null && author != null) {
-                    feed.add(ReviewFeedItem(review, place, author))
+                    feed.add(
+                        ReviewFeedItem(review, place, author)
+                    )
                 }
             }
 

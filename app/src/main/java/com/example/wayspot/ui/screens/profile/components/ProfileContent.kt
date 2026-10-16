@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.TextButton
 import com.example.wayspot.data.model.review.ReviewInfo
 import com.example.wayspot.data.model.user.UserProfile
 import androidx.compose.ui.res.stringResource
@@ -33,7 +34,11 @@ fun ProfileContent(
     onReviewClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
-    errorMessage: String? = null
+    errorMessage: String? = null,
+    isOwnProfile: Boolean = true,
+    onBackClick: (() -> Unit)? = null
+
+
 ) {
     LazyColumn(
         modifier = modifier
@@ -59,6 +64,19 @@ fun ProfileContent(
                         bottom = 20.dp
                     )
             ) {
+
+                onBackClick?.let { back ->
+                    TextButton(
+                        onClick = back,
+                        modifier = Modifier.padding(start = 8.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.volver),
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
+
                 ProfileHeader(
                     user = user,
                     modifier = Modifier.fillMaxWidth()
@@ -76,34 +94,40 @@ fun ProfileContent(
             }
         }
 
-        item {
-            ProfileEditButton(
-                onClick = onEditProfileClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = 16.dp,
-                        vertical = 12.dp
+        if (isOwnProfile) {
+                item {
+                    ProfileEditButton(
+                        onClick = onEditProfileClick,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                horizontal = 16.dp,
+                                vertical = 12.dp
+                            )
                     )
-            )
+                }
         }
 
-        item {
-            ProfileTabs(
-                selectedTabIndex = 0,
-                onTabSelected = { index ->
-                    if (index == 1) {
-                        onSavedPlacesClick()
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        top = 4.dp,
-                        bottom = 4.dp
-                    )
-            )
+
+        if (isOwnProfile) {
+            item {
+                ProfileTabs(
+                    selectedTabIndex = 0,
+                    onTabSelected = { index ->
+                        if (index == 1) {
+                            onSavedPlacesClick()
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            top = 4.dp,
+                            bottom = 4.dp
+                        )
+                )
+            }
         }
+
 
         if (isLoading) {
             item(key = "reviews-loading") { CircularProgressIndicator() }
@@ -134,17 +158,18 @@ fun ProfileContent(
                 modifier = Modifier.fillMaxWidth()
             )
         }
-
-        item {
-            ProfileSignOutButton(
-                onClick = onSignOutClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = 32.dp,
-                        vertical = 16.dp
-                    )
-            )
+        if (isOwnProfile) {
+            item {
+                ProfileSignOutButton(
+                    onClick = onSignOutClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = 32.dp,
+                            vertical = 16.dp
+                        )
+                )
+            }
         }
     }
 }
