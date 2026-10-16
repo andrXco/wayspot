@@ -246,7 +246,7 @@ fun EditProfileContent(
                 item(key = "danger_zone") {
                     EditProfileDangerZone(
                         onDeleteAccountClick = onDeleteAccountClick,
-                        isDeleteEnabled = !isUploadingAvatar,
+                        isDeleteEnabled = false,
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 }

@@ -49,12 +49,11 @@ class AppNavigationViewModel @Inject constructor(
     private fun loadInitialData() {
         _uiState.update { currentState ->
             currentState.copy(
-                savedPlaces = PreviewData.savedPlaces
+                savedPlaces = emptyList()
             )
         }
         syncAuthenticatedUser()
     }
-
 
     fun syncAuthenticatedUser() {
         val firebaseUser = authRepository.currentUser
@@ -144,7 +143,7 @@ class AppNavigationViewModel @Inject constructor(
     fun resetSavedPlaces() {
         _uiState.update { currentState ->
             currentState.copy(
-                savedPlaces = PreviewData.savedPlaces
+                savedPlaces = emptyList()
             )
         }
     }

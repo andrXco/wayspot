@@ -67,10 +67,13 @@ class HomeViewModel @Inject constructor(
 
             val reviews = reviewsResult.getOrNull().orEmpty()
 
-            val usersResult = if (reviews.any {
-                    it.authorName.isNullOrBlank() ||
-                            it.authorUsername.isNullOrBlank()
-                }) {
+
+            val needsUserFallback = reviews.any {
+                it.authorName.isNullOrBlank() ||
+                        it.authorUsername.isNullOrBlank()
+            }
+
+            val usersResult = if (reviews.isNotEmpty()) {
                 userRepository.getUsers()
             } else {
                 Result.success(emptyList<UserInfo>())
@@ -78,7 +81,8 @@ class HomeViewModel @Inject constructor(
 
             val error = placesResult.exceptionOrNull()
                 ?: reviewsResult.exceptionOrNull()
-                ?: usersResult.exceptionOrNull()
+                ?: if (needsUserFallback) usersResult.exceptionOrNull() else null
+
 
             if (error != null) {
                 _uiState.update { currentState ->
@@ -101,6 +105,11 @@ class HomeViewModel @Inject constructor(
                     it.id == review.placeId
                 }
 
+
+                val storedAuthor = users.find {
+                    it.id == review.userId
+                }
+
                 val author = if (
                     !review.authorName.isNullOrBlank() &&
                     !review.authorUsername.isNullOrBlank()
@@ -111,13 +120,12 @@ class HomeViewModel @Inject constructor(
                         username = review.authorUsername,
                         bio = null,
                         location = null,
-                        avatarUrl = null
+                        avatarUrl = storedAuthor?.avatarUrl
                     )
                 } else {
-                    users.find {
-                        it.id == review.userId
-                    }
+                    storedAuthor
                 }
+
 
                 if (place != null && author != null) {
                     feed.add(

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -42,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
 import com.example.wayspot.data.model.home.HomeRules
 import com.example.wayspot.data.model.review.ReviewFeedItem
+import com.example.wayspot.ui.components.ProfileAvatar
 
 /** Mantiene la estructura visual del feed y recibe la reseña publicada desde el backend. */
 @Composable
@@ -79,12 +79,15 @@ fun HomeReviewCard(
             modifier = Modifier.padding(vertical = 14.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+
             HomeReviewAuthorRow(
                 name = authorName,
                 username = item.author.username,
+                avatarUrl = item.author.avatarUrl,
                 onClick = onAuthorClick,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
+
             HomeReviewPlacePill(
                 title = item.place.title,
                 location = item.place.location,
@@ -138,38 +141,29 @@ fun HomeReviewCard(
     }
 }
 
+
 @Composable
 private fun HomeReviewAuthorRow(
     name: String,
     username: String,
+    avatarUrl: String?,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
-) {
+)
+ {
     val avatarDescription = stringResource(R.string.home_review_avatar_content_description, name)
     Row(
         modifier = modifier.fillMaxWidth().clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Surface(
-            modifier = Modifier.size(38.dp),
-            shape = CircleShape,
-            color = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = name.take(1).uppercase(),
-                    modifier = Modifier.clearAndSetSemantics {
-                        contentDescription = avatarDescription
-                    },
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.ExtraBold
-                )
-            }
-        }
+
+        ProfileAvatar(
+            avatarUrl = avatarUrl,
+            initials = name.take(1).uppercase(),
+            contentDescription = avatarDescription,
+            modifier = Modifier.size(38.dp)
+        )
+
         Spacer(modifier = Modifier.width(10.dp))
         Column {
             Text(

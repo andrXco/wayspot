@@ -63,6 +63,23 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
         docRef.set(userDto).await()
     }
 
+    suspend fun updateUserAvatar(
+        userId: String,
+        avatarUrl: String
+    ) {
+        val user = getUserById(userId)
+
+        val userDto = RegisterUserDto(
+            username = user.username,
+            name = user.name,
+            country = user.country,
+            bio = user.bio,
+            avatarUrl = avatarUrl
+        )
+
+        updateUser(userDto, userId)
+    }
+
     override suspend fun getReviewsByUserId(
         userId: String
     ): List<ReviewFirestoreDto> {

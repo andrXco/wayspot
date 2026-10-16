@@ -104,10 +104,26 @@ class EditProfileViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val result = storageRepository.uploadProfileImage(uri)
-            val uploadedUrl = result.getOrNull()
 
+            val storageResult = storageRepository.uploadProfileImage(uri)
+            val uploadedUrl = storageResult.getOrNull()
+
+            val result = if (uploadedUrl != null) {
+                val userId = authRepository.currentUser?.uid
+
+                if (userId != null) {
+                    userRepository.updateUserAvatar(userId, uploadedUrl)
+                } else {
+                    Result.failure(Exception("Usuario no autenticado"))
+                }
+            } else {
+                Result.failure(
+                    storageResult.exceptionOrNull()
+                        ?: Exception("No se pudo subir la foto de perfil")
+                )
+            }
             if (result.isSuccess && uploadedUrl != null) {
+
                 _uiState.update { currentState ->
                     withValidation(
                         currentState.copy(
@@ -224,9 +240,10 @@ class EditProfileViewModel @Inject constructor(
                 username = updatedProfile.username,
                 country = updatedProfile.location,
                 bio = updatedProfile.bio,
-                userId = firebaseUser.uid
-
+                userId = firebaseUser.uid,
+                avatarUrl = updatedProfile.avatarUrl
             )
+
 
             _uiState.update { currentState ->
                 withValidation(

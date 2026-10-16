@@ -135,6 +135,7 @@ class ReviewRepository @Inject constructor(
         }
     }
 
+
     suspend fun getComments(
         reviewId: String
     ): Result<List<ReviewComment>> {
@@ -143,8 +144,26 @@ class ReviewRepository @Inject constructor(
                 reviewId
             )
 
-            val commentsInfo = comments.map {
-                it.toReviewComment()
+            val users = userRepository.getUsers()
+                .getOrNull()
+                .orEmpty()
+
+            val commentsInfo = comments.map { commentDto ->
+                val comment = commentDto.toReviewComment()
+
+                val user = users.find {
+                    it.id == comment.author.id
+                }
+
+                if (user != null) {
+                    comment.copy(
+                        author = comment.author.copy(
+                            avatarUrl = user.avatarUrl
+                        )
+                    )
+                } else {
+                    comment
+                }
             }
 
             Result.success(commentsInfo)

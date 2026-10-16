@@ -59,17 +59,35 @@ class UserRepository @Inject constructor(
         username: String,
         country: String?,
         bio: String?,
-        userId: String
+        userId: String,
+        avatarUrl: String? = null
     ): Result<Unit> {
         return try {
             val userDto = RegisterUserDto(
                 username = username,
                 name = name,
                 country = country,
-                bio = bio
+                bio = bio,
+                avatarUrl = avatarUrl
             )
 
             userFirestoreDataSource.updateUser(userDto, userId)
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun updateUserAvatar(
+        userId: String,
+        avatarUrl: String
+    ): Result<Unit> {
+        return try {
+            userFirestoreDataSource.updateUserAvatar(
+                userId,
+                avatarUrl
+            )
 
             Result.success(Unit)
         } catch (e: Exception) {
