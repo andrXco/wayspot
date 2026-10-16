@@ -54,18 +54,22 @@ class ReviewDetailViewModel @Inject constructor(
 
             val place = placeRepository.getPlaceById(review.placeId)
             val author = userRepository.getUserById(review.userId)
+            val commentsResult = reviewRepository.getComments(id)
+
 
             _uiState.update {
                 it.copy(
                     review = review,
                     place = place.getOrNull(),
                     author = author.getOrNull(),
-                    comments = emptyList(),
+                    comments = commentsResult.getOrNull().orEmpty(),
                     isLoading = false,
                     errorMessage = place.exceptionOrNull()?.message
                         ?: author.exceptionOrNull()?.message
+                        ?: commentsResult.exceptionOrNull()?.message
                 )
             }
+
         }
     }
 

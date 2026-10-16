@@ -3,8 +3,10 @@ package com.example.wayspot.data.datasource
 
 import com.example.wayspot.data.dto.ReviewDtoGeneric
 import com.example.wayspot.data.dto.SaveReviewDto
-import com.example.wayspot.data.dto.CommentDto
+import com.example.wayspot.data.dto.CommentDtoGeneric
 import com.example.wayspot.data.dto.CreateCommentDto
+import com.example.wayspot.data.datasource.ReviewRemoteDataSource
+
 
 interface ReviewRemoteDataSource {
 
@@ -20,6 +22,14 @@ interface ReviewRemoteDataSource {
     suspend fun createReview(review: SaveReviewDto): ReviewDtoGeneric
     suspend fun updateReview(id: String, review: SaveReviewDto): ReviewDtoGeneric
     suspend fun deleteReview(id: String)
-    suspend fun getComments(reviewId: String): List<CommentDto>
-    suspend fun createComment(reviewId: String, comment: CreateCommentDto): CommentDto
+
+    suspend fun getComments(
+        reviewId: String
+    ): List<CommentDtoGeneric>
+
+    suspend fun createComment(
+        reviewId: String,
+        comment: CreateCommentDto
+    ): CommentDtoGeneric
+
 }

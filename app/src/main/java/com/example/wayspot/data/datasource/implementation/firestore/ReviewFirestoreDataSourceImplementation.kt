@@ -1,27 +1,40 @@
-
 package com.example.wayspot.data.datasource.implementation.firestore
 
 import com.example.wayspot.data.dto.ReviewFirestoreDto
+import com.example.wayspot.data.dto.SaveReviewDto
 import com.google.firebase.firestore.FirebaseFirestore
+import com.example.wayspot.data.dto.CommentFirestoreDto
+import com.example.wayspot.data.dto.CreateCommentFirestoreDto
+import com.example.wayspot.data.datasource.ReviewRemoteDataSource
+import com.example.wayspot.data.dto.CreateCommentDto
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class ReviewFirestoreDataSourceImplementation @Inject constructor(
     private val db: FirebaseFirestore
-) {
+) : ReviewRemoteDataSource {
 
-    suspend fun createReview(
-        review: ReviewFirestoreDto
+
+    override suspend fun createReview(
+        review: SaveReviewDto
     ): ReviewFirestoreDto {
 
         val docRef = db.collection("reviews")
             .add(review)
             .await()
 
-        return review.copy(id = docRef.id)
+        return ReviewFirestoreDto(
+            id = docRef.id,
+            rating = review.rating,
+            title = review.title,
+            description = review.description,
+            userId = review.userId,
+            placeId = review.placeId,
+            user = review.user
+        )
     }
 
-    suspend fun getReviewsByPlaceId(
+    override suspend fun getReviewsByPlaceId(
         placeId: String
     ): List<ReviewFirestoreDto> {
 
@@ -45,7 +58,7 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
         return reviews
     }
 
-    suspend fun getReviewById(id: String): ReviewFirestoreDto {
+    override suspend fun getReviewById(id: String): ReviewFirestoreDto {
 
         val docRef = db.collection("reviews").document(id)
 
@@ -57,17 +70,27 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
         return review.copy(id = snapshot.id)
     }
 
-    suspend fun updateReview(
-        review: ReviewFirestoreDto
-    ) {
-        val docRef = db.collection("reviews").document(review.id)
+    override suspend fun updateReview(
+        id: String,
+        review: SaveReviewDto
+    ): ReviewFirestoreDto {
 
-        docRef.set(review).await()
+        val originalReview = getReviewById(id)
+
+        val updatedReview = originalReview.copy(
+            rating = review.rating,
+            title = review.title,
+            description = review.description
+        )
+
+        val docRef = db.collection("reviews").document(id)
+
+        docRef.set(updatedReview).await()
+
+        return updatedReview
     }
 
-
-
-    suspend fun getReviews(): List<ReviewFirestoreDto> {
+    override suspend fun getReviews(): List<ReviewFirestoreDto> {
 
         val snapshot = db.collection("reviews")
             .get()
@@ -88,7 +111,18 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
         return reviews
     }
 
-    suspend fun deleteReview(id: String) {
+
+    override suspend fun deleteReview(id: String) {
+
+        val commentsSnapshot = db.collection("comments")
+            .whereEqualTo("reviewId", id)
+            .get()
+            .await()
+
+        for (document in commentsSnapshot.documents) {
+            document.reference.delete().await()
+        }
+
         val docRef = db.collection("reviews").document(id)
 
         docRef.delete().await()
@@ -116,6 +150,50 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
         }
 
         return reviews
+    }
+
+    override suspend fun createComment(
+        reviewId: String,
+        comment: CreateCommentDto
+    ): CommentFirestoreDto {
+
+        val firestoreComment = CreateCommentFirestoreDto(
+            content = comment.content,
+            reviewId = reviewId,
+            userId = comment.userId,
+            user = comment.user
+        )
+
+        val docRef = db.collection("comments")
+            .add(firestoreComment)
+            .await()
+
+        return CommentFirestoreDto(
+            id = docRef.id,
+            content = comment.content,
+            reviewId = reviewId,
+            userId = comment.userId,
+            user = comment.user
+        )
+    }
+
+    override suspend fun getComments(
+        reviewId: String
+    ): List<CommentFirestoreDto> {
+
+        val snapshot = db.collection("comments")
+            .whereEqualTo("reviewId", reviewId)
+            .get()
+            .await()
+
+        return snapshot.documents.map { document ->
+
+            val comment = document.toObject(
+                CommentFirestoreDto::class.java
+            ) ?: throw Exception("No se pudo obtener el comentario")
+
+            comment.copy(id = document.id)
+        }
     }
 
 }

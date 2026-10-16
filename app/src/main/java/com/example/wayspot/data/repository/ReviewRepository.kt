@@ -1,29 +1,31 @@
 package com.example.wayspot.data.repository
 
-import com.example.wayspot.data.datasource.implementation.ReviewRetrofitDataSourceImplementation
-import com.example.wayspot.data.dto.BackendSession
-import com.example.wayspot.data.dto.CreateCommentDto
-import com.example.wayspot.data.mapper.toReviewComment
 import com.example.wayspot.data.model.review.ReviewComment
 import com.example.wayspot.data.model.review.ReviewDraft
 import com.example.wayspot.data.model.review.ReviewInfo
 import com.example.wayspot.data.datasource.implementation.firestore.ReviewFirestoreDataSourceImplementation
-import com.example.wayspot.data.dto.ReviewFirestoreDto
-
+import com.example.wayspot.data.dto.CreateCommentDto
+import com.example.wayspot.data.dto.ReviewUserDto
+import com.example.wayspot.data.dto.SaveReviewDto
+import com.example.wayspot.data.dto.CommentFirestoreUserDto
+import com.example.wayspot.data.datasource.ReviewRemoteDataSource
 import javax.inject.Inject
 
 
 class ReviewRepository @Inject constructor(
-    private val reviewRemoteDataSource: ReviewRetrofitDataSourceImplementation,
     private val reviewFirestoreDataSource: ReviewFirestoreDataSourceImplementation,
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository
 ) {
 
 
+    private val reviewRemoteDataSource: ReviewRemoteDataSource =
+        reviewFirestoreDataSource
+
+
     suspend fun getReviews(): Result<List<ReviewInfo>> {
         return try {
-            val reviews = reviewFirestoreDataSource.getReviews()
+            val reviews = reviewRemoteDataSource.getReviews()
             val reviewsInfo = reviews.map { it.toReviewInfo() }
             Result.success(reviewsInfo)
         } catch (e: Exception) {
@@ -33,7 +35,7 @@ class ReviewRepository @Inject constructor(
 
     suspend fun getReviewById(id: String): Result<ReviewInfo> {
         return try {
-            val review = reviewFirestoreDataSource.getReviewById(id)
+            val review = reviewRemoteDataSource.getReviewById(id)
 
             Result.success(review.toReviewInfo())
         } catch (e: Exception) {
@@ -54,14 +56,17 @@ class ReviewRepository @Inject constructor(
             val user = userResult.getOrNull()
                 ?: throw Exception("No se pudo obtener el perfil del usuario")
 
-            val reviewDto = ReviewFirestoreDto(
+            val reviewDto = SaveReviewDto(
                 rating = draft.rating,
                 title = draft.title,
                 description = draft.description,
                 userId = userId,
                 placeId = draft.placeId,
-                authorName = user.name
+                user = ReviewUserDto(
+                    name = user.name
+                )
             )
+
 
             val savedReview = reviewFirestoreDataSource.createReview(
                 reviewDto
@@ -91,13 +96,19 @@ class ReviewRepository @Inject constructor(
                 throw Exception("No puedes editar una reseña de otro usuario")
             }
 
-            val updatedReview = originalReview.copy(
+            val reviewDto = SaveReviewDto(
                 rating = draft.rating,
                 title = draft.title,
-                description = draft.description
+                description = draft.description,
+                userId = originalReview.userId,
+                placeId = originalReview.placeId,
+                user = originalReview.user
             )
 
-            reviewFirestoreDataSource.updateReview(updatedReview)
+            val updatedReview = reviewFirestoreDataSource.updateReview(
+                reviewId,
+                reviewDto
+            )
 
             Result.success(updatedReview.toReviewInfo())
 
@@ -126,33 +137,64 @@ class ReviewRepository @Inject constructor(
         }
     }
 
-    suspend fun getComments(reviewId: String): Result<List<ReviewComment>> {
+    suspend fun getComments(
+        reviewId: String
+    ): Result<List<ReviewComment>> {
         return try {
-            val comments = reviewRemoteDataSource.getComments(reviewId)
-            val commentsInfo = comments.map { it.toReviewComment() }
+            val comments = reviewRemoteDataSource.getComments(
+                reviewId
+            )
+
+            val commentsInfo = comments.map {
+                it.toReviewComment()
+            }
+
             Result.success(commentsInfo)
+
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    suspend fun createComment(reviewId: String, content: String): Result<ReviewComment> {
+    suspend fun createComment(
+        reviewId: String,
+        content: String
+    ): Result<ReviewComment> {
         return try {
-            val comment = reviewRemoteDataSource.createComment(
-                reviewId,
-                CreateCommentDto(content, BackendSession.USER_ID.toInt())
+            val userId = authRepository.currentUser?.uid
+                ?: throw Exception("Usuario no autenticado")
+
+            val userResult = userRepository.getUserById(userId)
+
+            val user = userResult.getOrNull()
+                ?: throw Exception("No se pudo obtener el perfil del usuario")
+
+            val commentDto = CreateCommentDto(
+                content = content,
+                userId = userId,
+                user = CommentFirestoreUserDto(
+                    name = user.name
+                )
             )
-            Result.success(comment.toReviewComment())
+
+            val savedComment = reviewFirestoreDataSource.createComment(
+                reviewId,
+                commentDto
+            )
+
+            Result.success(savedComment.toReviewComment())
+
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
+
 
     suspend fun getReviewsByPlaceId(
         placeId: String
     ): Result<List<ReviewInfo>> {
         return try {
-            val reviews = reviewFirestoreDataSource.getReviewsByPlaceId(
+            val reviews = reviewRemoteDataSource.getReviewsByPlaceId(
                 placeId
             )
 

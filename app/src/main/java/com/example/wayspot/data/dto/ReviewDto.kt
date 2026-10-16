@@ -29,13 +29,14 @@ data class ReviewDto(
 }
 
 data class ReviewUserDto(
-    val name: String?
+    val name: String? = null
 )
 
 data class SaveReviewDto(
     val rating: Int,
     val title: String,
     val description: String,
-    val userId: Int,
-    val placeId: Int
+    val userId: String,
+    val placeId: String,
+    val user: ReviewUserDto? = null
 )
