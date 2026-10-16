@@ -37,4 +37,5 @@ class PlaceFirestoreDataSourceImplementation @Inject constructor(
 
         return place.copy(id = snapshot.id)
     }
+
 }
