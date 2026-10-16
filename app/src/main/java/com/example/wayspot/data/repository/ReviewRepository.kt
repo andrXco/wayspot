@@ -61,8 +61,10 @@ class ReviewRepository @Inject constructor(
                 placeId = draft.placeId,
                 user = ReviewUserDto(
                     name = user.name,
-                    username = user.username
+                    username = user.username,
+                    avatarUrl = user.avatarUrl
                 )
+
             )
 
 
@@ -135,7 +137,6 @@ class ReviewRepository @Inject constructor(
         }
     }
 
-
     suspend fun getComments(
         reviewId: String
     ): Result<List<ReviewComment>> {
@@ -144,13 +145,25 @@ class ReviewRepository @Inject constructor(
                 reviewId
             )
 
-            val users = userRepository.getUsers()
-                .getOrNull()
-                .orEmpty()
-
             val commentsInfo = comments.map { commentDto ->
-                val comment = commentDto.toReviewComment()
+                commentDto.toReviewComment()
+            }
 
+            val needsUserFallback = commentsInfo.any { comment ->
+                comment.author.name.isBlank() ||
+                        comment.author.username.isBlank() ||
+                        comment.author.avatarUrl.isNullOrBlank()
+            }
+
+            val users = if (needsUserFallback) {
+                userRepository.getUsers()
+                    .getOrNull()
+                    .orEmpty()
+            } else {
+                emptyList()
+            }
+
+            val updatedComments = commentsInfo.map { comment ->
                 val user = users.find {
                     it.id == comment.author.id
                 }
@@ -158,7 +171,21 @@ class ReviewRepository @Inject constructor(
                 if (user != null) {
                     comment.copy(
                         author = comment.author.copy(
-                            avatarUrl = user.avatarUrl
+                            name = if (comment.author.name.isNotBlank()) {
+                                comment.author.name
+                            } else {
+                                user.name
+                            },
+                            username = if (comment.author.username.isNotBlank()) {
+                                comment.author.username
+                            } else {
+                                user.username
+                            },
+                            avatarUrl = if (!comment.author.avatarUrl.isNullOrBlank()) {
+                                comment.author.avatarUrl
+                            } else {
+                                user.avatarUrl
+                            }
                         )
                     )
                 } else {
@@ -166,12 +193,13 @@ class ReviewRepository @Inject constructor(
                 }
             }
 
-            Result.success(commentsInfo)
+            Result.success(updatedComments)
 
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
+
 
     suspend fun createComment(
         reviewId: String,
@@ -186,13 +214,17 @@ class ReviewRepository @Inject constructor(
             val user = userResult.getOrNull()
                 ?: throw Exception("No se pudo obtener el perfil del usuario")
 
+
             val commentDto = CreateCommentDto(
                 content = content,
                 userId = userId,
                 user = CommentFirestoreUserDto(
-                    name = user.name
+                    name = user.name,
+                    username = user.username,
+                    avatarUrl = user.avatarUrl
                 )
             )
+
 
             val savedComment = reviewFirestoreDataSource.createComment(
                 reviewId,

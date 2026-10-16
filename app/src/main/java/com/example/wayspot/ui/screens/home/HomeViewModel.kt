@@ -70,19 +70,24 @@ class HomeViewModel @Inject constructor(
 
             val needsUserFallback = reviews.any {
                 it.authorName.isNullOrBlank() ||
-                        it.authorUsername.isNullOrBlank()
+                        it.authorUsername.isNullOrBlank() ||
+                        it.authorAvatarUrl.isNullOrBlank()
             }
 
-            val usersResult = if (reviews.isNotEmpty()) {
+            val usersResult = if (needsUserFallback) {
                 userRepository.getUsers()
             } else {
                 Result.success(emptyList<UserInfo>())
             }
 
+            val needsUserData = reviews.any {
+                it.authorName.isNullOrBlank() ||
+                        it.authorUsername.isNullOrBlank()
+            }
+
             val error = placesResult.exceptionOrNull()
                 ?: reviewsResult.exceptionOrNull()
-                ?: if (needsUserFallback) usersResult.exceptionOrNull() else null
-
+                ?: if (needsUserData) usersResult.exceptionOrNull() else null
 
             if (error != null) {
                 _uiState.update { currentState ->
@@ -120,8 +125,11 @@ class HomeViewModel @Inject constructor(
                         username = review.authorUsername,
                         bio = null,
                         location = null,
-                        avatarUrl = storedAuthor?.avatarUrl
+                        avatarUrl = review.authorAvatarUrl
+                            ?.takeIf { it.isNotBlank() }
+                            ?: storedAuthor?.avatarUrl
                     )
+
                 } else {
                     storedAuthor
                 }
