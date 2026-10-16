@@ -1,6 +1,7 @@
 package com.example.wayspot.data.model
 
 import com.example.wayspot.data.local.PreviewDataPopular
+import com.example.wayspot.data.model.place.toPlaceInfo
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
