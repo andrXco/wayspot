@@ -3,6 +3,7 @@ package com.example.wayspot.data.datasource
 
 import com.example.wayspot.data.dto.RegisterUserDto
 import com.example.wayspot.data.dto.UserDtoGeneric
+import com.example.wayspot.data.dto.ReviewDtoGeneric
 
 interface UserRemoteDataSource {
 
@@ -14,4 +15,8 @@ interface UserRemoteDataSource {
         registerUserDto: RegisterUserDto,
         userId: String
     )
+    suspend fun getReviewsByUserId(
+        userId: String
+    ): List<ReviewDtoGeneric>
+
 }

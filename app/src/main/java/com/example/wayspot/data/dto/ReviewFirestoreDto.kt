@@ -24,7 +24,9 @@ data class ReviewFirestoreDto(
             userId = userId,
             placeId = placeId,
             reviewDate = reviewDate,
-            authorName = user?.name ?: authorName
+            authorName = user?.name ?: authorName,
+            authorUsername = user?.username
         )
     }
+
 }

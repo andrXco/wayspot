@@ -5,6 +5,7 @@ import com.example.wayspot.data.datasource.UserRemoteDataSource
 import com.example.wayspot.data.dto.RegisterUserDto
 import com.example.wayspot.data.dto.UserFirestoreDto
 import com.google.firebase.firestore.FirebaseFirestore
+import com.example.wayspot.data.dto.ReviewFirestoreDto
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -60,6 +61,25 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
     ) {
         val docRef = db.collection("users").document(userId)
         docRef.set(userDto).await()
+    }
+
+    override suspend fun getReviewsByUserId(
+        userId: String
+    ): List<ReviewFirestoreDto> {
+
+        val snapshot = db.collection("reviews")
+            .whereEqualTo("userId", userId)
+            .get()
+            .await()
+
+        return snapshot.documents.map { document ->
+
+            val review = document.toObject(
+                ReviewFirestoreDto::class.java
+            ) ?: throw Exception("No se pudo obtener la reseña")
+
+            review.copy(id = document.id)
+        }
     }
 
 }

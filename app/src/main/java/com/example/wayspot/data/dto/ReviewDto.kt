@@ -29,8 +29,10 @@ data class ReviewDto(
 }
 
 data class ReviewUserDto(
-    val name: String? = null
+    val name: String? = null,
+    val username: String? = null
 )
+
 
 data class SaveReviewDto(
     val rating: Int,

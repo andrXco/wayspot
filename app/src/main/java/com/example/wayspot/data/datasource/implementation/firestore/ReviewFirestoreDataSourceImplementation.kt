@@ -128,30 +128,6 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
         docRef.delete().await()
     }
 
-    suspend fun getReviewsByUserId(
-        userId: String
-    ): List<ReviewFirestoreDto> {
-
-        val snapshot = db.collection("reviews")
-            .whereEqualTo("userId", userId)
-            .get()
-            .await()
-
-        val reviews = mutableListOf<ReviewFirestoreDto>()
-
-        for (document in snapshot.documents) {
-            val review = document.toObject(
-                ReviewFirestoreDto::class.java
-            )
-
-            if (review != null) {
-                reviews.add(review.copy(id = document.id))
-            }
-        }
-
-        return reviews
-    }
-
     override suspend fun createComment(
         reviewId: String,
         comment: CreateCommentDto

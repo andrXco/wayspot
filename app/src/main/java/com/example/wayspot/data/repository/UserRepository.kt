@@ -2,6 +2,7 @@ package com.example.wayspot.data.repository
 
 import com.example.wayspot.data.model.user.UserInfo
 import com.example.wayspot.data.dto.RegisterUserDto
+import com.example.wayspot.data.model.review.ReviewInfo
 import com.example.wayspot.data.datasource.implementation.firestore.UserFirestoreDataSourceImplementation
 import javax.inject.Inject
 
@@ -71,6 +72,25 @@ class UserRepository @Inject constructor(
             userFirestoreDataSource.updateUser(userDto, userId)
 
             Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getReviewsByUserId(
+        userId: String
+    ): Result<List<ReviewInfo>> {
+        return try {
+            val reviews = userFirestoreDataSource.getReviewsByUserId(
+                userId
+            )
+
+            val reviewsInfo = reviews.map {
+                it.toReviewInfo()
+            }
+
+            Result.success(reviewsInfo)
+
         } catch (e: Exception) {
             Result.failure(e)
         }

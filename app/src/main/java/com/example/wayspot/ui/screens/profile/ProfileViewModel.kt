@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.wayspot.data.model.user.UserProfile
 import com.example.wayspot.data.repository.AuthRepository
-import com.example.wayspot.data.repository.ReviewRepository
+import com.example.wayspot.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,8 +18,9 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val reviewRepository: ReviewRepository
+    private val userRepository: UserRepository
 ) : ViewModel() {
+
 
 
     private val _uiState = MutableStateFlow(ProfileState())
@@ -49,7 +50,7 @@ class ProfileViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val result = reviewRepository.getReviewsByUserId(userId)
+            val result = userRepository.getReviewsByUserId(userId)
 
             _uiState.update { currentState ->
                 currentState.copy(

@@ -8,9 +8,7 @@ import com.example.wayspot.data.dto.CreateCommentDto
 import com.example.wayspot.data.dto.ReviewUserDto
 import com.example.wayspot.data.dto.SaveReviewDto
 import com.example.wayspot.data.dto.CommentFirestoreUserDto
-import com.example.wayspot.data.datasource.ReviewRemoteDataSource
 import javax.inject.Inject
-
 
 class ReviewRepository @Inject constructor(
     private val reviewFirestoreDataSource: ReviewFirestoreDataSourceImplementation,
@@ -18,16 +16,29 @@ class ReviewRepository @Inject constructor(
     private val userRepository: UserRepository
 ) {
 
-
-    private val reviewRemoteDataSource: ReviewRemoteDataSource =
-        reviewFirestoreDataSource
+/*
+    suspend fun getReviews(): Result<List<ReviewInfo>> {
+        return try {
+            val reviews = reviewFirestoreDataSource.getReviews()
+            val reviewsInfo = reviews.map { it.toReviewInfo() }
+            Result.success(reviewsInfo)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+*/
 
 
     suspend fun getReviews(): Result<List<ReviewInfo>> {
         return try {
-            val reviews = reviewRemoteDataSource.getReviews()
-            val reviewsInfo = reviews.map { it.toReviewInfo() }
+            val reviews = reviewFirestoreDataSource.getReviews()
+
+            val reviewsInfo = reviews.map {
+                it.toReviewInfo()
+            }
+
             Result.success(reviewsInfo)
+
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -35,7 +46,7 @@ class ReviewRepository @Inject constructor(
 
     suspend fun getReviewById(id: String): Result<ReviewInfo> {
         return try {
-            val review = reviewRemoteDataSource.getReviewById(id)
+            val review = reviewFirestoreDataSource.getReviewById(id)
 
             Result.success(review.toReviewInfo())
         } catch (e: Exception) {
@@ -63,7 +74,8 @@ class ReviewRepository @Inject constructor(
                 userId = userId,
                 placeId = draft.placeId,
                 user = ReviewUserDto(
-                    name = user.name
+                    name = user.name,
+                    username = user.username
                 )
             )
 
@@ -141,7 +153,7 @@ class ReviewRepository @Inject constructor(
         reviewId: String
     ): Result<List<ReviewComment>> {
         return try {
-            val comments = reviewRemoteDataSource.getComments(
+            val comments = reviewFirestoreDataSource.getComments(
                 reviewId
             )
 
@@ -194,27 +206,8 @@ class ReviewRepository @Inject constructor(
         placeId: String
     ): Result<List<ReviewInfo>> {
         return try {
-            val reviews = reviewRemoteDataSource.getReviewsByPlaceId(
+            val reviews = reviewFirestoreDataSource.getReviewsByPlaceId(
                 placeId
-            )
-
-            val reviewsInfo = reviews.map {
-                it.toReviewInfo()
-            }
-
-            Result.success(reviewsInfo)
-
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    suspend fun getReviewsByUserId(
-        userId: String
-    ): Result<List<ReviewInfo>> {
-        return try {
-            val reviews = reviewFirestoreDataSource.getReviewsByUserId(
-                userId
             )
 
             val reviewsInfo = reviews.map {
