@@ -15,20 +15,6 @@ class ReviewRepository @Inject constructor(
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository
 ) {
-
-/*
-    suspend fun getReviews(): Result<List<ReviewInfo>> {
-        return try {
-            val reviews = reviewFirestoreDataSource.getReviews()
-            val reviewsInfo = reviews.map { it.toReviewInfo() }
-            Result.success(reviewsInfo)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-*/
-
-
     suspend fun getReviews(): Result<List<ReviewInfo>> {
         return try {
             val reviews = reviewFirestoreDataSource.getReviews()

@@ -1,12 +1,10 @@
 package com.example.wayspot.data.mapper
 
 import com.example.wayspot.data.dto.CommentAuthorDto
-import com.example.wayspot.data.dto.CommentDto
 import com.example.wayspot.data.dto.PlaceDto
 import com.example.wayspot.data.model.place.Place
 import com.example.wayspot.data.model.place.PlaceDetail
 import com.example.wayspot.data.model.place.PlaceInfo
-import com.example.wayspot.data.model.review.ReviewComment
 import com.example.wayspot.data.model.user.UserInfo
 
 fun PlaceDto.toPlaceInfo() = PlaceInfo(
@@ -46,13 +44,6 @@ fun PlaceDto.toPlace() = Place(
     titleText = title,
     categoryText = category,
     locationText = location
-)
-
-fun CommentDto.toReviewComment() = ReviewComment(
-    id = id.toString(),
-    content = content,
-    reviewId = reviewId.toString(),
-    author = user.toUserInfo()
 )
 
 fun CommentAuthorDto.toUserInfo() = UserInfo(

@@ -5,7 +5,6 @@ import com.example.wayspot.data.dto.ReviewDtoGeneric
 import com.example.wayspot.data.dto.SaveReviewDto
 import com.example.wayspot.data.dto.CommentDtoGeneric
 import com.example.wayspot.data.dto.CreateCommentDto
-import com.example.wayspot.data.datasource.ReviewRemoteDataSource
 
 
 interface ReviewRemoteDataSource {
