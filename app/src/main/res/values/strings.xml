@@ -91,6 +91,7 @@
     <string name="profile_label_places">Lugares</string>
     <string name="profile_label_reviews">Reseñas</string>
     <string name="profile_label_followers">Seguidores</string>
+    <string name="profile_label_following">Seguidos</string>
     <string name="profile_button_edit">Editar perfil</string>
     <string name="profile_button_sign_out">Cerrar sesión</string>
     <string name="profile_tab_my_reviews">Mis reseñas</string>

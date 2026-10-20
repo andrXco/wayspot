@@ -25,5 +25,6 @@ data class ProfileNotificationPreferences(
 data class UserStats(
     val places: Int,
     val reviews: Int,
-    val followers: String
+    val followers: String,
+    val following: String
 )

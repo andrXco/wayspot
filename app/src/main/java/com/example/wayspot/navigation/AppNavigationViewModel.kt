@@ -79,7 +79,8 @@ class AppNavigationViewModel @Inject constructor(
                     stats = UserStats(
                         places = 0,
                         reviews = 0,
-                        followers = "0"
+                        followers = "0",
+                        following = "0"
                     )
                 )
             )

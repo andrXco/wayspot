@@ -2,7 +2,10 @@ package com.example.wayspot.ui.screens.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.wayspot.data.model.review.ReviewFeedItem
+import com.example.wayspot.data.repository.PlaceRepository
 import com.example.wayspot.data.model.user.UserProfile
+import com.example.wayspot.data.model.user.UserInfo
 import com.example.wayspot.data.repository.AuthRepository
 import com.example.wayspot.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +21,8 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val placeRepository: PlaceRepository
 ) : ViewModel() {
 
 
@@ -35,6 +39,7 @@ class ProfileViewModel @Inject constructor(
             _uiState.update {
                 it.copy(
                     reviews = emptyList(),
+                    reviewFeedItems = emptyList(),
                     isLoading = false,
                     errorMessage = "Usuario no autenticado"
                 )
@@ -51,10 +56,33 @@ class ProfileViewModel @Inject constructor(
 
         viewModelScope.launch {
             val result = userRepository.getReviewsByUserId(userId)
+            val placesResult = placeRepository.getPlaces()
+            val reviews = result.getOrNull().orEmpty()
+            val places = placesResult.getOrNull().orEmpty()
+            val profile = _uiState.value.userProfile
+            val reviewFeedItems = reviews.mapNotNull { review ->
+                val place = places.firstOrNull { it.id == review.placeId } ?: return@mapNotNull null
+                val author = UserInfo(
+                    id = review.userId,
+                    name = review.authorName?.takeIf(String::isNotBlank)
+                        ?: profile?.name.orEmpty(),
+                    username = review.authorUsername?.takeIf(String::isNotBlank)
+                        ?: profile?.username.orEmpty(),
+                    bio = profile?.bio,
+                    location = profile?.location,
+                    avatarUrl = review.authorAvatarUrl?.takeIf(String::isNotBlank)
+                        ?: profile?.avatarUrl
+                )
+                ReviewFeedItem(review = review, place = place, author = author)
+            }
 
             _uiState.update { currentState ->
                 currentState.copy(
-                    reviews = result.getOrNull().orEmpty(),
+                    reviews = reviews,
+                    reviewFeedItems = reviewFeedItems,
+                    reviewLikeCounts = reviews.associate { review ->
+                        review.id to (currentState.reviewLikeCounts[review.id] ?: 0)
+                    },
                     isLoading = false,
                     errorMessage = result.exceptionOrNull()?.message
                 )
@@ -73,4 +101,44 @@ class ProfileViewModel @Inject constructor(
     fun signOut() {
         authRepository.signOut()
     }
+
+    fun toggleReviewLike(reviewId: String) {
+        _uiState.update { currentState ->
+            val wasLiked = reviewId in currentState.likedReviewIds
+            currentState.copy(
+                likedReviewIds = currentState.likedReviewIds.toggle(reviewId),
+                reviewLikeCounts = currentState.reviewLikeCounts.withAdjustedCount(
+                    id = reviewId,
+                    delta = if (wasLiked) -1 else 1
+                )
+            )
+        }
+    }
+
+    fun toggleReviewExpanded(reviewId: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                expandedReviewIds = currentState.expandedReviewIds.toggle(reviewId)
+            )
+        }
+    }
+
+    fun toggleReviewShared(reviewId: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                sharedReviewIds = currentState.sharedReviewIds.toggle(reviewId)
+            )
+        }
+    }
+
+    private fun Set<String>.toggle(id: String): Set<String> = if (id in this) {
+        this - id
+    } else {
+        this + id
+    }
+
+    private fun Map<String, Int>.withAdjustedCount(
+        id: String,
+        delta: Int
+    ): Map<String, Int> = this + (id to ((this[id] ?: 0) + delta).coerceAtLeast(0))
 }

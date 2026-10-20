@@ -119,7 +119,8 @@ object PreviewData {
         stats = UserStats(
             places = 47,
             reviews = 38,
-            followers = "1.2k"
+            followers = "1.2k",
+            following = "0"
         )
     )
 

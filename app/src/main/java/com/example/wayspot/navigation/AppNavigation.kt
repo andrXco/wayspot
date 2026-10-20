@@ -175,6 +175,12 @@ fun AppNavigation(
                 onReviewClick = { reviewId ->
                     navController.navigate(Screen.ReviewDetail.createRoute(reviewId))
                 },
+                onReviewCommentClick = { reviewId ->
+                    navController.navigate(Screen.ReviewComment.createRoute(reviewId))
+                },
+                onReviewPlaceClick = { placeId ->
+                    navController.navigate(Screen.PlaceDetail.createRoute(placeId))
+                },
 
                 onSignOut = {
                     appNavigationViewModel.resetUserProfile()
@@ -359,6 +365,9 @@ fun AppNavigation(
                 onBackClick = { navController.popBackStack() },
                 onCommentClick = { id ->
                     navController.navigate(Screen.ReviewComment.createRoute(id))
+                },
+                onPlaceClick = { placeId ->
+                    navController.navigate(Screen.PlaceDetail.createRoute(placeId))
                 },
                 commentsRefreshReviewId = appNavigationState.commentRefreshReviewId,
                 commentsRefreshVersion = appNavigationState.commentRefreshVersion,

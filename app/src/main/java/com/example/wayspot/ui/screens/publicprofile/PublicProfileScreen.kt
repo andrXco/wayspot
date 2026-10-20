@@ -69,7 +69,8 @@ fun PublicProfileContent(
                 stats = UserStats(
                     places = 0,
                     reviews = state.reviews.size,
-                    followers = "0"
+                    followers = "0",
+                    following = "0"
                 )
             )
 
