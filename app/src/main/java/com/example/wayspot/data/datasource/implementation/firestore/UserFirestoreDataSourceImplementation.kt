@@ -80,6 +80,50 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
         updateUser(userDto, userId)
     }
 
+    suspend fun isFollowing(followerId: String, followedId: String): Boolean {
+        return db.collection("follows")
+            .document(followId(followerId, followedId))
+            .get()
+            .await()
+            .exists()
+    }
+
+    suspend fun getFollowersCount(userId: String): Int {
+        return db.collection("follows")
+            .whereEqualTo("followedId", userId)
+            .get()
+            .await()
+            .size()
+    }
+
+    suspend fun getFollowingCount(userId: String): Int {
+        return db.collection("follows")
+            .whereEqualTo("followerId", userId)
+            .get()
+            .await()
+            .size()
+    }
+
+    suspend fun setFollowing(
+        followerId: String,
+        followedId: String,
+        isFollowing: Boolean
+    ) {
+        val followRef = db.collection("follows")
+            .document(followId(followerId, followedId))
+
+        if (isFollowing) {
+            followRef.set(
+                mapOf("followerId" to followerId, "followedId" to followedId)
+            ).await()
+        } else {
+            followRef.delete().await()
+        }
+    }
+
+    private fun followId(followerId: String, followedId: String): String =
+        "${followerId.length}:$followerId$followedId"
+
     override suspend fun getReviewsByUserId(
         userId: String
     ): List<ReviewFirestoreDto> {

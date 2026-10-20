@@ -433,4 +433,7 @@
     <string name="review_cancel">Cancelar</string>
     <string name="review_edit_forbidden">No puedes editar esta reseña.</string>
     <string name="profile_reviews_empty">Este usuario aún no tiene reseñas.</string>
+    <string name="profile_follow_action">Seguir</string>
+    <string name="profile_following_action">Siguiendo</string>
+    <string name="profile_follow_error">No se pudo actualizar el seguimiento. Inténtalo de nuevo.</string>
 </resources>

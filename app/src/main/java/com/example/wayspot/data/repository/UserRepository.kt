@@ -95,6 +95,43 @@ class UserRepository @Inject constructor(
         }
     }
 
+    suspend fun isFollowing(followerId: String, followedId: String): Result<Boolean> {
+        return try {
+            Result.success(userFirestoreDataSource.isFollowing(followerId, followedId))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getFollowersCount(userId: String): Result<Int> {
+        return try {
+            Result.success(userFirestoreDataSource.getFollowersCount(userId))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getFollowingCount(userId: String): Result<Int> {
+        return try {
+            Result.success(userFirestoreDataSource.getFollowingCount(userId))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun setFollowing(
+        followerId: String,
+        followedId: String,
+        isFollowing: Boolean
+    ): Result<Unit> {
+        return try {
+            userFirestoreDataSource.setFollowing(followerId, followedId, isFollowing)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     suspend fun getReviewsByUserId(
         userId: String
     ): Result<List<ReviewInfo>> {

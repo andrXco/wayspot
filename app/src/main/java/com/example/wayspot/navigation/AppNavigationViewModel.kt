@@ -96,14 +96,22 @@ class AppNavigationViewModel @Inject constructor(
                     return@launch
                 }
 
+                val followersCount = userRepository.getFollowersCount(userId).getOrNull() ?: 0
+                val followingCount = userRepository.getFollowingCount(userId).getOrNull() ?: 0
+
                 _uiState.update { currentState ->
+                    val currentProfile = currentState.userProfile ?: return@update currentState
                     currentState.copy(
-                        userProfile = currentState.userProfile?.copy(
+                        userProfile = currentProfile.copy(
                             name = user.name,
                             username = user.username,
                             bio = user.bio.orEmpty(),
                             location = user.location.orEmpty(),
-                            initials = user.name.take(1).uppercase()
+                            initials = user.name.take(1).uppercase(),
+                            stats = currentProfile.stats.copy(
+                                followers = followersCount.toString(),
+                                following = followingCount.toString()
+                            )
                         )
                     )
                 }
