@@ -6,5 +6,7 @@ data class RegisterUserDto(
     val name: String,
     val country: String? = null,
     val bio: String? = null,
-    val avatarUrl: String? = null
+    val avatarUrl: String? = null,
+    val followersCount: Int = 0,
+    val followingCount: Int = 0
 )

@@ -4,6 +4,7 @@ package com.example.wayspot.data.datasource.implementation.firestore
 import com.example.wayspot.data.datasource.UserRemoteDataSource
 import com.example.wayspot.data.dto.RegisterUserDto
 import com.example.wayspot.data.dto.UserFirestoreDto
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.wayspot.data.dto.ReviewFirestoreDto
 import kotlinx.coroutines.tasks.await
@@ -60,7 +61,16 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
         userId: String
     ) {
         val docRef = db.collection("users").document(userId)
-        docRef.set(userDto).await()
+
+        docRef.update(
+            mapOf(
+                "username" to userDto.username,
+                "name" to userDto.name,
+                "country" to userDto.country,
+                "bio" to userDto.bio,
+                "avatarUrl" to userDto.avatarUrl
+            )
+        ).await()
     }
 
     suspend fun updateUserAvatar(
@@ -80,49 +90,109 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
         updateUser(userDto, userId)
     }
 
-    suspend fun isFollowing(followerId: String, followedId: String): Boolean {
-        return db.collection("follows")
-            .document(followId(followerId, followedId))
+
+    suspend fun isFollowing(
+        followerId: String,
+        followedId: String
+    ): Boolean {
+        return db.collection("users")
+            .document(followerId)
+            .collection("following")
+            .document(followedId)
             .get()
             .await()
             .exists()
     }
 
+
     suspend fun getFollowersCount(userId: String): Int {
-        return db.collection("follows")
-            .whereEqualTo("followedId", userId)
+        val snapshot = db.collection("users")
+            .document(userId)
             .get()
             .await()
-            .size()
+
+        return snapshot.getLong("followersCount")?.toInt() ?: 0
     }
+
+
 
     suspend fun getFollowingCount(userId: String): Int {
-        return db.collection("follows")
-            .whereEqualTo("followerId", userId)
+        val snapshot = db.collection("users")
+            .document(userId)
             .get()
             .await()
-            .size()
+
+        return snapshot.getLong("followingCount")?.toInt() ?: 0
     }
 
-    suspend fun setFollowing(
-        followerId: String,
-        followedId: String,
-        isFollowing: Boolean
+    override suspend fun followOrUnfollowUser(
+        currentUserId: String,
+        targetUserId: String
     ) {
-        val followRef = db.collection("follows")
-            .document(followId(followerId, followedId))
+        val currentUserRef = db.collection("users")
+            .document(currentUserId)
 
-        if (isFollowing) {
-            followRef.set(
-                mapOf("followerId" to followerId, "followedId" to followedId)
-            ).await()
-        } else {
-            followRef.delete().await()
-        }
+        val targetUserRef = db.collection("users")
+            .document(targetUserId)
+
+        val followingRef = currentUserRef.collection("following")
+            .document(targetUserId)
+
+        val followersRef = targetUserRef.collection("followers")
+            .document(currentUserId)
+
+        db.runTransaction { transaction ->
+
+            val followingDoc = transaction.get(followingRef)
+
+            if (followingDoc.exists()) {
+
+                transaction.delete(followingRef)
+
+                transaction.delete(followersRef)
+
+                transaction.update(
+                    currentUserRef,
+                    "followingCount",
+                    FieldValue.increment(-1L)
+                )
+
+                transaction.update(
+                    targetUserRef,
+                    "followersCount",
+                    FieldValue.increment(-1L)
+                )
+
+            } else {
+
+                transaction.set(
+                    followingRef,
+                    mapOf(
+                        "timestamp" to FieldValue.serverTimestamp()
+                    )
+                )
+
+                transaction.set(
+                    followersRef,
+                    mapOf(
+                        "timestamp" to FieldValue.serverTimestamp()
+                    )
+                )
+
+                transaction.update(
+                    currentUserRef,
+                    "followingCount",
+                    FieldValue.increment(1L)
+                )
+
+                transaction.update(
+                    targetUserRef,
+                    "followersCount",
+                    FieldValue.increment(1L)
+                )
+            }
+        }.await()
     }
-
-    private fun followId(followerId: String, followedId: String): String =
-        "${followerId.length}:$followerId$followedId"
 
     override suspend fun getReviewsByUserId(
         userId: String

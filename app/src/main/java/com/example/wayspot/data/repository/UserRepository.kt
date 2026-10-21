@@ -119,14 +119,18 @@ class UserRepository @Inject constructor(
         }
     }
 
-    suspend fun setFollowing(
-        followerId: String,
-        followedId: String,
-        isFollowing: Boolean
+    suspend fun followOrUnfollowUser(
+        currentUserId: String,
+        targetUserId: String
     ): Result<Unit> {
         return try {
-            userFirestoreDataSource.setFollowing(followerId, followedId, isFollowing)
+            userFirestoreDataSource.followOrUnfollowUser(
+                currentUserId,
+                targetUserId
+            )
+
             Result.success(Unit)
+
         } catch (e: Exception) {
             Result.failure(e)
         }

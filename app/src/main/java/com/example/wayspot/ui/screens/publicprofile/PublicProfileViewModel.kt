@@ -83,10 +83,9 @@ class PublicProfileViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val result = userRepository.setFollowing(
-                followerId = followerId,
-                followedId = followedId,
-                isFollowing = nextFollowingState
+            val result = userRepository.followOrUnfollowUser(
+                currentUserId = followerId,
+                targetUserId = followedId
             )
             if (result.isSuccess) {
                 val refreshedCount = userRepository.getFollowersCount(followedId).getOrNull()

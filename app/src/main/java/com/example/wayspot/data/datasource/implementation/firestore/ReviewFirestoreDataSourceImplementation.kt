@@ -84,6 +84,12 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
             false
         }
 
+        android.util.Log.d(
+            "WaySpotLikes",
+            "Review: $id | Usuario: $currentUserId | Liked: $liked | Contador: ${review.likesCount}"
+        )
+
+
         return review.copy(
             id = snapshot.id,
             liked = liked

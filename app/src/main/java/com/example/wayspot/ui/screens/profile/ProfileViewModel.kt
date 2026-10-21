@@ -8,6 +8,7 @@ import com.example.wayspot.data.model.user.UserProfile
 import com.example.wayspot.data.model.user.UserInfo
 import com.example.wayspot.data.repository.AuthRepository
 import com.example.wayspot.data.repository.UserRepository
+import com.example.wayspot.data.repository.ReviewRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +23,8 @@ import kotlinx.coroutines.launch
 class ProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository,
-    private val placeRepository: PlaceRepository
+    private val placeRepository: PlaceRepository,
+    private val reviewRepository: ReviewRepository
 ) : ViewModel() {
 
 
@@ -55,10 +57,36 @@ class ProfileViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+
             val result = userRepository.getReviewsByUserId(userId)
             val placesResult = placeRepository.getPlaces()
-            val reviews = result.getOrNull().orEmpty()
+
+            val reviews = result.getOrNull().orEmpty().toMutableList()
             val places = placesResult.getOrNull().orEmpty()
+            val likedReviewIds = mutableSetOf<String>()
+
+            for (index in reviews.indices) {
+                val reviewResult = reviewRepository.getReviewById(reviews[index].id)
+                val review = reviewResult.getOrNull()
+
+                if (review == null) {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            isLoading = false,
+                            errorMessage = reviewResult.exceptionOrNull()?.message
+                                ?: "No se pudieron cargar los likes"
+                        )
+                    }
+                    return@launch
+                }
+
+                reviews[index] = review
+
+                if (review.liked) {
+                    likedReviewIds.add(review.id)
+                }
+            }
+
             val profile = _uiState.value.userProfile
             val reviewFeedItems = reviews.mapNotNull { review ->
                 val place = places.firstOrNull { it.id == review.placeId } ?: return@mapNotNull null
@@ -80,8 +108,9 @@ class ProfileViewModel @Inject constructor(
                 currentState.copy(
                     reviews = reviews,
                     reviewFeedItems = reviewFeedItems,
+                    likedReviewIds = likedReviewIds,
                     reviewLikeCounts = reviews.associate { review ->
-                        review.id to (currentState.reviewLikeCounts[review.id] ?: 0)
+                        review.id to review.likesCount
                     },
                     isLoading = false,
                     errorMessage = result.exceptionOrNull()?.message
@@ -102,18 +131,35 @@ class ProfileViewModel @Inject constructor(
         authRepository.signOut()
     }
 
+
     fun toggleReviewLike(reviewId: String) {
-        _uiState.update { currentState ->
-            val wasLiked = reviewId in currentState.likedReviewIds
-            currentState.copy(
-                likedReviewIds = currentState.likedReviewIds.toggle(reviewId),
-                reviewLikeCounts = currentState.reviewLikeCounts.withAdjustedCount(
-                    id = reviewId,
-                    delta = if (wasLiked) -1 else 1
-                )
-            )
+        viewModelScope.launch {
+            val result = reviewRepository.sendOrDeleteReviewLike(reviewId)
+
+            if (result.isSuccess) {
+                _uiState.update { currentState ->
+                    val wasLiked = reviewId in currentState.likedReviewIds
+
+                    currentState.copy(
+                        likedReviewIds = currentState.likedReviewIds.toggle(reviewId),
+                        reviewLikeCounts = currentState.reviewLikeCounts.withAdjustedCount(
+                            id = reviewId,
+                            delta = if (wasLiked) -1 else 1
+                        ),
+                        errorMessage = null
+                    )
+                }
+            } else {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        errorMessage = result.exceptionOrNull()?.message
+                            ?: "No se pudo actualizar el like"
+                    )
+                }
+            }
         }
     }
+
 
     fun toggleReviewExpanded(reviewId: String) {
         _uiState.update { currentState ->

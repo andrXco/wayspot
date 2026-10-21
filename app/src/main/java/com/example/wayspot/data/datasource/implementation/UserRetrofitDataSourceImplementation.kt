@@ -30,5 +30,12 @@ class UserRetrofitDataSourceImplementation @Inject constructor(
         return service.getReviewsByUserId(userId)
     }
 
+    override suspend fun followOrUnfollowUser(
+        currentUserId: String,
+        targetUserId: String
+    ) {
+    }
+
+
 }
 

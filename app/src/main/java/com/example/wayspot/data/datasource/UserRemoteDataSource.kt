@@ -19,4 +19,9 @@ interface UserRemoteDataSource {
         userId: String
     ): List<ReviewDtoGeneric>
 
+    suspend fun followOrUnfollowUser(
+        currentUserId: String,
+        targetUserId: String
+    )
+
 }
