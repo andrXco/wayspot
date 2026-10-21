@@ -32,9 +32,15 @@ class ReviewRepository @Inject constructor(
 
     suspend fun getReviewById(id: String): Result<ReviewInfo> {
         return try {
-            val review = reviewFirestoreDataSource.getReviewById(id)
+            val currentUserId = authRepository.currentUser?.uid
+
+            val review = reviewFirestoreDataSource.getReviewById(
+                id,
+                currentUserId
+            )
 
             Result.success(review.toReviewInfo())
+
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -129,6 +135,25 @@ class ReviewRepository @Inject constructor(
             }
 
             reviewFirestoreDataSource.deleteReview(id)
+
+            Result.success(Unit)
+
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun sendOrDeleteReviewLike(
+        reviewId: String
+    ): Result<Unit> {
+        return try {
+            val userId = authRepository.currentUser?.uid
+                ?: throw Exception("Usuario no autenticado")
+
+            reviewFirestoreDataSource.sendOrDeleteReviewLike(
+                reviewId,
+                userId
+            )
 
             Result.success(Unit)
 

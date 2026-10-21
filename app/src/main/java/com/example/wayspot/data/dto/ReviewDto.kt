@@ -43,5 +43,6 @@ data class SaveReviewDto(
     val description: String,
     val userId: String,
     val placeId: String,
-    val user: ReviewUserDto? = null
+    val user: ReviewUserDto? = null,
+    val likesCount: Int = 0
 )
