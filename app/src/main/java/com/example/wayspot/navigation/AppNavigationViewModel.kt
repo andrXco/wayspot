@@ -1,25 +1,24 @@
+
 package com.example.wayspot.navigation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import android.util.Log
 
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.model.place.Place
 import com.example.wayspot.data.model.savedplace.SavedPlaceList
 import com.example.wayspot.data.model.savedplace.SavedPlacesRules
 import com.example.wayspot.data.model.user.UserProfile
-import com.example.wayspot.data.repository.AuthRepository
 import com.example.wayspot.data.model.user.UserStats
+import com.example.wayspot.data.repository.AuthRepository
 import com.example.wayspot.data.repository.UserRepository
-
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 import javax.inject.Inject
 
 import kotlinx.coroutines.launch
-
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -38,9 +37,9 @@ class AppNavigationViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(AppNavigationState())
     val uiState: StateFlow<AppNavigationState> = _uiState
+
     val currentUserId: String?
         get() = authRepository.currentUser?.uid
-
 
     init {
         loadInitialData()
@@ -52,6 +51,7 @@ class AppNavigationViewModel @Inject constructor(
                 savedPlaces = emptyList()
             )
         }
+
         syncAuthenticatedUser()
     }
 
@@ -96,11 +96,18 @@ class AppNavigationViewModel @Inject constructor(
                     return@launch
                 }
 
-                val followersCount = userRepository.getFollowersCount(userId).getOrNull() ?: 0
-                val followingCount = userRepository.getFollowingCount(userId).getOrNull() ?: 0
+                val followersCount = userRepository
+                    .getFollowersCount(userId)
+                    .getOrNull() ?: 0
+
+                val followingCount = userRepository
+                    .getFollowingCount(userId)
+                    .getOrNull() ?: 0
 
                 _uiState.update { currentState ->
-                    val currentProfile = currentState.userProfile ?: return@update currentState
+                    val currentProfile = currentState.userProfile
+                        ?: return@update currentState
+
                     currentState.copy(
                         userProfile = currentProfile.copy(
                             name = user.name,
@@ -115,11 +122,41 @@ class AppNavigationViewModel @Inject constructor(
                         )
                     )
                 }
+
             } else {
                 Log.e(
                     "AppNavigationViewModel",
                     "Error al obtener el perfil",
                     result.exceptionOrNull()
+                )
+            }
+        }
+    }
+
+    fun refreshFollowStats() {
+        val userId = authRepository.currentUser?.uid ?: return
+
+        viewModelScope.launch {
+            val followersResult = userRepository.getFollowersCount(userId)
+            val followingResult = userRepository.getFollowingCount(userId)
+
+            if (authRepository.currentUser?.uid != userId) {
+                return@launch
+            }
+
+            _uiState.update { currentState ->
+                val currentProfile = currentState.userProfile
+                    ?: return@update currentState
+
+                currentState.copy(
+                    userProfile = currentProfile.copy(
+                        stats = currentProfile.stats.copy(
+                            followers = followersResult.getOrNull()?.toString()
+                                ?: currentProfile.stats.followers,
+                            following = followingResult.getOrNull()?.toString()
+                                ?: currentProfile.stats.following
+                        )
+                    )
                 )
             }
         }
@@ -136,7 +173,9 @@ class AppNavigationViewModel @Inject constructor(
     fun updateUserAvatar(avatarUrl: String) {
         _uiState.update { currentState ->
             currentState.copy(
-                userProfile = currentState.userProfile?.copy(avatarUrl = avatarUrl)
+                userProfile = currentState.userProfile?.copy(
+                    avatarUrl = avatarUrl
+                )
             )
         }
     }
@@ -144,7 +183,9 @@ class AppNavigationViewModel @Inject constructor(
     fun resetUserProfile() {
         _uiState.update { currentState ->
             currentState.copy(
-                userProfile = PreviewData.userProfile.copy(avatarUrl = null)
+                userProfile = PreviewData.userProfile.copy(
+                    avatarUrl = null
+                )
             )
         }
     }

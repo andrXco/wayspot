@@ -33,6 +33,9 @@ class ReviewDetailViewModel @Inject constructor(
             it.copy(
                 isLoading = true,
                 errorMessage = null,
+                review = null,
+                place = null,
+                author = null,
                 comments = emptyList()
             )
         }
