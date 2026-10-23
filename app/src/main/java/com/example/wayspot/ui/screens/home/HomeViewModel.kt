@@ -1,6 +1,7 @@
 package com.example.wayspot.ui.screens.home
 
 import androidx.lifecycle.ViewModel
+import com.example.wayspot.data.repository.AuthRepository
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.model.home.HomeCategoryId
 import com.example.wayspot.data.model.home.HomeRules
@@ -31,12 +32,14 @@ import kotlinx.coroutines.flow.collect
 class HomeViewModel @Inject constructor(
     private val placeRepository: PlaceRepository,
     private val reviewRepository: ReviewRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeState())
     val uiState: StateFlow<HomeState> = _uiState
     private var homeLoadJob: Job? = null
+    private var followingLoadJob: Job? = null
 
     fun refresh() {
         if (!_uiState.value.isLoading) loadHome()
@@ -175,6 +178,62 @@ class HomeViewModel @Inject constructor(
                         )
                     }
                 }
+        }
+    }
+
+    fun toggleFollowingFilter() {
+        val currentState = _uiState.value
+        if (currentState.isLoadingFollowingUsers) return
+
+        if (currentState.isFollowingOnly) {
+            _uiState.update { state ->
+                state.copy(
+                    isFollowingOnly = false,
+                    followingUsersLoadFailed = false
+                )
+            }
+            return
+        }
+
+        val currentUserId = authRepository.currentUser?.uid
+        if (currentUserId.isNullOrBlank()) {
+            _uiState.update { state ->
+                state.copy(followingUsersLoadFailed = true)
+            }
+            return
+        }
+
+        followingLoadJob?.cancel()
+        _uiState.update { state ->
+            state.copy(
+                isFollowingOnly = true,
+                isLoadingFollowingUsers = true,
+                followingUsersLoadFailed = false
+            )
+        }
+
+        followingLoadJob = viewModelScope.launch {
+            val result = userRepository.getFollowingUserIds(currentUserId)
+            result.fold(
+                onSuccess = { userIds ->
+                    _uiState.update { state ->
+                        state.copy(
+                            followingUserIds = userIds,
+                            isLoadingFollowingUsers = false,
+                            followingUsersLoadFailed = false
+                        )
+                    }
+                },
+                onFailure = {
+                    _uiState.update { state ->
+                        state.copy(
+                            isFollowingOnly = false,
+                            isLoadingFollowingUsers = false,
+                            followingUsersLoadFailed = true
+                        )
+                    }
+                }
+            )
         }
     }
 

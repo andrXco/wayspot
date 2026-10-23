@@ -13,7 +13,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.model.home.HomeCategoryId
@@ -26,7 +25,9 @@ import com.example.wayspot.ui.screens.home.components.HomeFeaturedPlanCarousel
 import com.example.wayspot.ui.screens.home.components.HomeIntroSection
 import com.example.wayspot.ui.screens.home.components.HomeReviewCard
 import com.example.wayspot.ui.screens.home.components.HomeReviewsEmptyState
+import com.example.wayspot.ui.screens.home.components.HomeReviewsFilterError
 import com.example.wayspot.ui.screens.home.components.HomeReviewsHeader
+import com.example.wayspot.ui.screens.home.components.HomeReviewsLoadingState
 import com.example.wayspot.ui.theme.WayspotTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.CircularProgressIndicator
@@ -88,6 +89,7 @@ fun HomeScreen(
                 onReviewExpandClick = homeViewModel::toggleReviewExpanded,
                 onReviewCommentClick = onReviewCommentClick,
                 onReviewShareClick = homeViewModel::toggleReviewShared,
+                onFollowingFilterClick = homeViewModel::toggleFollowingFilter,
                 onSaveClick = onSaveClick,
                 onPlaceClick = onPlaceClick,
                 onReviewClick = onReviewClick,
@@ -111,25 +113,26 @@ fun HomeContent(
     onReviewExpandClick: (String) -> Unit,
     onReviewCommentClick: (String) -> Unit,
     onReviewShareClick: (String) -> Unit,
+    onFollowingFilterClick: () -> Unit,
     onSaveClick: (Place) -> Unit,
     onPlaceClick: (String) -> Unit,
     onReviewClick: (String) -> Unit,
     onAuthorClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     val visibleReviews = state.reviews.filter { review ->
-        HomeRules.matchesSearch(
-            query = state.searchQuery,
-            candidates = listOf(
-                review.author.name,
-                review.author.username,
-                review.review.title.orEmpty(),
-                review.review.description,
-                review.place.title,
-                review.place.location
+        (!state.isFollowingOnly || review.author.id in state.followingUserIds) &&
+            HomeRules.matchesSearch(
+                query = state.searchQuery,
+                candidates = listOf(
+                    review.author.name,
+                    review.author.username,
+                    review.review.title.orEmpty(),
+                    review.review.description,
+                    review.place.title,
+                    review.place.location
+                )
             )
-        )
     }
 
     LazyColumn(
@@ -171,12 +174,29 @@ fun HomeContent(
         }
         item(key = HomeSectionKey.REVIEWS_HEADER) {
             HomeReviewsHeader(
+                isFollowingOnly = state.isFollowingOnly,
+                isLoadingFollowingUsers = state.isLoadingFollowingUsers,
+                onFollowingFilterClick = onFollowingFilterClick,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp)
             )
         }
-        if (visibleReviews.isEmpty()) {
+        if (state.followingUsersLoadFailed) {
+            item(key = HomeSectionKey.FOLLOWING_FILTER_ERROR) {
+                HomeReviewsFilterError(
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
+        }
+        if (state.isLoadingFollowingUsers) {
+            item(key = HomeSectionKey.FOLLOWING_FILTER_LOADING) {
+                HomeReviewsLoadingState(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp)
+                )
+            }
+        } else if (visibleReviews.isEmpty()) {
             item(key = HomeSectionKey.EMPTY_REVIEWS) {
                 HomeReviewsEmptyState(
+                    isFollowingOnly = state.isFollowingOnly,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp)
                 )
             }
@@ -210,7 +230,9 @@ private enum class HomeSectionKey {
     CATEGORIES,
     FEATURED,
     REVIEWS_HEADER,
-    EMPTY_REVIEWS
+    EMPTY_REVIEWS,
+    FOLLOWING_FILTER_ERROR,
+    FOLLOWING_FILTER_LOADING
 }
 
 @WayspotMultiPreview
@@ -242,6 +264,7 @@ private fun HomeScreenPreview() {
             onReviewExpandClick = {},
             onReviewCommentClick = {},
             onReviewShareClick = {},
+            onFollowingFilterClick = {},
             onSaveClick = {},
             onPlaceClick = {},
             onReviewClick = {},

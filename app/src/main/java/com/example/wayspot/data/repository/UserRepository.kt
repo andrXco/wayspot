@@ -176,6 +176,30 @@ class UserRepository @Inject constructor(
         }
     }
 
+    suspend fun getFollowingUserIds(userId: String): Result<Set<String>> {
+        return try {
+            val followingUserIds = linkedSetOf<String>()
+            var cursor: String? = null
+
+            do {
+                val page = userRemoteDataSource.getUserConnections(
+                    userId = userId,
+                    relationshipType = UserRelationshipListType.FOLLOWING,
+                    cursor = cursor,
+                    pageSize = UserRelationshipRules.PAGE_SIZE
+                )
+                followingUserIds.addAll(page.users.map { user -> user.toUserInfo().id })
+                cursor = page.nextCursor
+            } while (cursor != null)
+
+            Result.success(followingUserIds.toSet())
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     suspend fun followOrUnfollowUser(
         currentUserId: String,
         targetUserId: String

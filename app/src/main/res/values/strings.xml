@@ -357,6 +357,12 @@
     <string name="home_reviews_title">Últimas reseñas</string>
     <string name="home_reviews_subtitle">de la comunidad</string>
     <string name="home_reviews_empty">Aún no hay reseñas para mostrar. Puedes publicar la primera.</string>
+    <string name="home_reviews_filter_following">Ver seguidos</string>
+    <string name="home_reviews_filter_active">Siguiendo</string>
+    <string name="home_reviews_filter_loading">Cargando...</string>
+    <string name="home_reviews_empty_following">Aún no hay reseñas de las personas que sigues.</string>
+    <string name="home_reviews_following_loading">Cargando las cuentas que sigues...</string>
+    <string name="home_reviews_following_error">No se pudo cargar la lista de personas que sigues. Inténtalo de nuevo.</string>
     <string name="home_review_valentina_name">Valentina García</string>
     <string name="home_review_valentina_handle">@valentina_viaja</string>
     <string name="home_review_valentina_initials">V</string>
