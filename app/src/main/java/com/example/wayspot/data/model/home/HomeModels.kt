@@ -1,4 +1,4 @@
-package com.example.wayspot.data.model
+package com.example.wayspot.data.model.home
 
 import androidx.annotation.StringRes
 import java.text.Normalizer

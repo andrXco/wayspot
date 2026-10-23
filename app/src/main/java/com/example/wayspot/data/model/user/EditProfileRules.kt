@@ -1,4 +1,4 @@
-package com.example.wayspot.data.model
+package com.example.wayspot.data.model.user
 
 /** Reúne las reglas de normalización y validez que comparte la edición de perfil. */
 object EditProfileRules {

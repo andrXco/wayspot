@@ -1,8 +1,8 @@
 package com.example.wayspot.ui.screens.explore
 
-import com.example.wayspot.data.model.ExploreCategory
-import com.example.wayspot.data.model.ExploreCategoryRules
-import com.example.wayspot.data.model.Place
+import com.example.wayspot.data.model.explore.ExploreCategory
+import com.example.wayspot.data.model.explore.ExploreCategoryRules
+import com.example.wayspot.data.model.place.Place
 
 /** Estado inmutable del catálogo explorado, su filtro activo y los guardados sincronizados. */
 data class ExploreState(
