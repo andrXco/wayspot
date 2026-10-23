@@ -22,14 +22,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
-import com.example.wayspot.data.model.Place
-import com.example.wayspot.data.local.PreviewDataPopular
+import com.example.wayspot.data.model.PlaceInfo
+import com.example.wayspot.data.model.ReviewInfo
 import com.example.wayspot.ui.theme.WayspotTheme
 
-/** Cuerpo del detalle con metadatos, información práctica, descripción y reseñas recientes. */
+/** Cuerpo del detalle con metadatos, descripción y reseñas. */
 @Composable
 fun PlaceDetailBody(
-    place: Place,
+    place: PlaceInfo,
+    reviews: List<ReviewInfo>,
     onShareClick: () -> Unit,
     onWriteReviewClick: () -> Unit,
     onSeeAllReviewsClick: () -> Unit,
@@ -37,22 +38,46 @@ fun PlaceDetailBody(
 ) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+        shape = RoundedCornerShape(
+            topStart = 28.dp,
+            topEnd = 28.dp
+        ),
         color = MaterialTheme.colorScheme.surface
     ) {
-        Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 24.dp)) {
-            PlaceMetadata(place = place, onShareClick = onShareClick)
-            Spacer(modifier = Modifier.height(16.dp))
-            PlaceInfoRow(place = place)
-            Spacer(modifier = Modifier.height(24.dp))
-            PlaceDescription(descriptionRes = place.detail.descriptionRes)
-            Spacer(modifier = Modifier.height(24.dp))
-            WriteReviewButton(onClick = onWriteReviewClick)
+        Column(
+            modifier = Modifier.padding(
+                horizontal = 20.dp,
+                vertical = 24.dp
+            )
+        ) {
+            PlaceMetadata(
+                place = place,
+                onShareClick = onShareClick
+            )
 
-            if (place.detail.recentReviews.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(24.dp))
+            Spacer(
+                modifier = Modifier.height(24.dp)
+            )
+
+            PlaceDescription(
+                description = place.description
+            )
+
+            Spacer(
+                modifier = Modifier.height(24.dp)
+            )
+
+            WriteReviewButton(
+                onClick = onWriteReviewClick
+            )
+
+            if (reviews.isNotEmpty()) {
+                Spacer(
+                    modifier = Modifier.height(24.dp)
+                )
+
                 RecentReviewsSection(
-                    reviews = place.detail.recentReviews,
+                    reviews = reviews,
                     onSeeAllClick = onSeeAllReviewsClick
                 )
             }
@@ -61,16 +86,25 @@ fun PlaceDetailBody(
 }
 
 @Composable
-private fun PlaceDescription(descriptionRes: Int, modifier: Modifier = Modifier) {
-    Column(modifier = modifier) {
+private fun PlaceDescription(
+    description: String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+    ) {
         Text(
             text = stringResource(R.string.description_title),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold
         )
-        Spacer(modifier = Modifier.height(8.dp))
+
+        Spacer(
+            modifier = Modifier.height(8.dp)
+        )
+
         Text(
-            text = stringResource(descriptionRes),
+            text = description,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             lineHeight = 22.sp
         )
@@ -78,7 +112,10 @@ private fun PlaceDescription(descriptionRes: Int, modifier: Modifier = Modifier)
 }
 
 @Composable
-private fun WriteReviewButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun WriteReviewButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Button(
         onClick = onClick,
         modifier = modifier
@@ -86,9 +123,18 @@ private fun WriteReviewButton(onClick: () -> Unit, modifier: Modifier = Modifier
             .height(52.dp),
         shape = RoundedCornerShape(14.dp)
     ) {
-        Icon(imageVector = Icons.Default.Edit, contentDescription = null)
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(text = stringResource(R.string.button_write_review))
+        Icon(
+            imageVector = Icons.Default.Edit,
+            contentDescription = null
+        )
+
+        Spacer(
+            modifier = Modifier.width(8.dp)
+        )
+
+        Text(
+            text = stringResource(R.string.button_write_review)
+        )
     }
 }
 
@@ -97,7 +143,25 @@ private fun WriteReviewButton(onClick: () -> Unit, modifier: Modifier = Modifier
 private fun PlaceDetailBodyPreview() {
     WayspotTheme {
         PlaceDetailBody(
-            place = PreviewDataPopular.samplePlaces1,
+            place = PlaceInfo(
+                id = "1",
+                title = "Monserrate",
+                category = "Turismo",
+                location = "Bogotá, Colombia",
+                rating = 4.7,
+                imageUrl = null,
+                description = "Lugar turístico ubicado en Bogotá"
+            ),
+            reviews = listOf(
+                ReviewInfo(
+                    id = "1",
+                    rating = 5,
+                    title = "Excelente lugar",
+                    description = "Una experiencia muy buena y con una gran vista.",
+                    userId = "1",
+                    placeId = "1"
+                )
+            ),
             onShareClick = {},
             onWriteReviewClick = {},
             onSeeAllReviewsClick = {}
@@ -109,7 +173,9 @@ private fun PlaceDetailBodyPreview() {
 @Composable
 private fun PlaceDescriptionPreview() {
     WayspotTheme {
-        PlaceDescription(descriptionRes = PreviewDataPopular.samplePlaces1.detail.descriptionRes)
+        PlaceDescription(
+            description = "Lugar turístico ubicado en Bogotá"
+        )
     }
 }
 
@@ -117,6 +183,8 @@ private fun PlaceDescriptionPreview() {
 @Composable
 private fun WriteReviewButtonPreview() {
     WayspotTheme {
-        WriteReviewButton(onClick = {})
+        WriteReviewButton(
+            onClick = {}
+        )
     }
 }

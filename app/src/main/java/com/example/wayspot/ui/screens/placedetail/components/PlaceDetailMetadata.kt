@@ -26,17 +26,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
-import com.example.wayspot.data.model.Place
-import com.example.wayspot.data.local.PreviewDataPopular
+import com.example.wayspot.data.model.PlaceInfo
 import com.example.wayspot.ui.theme.EstrellaAmarilla
 import com.example.wayspot.ui.theme.WayspotTheme
 
 /** Agrupa ubicación, valoración y la acción de compartir del lugar. */
 @Composable
 internal fun PlaceMetadata(
-    place: Place,
+    place: PlaceInfo,
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -45,32 +43,60 @@ internal fun PlaceMetadata(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        PlaceLocationAndRating(place = place)
-        SharePlaceButton(onClick = onShareClick)
+        PlaceLocationAndRating(
+            place = place
+        )
+
+        SharePlaceButton(
+            onClick = onShareClick
+        )
     }
 }
 
 @Composable
-private fun PlaceLocationAndRating(place: Place, modifier: Modifier = Modifier) {
-    Column(modifier = modifier) {
-        PlaceLocation(locationRes = place.ubicacionRes)
-        Spacer(modifier = Modifier.height(8.dp))
-        PlaceRating(rating = place.rating, reviewCount = place.detail.reviewCount)
+private fun PlaceLocationAndRating(
+    place: PlaceInfo,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+    ) {
+        PlaceLocation(
+            location = place.location
+        )
+
+        Spacer(
+            modifier = Modifier.height(8.dp)
+        )
+
+        PlaceRating(
+            rating = place.rating
+        )
     }
 }
 
 @Composable
-private fun PlaceLocation(locationRes: Int, modifier: Modifier = Modifier) {
-    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+private fun PlaceLocation(
+    location: String,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Icon(
             imageVector = Icons.Default.LocationOn,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(18.dp)
         )
-        Spacer(modifier = Modifier.width(4.dp))
+
+        Spacer(
+            modifier = Modifier.width(4.dp)
+        )
+
         Text(
-            text = stringResource(locationRes),
+            text = location,
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Medium
         )
@@ -80,31 +106,50 @@ private fun PlaceLocation(locationRes: Int, modifier: Modifier = Modifier) {
 @Composable
 private fun PlaceRating(
     rating: Double,
-    reviewCount: Int,
     modifier: Modifier = Modifier
 ) {
-    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
-        RatingStars(rating = rating.toInt(), size = 16.dp)
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(text = stringResource(R.string.rating_value, rating), fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.width(4.dp))
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RatingStars(
+            rating = rating.toInt(),
+            size = 16.dp
+        )
+
+        Spacer(
+            modifier = Modifier.width(8.dp)
+        )
+
         Text(
-            text = stringResource(R.string.reviews_count, reviewCount),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontSize = 13.sp
+            text = stringResource(
+                R.string.rating_value,
+                rating
+            ),
+            fontWeight = FontWeight.Bold
         )
     }
 }
 
 /** Dibuja una valoración discreta con el tamaño solicitado por la sección consumidora. */
 @Composable
-internal fun RatingStars(rating: Int, size: Dp, modifier: Modifier = Modifier) {
-    Row(modifier = modifier) {
+internal fun RatingStars(
+    rating: Int,
+    size: Dp,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+    ) {
         repeat(5) { starIndex ->
             Icon(
                 imageVector = Icons.Default.Star,
                 contentDescription = null,
-                tint = if (starIndex < rating) EstrellaAmarilla else MaterialTheme.colorScheme.outlineVariant,
+                tint = if (starIndex < rating) {
+                    EstrellaAmarilla
+                } else {
+                    MaterialTheme.colorScheme.outlineVariant
+                },
                 modifier = Modifier.size(size)
             )
         }
@@ -112,16 +157,24 @@ internal fun RatingStars(rating: Int, size: Dp, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun SharePlaceButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun SharePlaceButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     IconButton(
         onClick = onClick,
         modifier = modifier
             .size(40.dp)
-            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp))
+            .background(
+                MaterialTheme.colorScheme.surfaceVariant,
+                RoundedCornerShape(12.dp)
+            )
     ) {
         Icon(
             imageVector = Icons.Default.Share,
-            contentDescription = stringResource(R.string.share_content_description),
+            contentDescription = stringResource(
+                R.string.share_content_description
+            ),
             tint = MaterialTheme.colorScheme.primary
         )
     }
@@ -131,15 +184,18 @@ private fun SharePlaceButton(onClick: () -> Unit, modifier: Modifier = Modifier)
 @Composable
 private fun PlaceMetadataPreview() {
     WayspotTheme {
-        PlaceMetadata(place = PreviewDataPopular.samplePlaces1, onShareClick = {})
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PlaceLocationAndRatingPreview() {
-    WayspotTheme {
-        PlaceLocationAndRating(place = PreviewDataPopular.samplePlaces1)
+        PlaceMetadata(
+            place = PlaceInfo(
+                id = "1",
+                title = "Monserrate",
+                category = "Turismo",
+                location = "Bogotá, Colombia",
+                rating = 4.7,
+                imageUrl = null,
+                description = "Lugar turístico ubicado en Bogotá"
+            ),
+            onShareClick = {}
+        )
     }
 }
 
@@ -147,7 +203,9 @@ private fun PlaceLocationAndRatingPreview() {
 @Composable
 private fun PlaceLocationPreview() {
     WayspotTheme {
-        PlaceLocation(locationRes = PreviewDataPopular.samplePlaces1.ubicacionRes)
+        PlaceLocation(
+            location = "Bogotá, Colombia"
+        )
     }
 }
 
@@ -156,8 +214,7 @@ private fun PlaceLocationPreview() {
 private fun PlaceRatingPreview() {
     WayspotTheme {
         PlaceRating(
-            rating = PreviewDataPopular.samplePlaces1.rating,
-            reviewCount = PreviewDataPopular.samplePlaces1.detail.reviewCount
+            rating = 4.7
         )
     }
 }
@@ -166,7 +223,10 @@ private fun PlaceRatingPreview() {
 @Composable
 private fun RatingStarsPreview() {
     WayspotTheme {
-        RatingStars(rating = PreviewDataPopular.samplePlaces1.rating.toInt(), size = 16.dp)
+        RatingStars(
+            rating = 4,
+            size = 16.dp
+        )
     }
 }
 
@@ -174,6 +234,8 @@ private fun RatingStarsPreview() {
 @Composable
 private fun SharePlaceButtonPreview() {
     WayspotTheme {
-        SharePlaceButton(onClick = {})
+        SharePlaceButton(
+            onClick = {}
+        )
     }
 }

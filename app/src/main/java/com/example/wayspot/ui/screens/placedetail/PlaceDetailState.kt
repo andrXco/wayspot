@@ -1,8 +1,9 @@
 package com.example.wayspot.ui.screens.placedetail
 
-import com.example.wayspot.data.model.Place
+import com.example.wayspot.data.model.PlaceInfo
+import com.example.wayspot.data.model.ReviewInfo
 
-/** Estado del detalle mientras se resuelve el lugar solicitado por la ruta. */
 data class PlaceDetailState(
-    val place: Place? = null
+    val place: PlaceInfo? = null,
+    val reviews: List<ReviewInfo> = emptyList()
 )

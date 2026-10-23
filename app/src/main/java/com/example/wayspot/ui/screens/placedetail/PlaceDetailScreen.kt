@@ -10,8 +10,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.wayspot.data.local.PreviewDataPopular
-import com.example.wayspot.data.model.Place
+import com.example.wayspot.data.model.PlaceInfo
+import com.example.wayspot.data.model.ReviewInfo
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.placedetail.components.PlaceDetailBody
 import com.example.wayspot.ui.screens.placedetail.components.PlaceDetailHero
@@ -40,6 +40,7 @@ fun PlaceDetailScreen(
     if (place != null) {
         PlaceDetailContent(
             place = place,
+            reviews = state.reviews,
             onBackClick = onBackClick,
             onSaveClick = onSaveClick,
             onShareClick = onShareClick,
@@ -53,7 +54,8 @@ fun PlaceDetailScreen(
 /** Compone la portada y el cuerpo del detalle como secciones independientes de una lista vertical. */
 @Composable
 fun PlaceDetailContent(
-    place: Place,
+    place: PlaceInfo,
+    reviews: List<ReviewInfo>,
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
     onShareClick: () -> Unit,
@@ -77,6 +79,7 @@ fun PlaceDetailContent(
         item {
             PlaceDetailBody(
                 place = place,
+                reviews = reviews,
                 onShareClick = onShareClick,
                 onWriteReviewClick = onWriteReviewClick,
                 onSeeAllReviewsClick = onSeeAllReviewsClick,
@@ -91,7 +94,16 @@ fun PlaceDetailContent(
 private fun PlaceDetailScreenPreview() {
     WayspotTheme {
         PlaceDetailContent(
-            place = PreviewDataPopular.samplePlaces1,
+            place = PlaceInfo(
+                id = "1",
+                title = "Monserrate",
+                category = "Turismo",
+                location = "Bogotá, Colombia",
+                rating = 4.7,
+                imageUrl = null,
+                description = "Lugar turístico ubicado en Bogotá"
+            ),
+            reviews = emptyList(),
             onBackClick = {},
             onSaveClick = {},
             onShareClick = {},

@@ -51,7 +51,7 @@ import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
 import com.example.wayspot.data.model.HomeReview
 import com.example.wayspot.data.model.HomeRules
-import com.example.wayspot.data.model.Place
+import com.example.wayspot.data.model.PlaceInfo
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.components.WayspotImage
@@ -96,7 +96,7 @@ fun HomeReviewsEmptyState(
 @Composable
 fun HomeReviewCard(
     review: HomeReview,
-    place: Place,
+    place: PlaceInfo,
     likeCount: Int,
     commentCount: Int,
     isLiked: Boolean,
@@ -112,7 +112,7 @@ fun HomeReviewCard(
     modifier: Modifier = Modifier
 ) {
     val authorName = stringResource(review.authorNameRes)
-    val placeTitle = stringResource(place.tituloRes)
+    val placeTitle = place.title
     val rating = HomeRules.normalizedReviewRating(review.rating)
 
     Card(
@@ -261,7 +261,7 @@ private fun HomeReviewAuthorRow(
 
 @Composable
 private fun HomeReviewPlacePill(
-    place: Place,
+    place: PlaceInfo,
     placeTitle: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -293,7 +293,7 @@ private fun HomeReviewPlacePill(
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = stringResource(place.ubicacionRes),
+                text = place.location,
                 modifier = Modifier.padding(start = 5.dp),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.labelSmall,
