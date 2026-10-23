@@ -24,7 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
 import com.example.wayspot.data.local.PreviewData
-import com.example.wayspot.data.model.Notification
+import com.example.wayspot.data.model.notification.Notification
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.notifications.components.NotificationItem
 import com.example.wayspot.ui.screens.notifications.components.NotificationsHeader
@@ -34,14 +34,12 @@ import com.example.wayspot.ui.theme.WayspotTheme
 @Composable
 fun NotificationsScreen(
     notificationsViewModel: NotificationsViewModel,
-    onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by notificationsViewModel.uiState.collectAsState()
 
     NotificationsContent(
         notifications = state.notifications,
-        onBackClick = onBackClick,
         modifier = modifier
     )
 }
@@ -50,7 +48,6 @@ fun NotificationsScreen(
 @Composable
 fun NotificationsContent(
     notifications: List<Notification>,
-    onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -60,7 +57,6 @@ fun NotificationsContent(
     ) {
 
         NotificationsHeader(
-            onBackClick = onBackClick,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -199,8 +195,7 @@ private fun NotificationsEmptySection(
 private fun NotificationsScreenPreview() {
     WayspotTheme {
         NotificationsContent(
-            notifications = PreviewData.notifications,
-            onBackClick = {}
+            notifications = PreviewData.notifications
         )
     }
 }

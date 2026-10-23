@@ -1,6 +1,7 @@
 package com.example.wayspot.ui.screens.profile.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,12 +21,15 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
-import com.example.wayspot.data.model.UserStats
+import com.example.wayspot.data.model.user.UserStats
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.theme.WayspotTheme
@@ -33,7 +37,9 @@ import com.example.wayspot.ui.theme.WayspotTheme
 @Composable
 fun ProfileStats(
     stats: UserStats,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onFollowersClick: () -> Unit = {},
+    onFollowingClick: () -> Unit = {}
 ) {
     Card(
         modifier = modifier
@@ -54,34 +60,48 @@ fun ProfileStats(
             verticalAlignment = Alignment.CenterVertically
         ) {
             ProfileStat(
-                value = stats.places.toString(),
-                label = stringResource(R.string.profile_label_places),
-                modifier = Modifier.weight(1f)
-            )
-
-            VerticalDivider(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(1.dp),
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.22f)
-            )
-
-            ProfileStat(
-                value = stats.reviews.toString(),
-                label = stringResource(R.string.profile_label_reviews),
-                modifier = Modifier.weight(1f)
-            )
-
-            VerticalDivider(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(1.dp),
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.22f)
-            )
-
-            ProfileStat(
                 value = stats.followers,
                 label = stringResource(R.string.profile_label_followers),
+                modifier = Modifier.weight(1f),
+                onClick = onFollowersClick,
+                actionDescription = stringResource(
+                    R.string.profile_stats_action_description,
+                    stats.followers,
+                    stringResource(R.string.profile_label_followers),
+                    stringResource(R.string.profile_open_followers)
+                )
+            )
+
+            VerticalDivider(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(1.dp),
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.22f)
+            )
+
+            ProfileStat(
+                value = stats.following,
+                label = stringResource(R.string.profile_label_following),
+                modifier = Modifier.weight(1f),
+                onClick = onFollowingClick,
+                actionDescription = stringResource(
+                    R.string.profile_stats_action_description,
+                    stats.following,
+                    stringResource(R.string.profile_label_following),
+                    stringResource(R.string.profile_open_following)
+                )
+            )
+
+            VerticalDivider(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(1.dp),
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.22f)
+            )
+
+            ProfileStat(
+                value = stats.places.toString(),
+                label = stringResource(R.string.profile_label_places),
                 modifier = Modifier.weight(1f)
             )
         }
@@ -92,10 +112,22 @@ fun ProfileStats(
 private fun ProfileStat(
     value: String,
     label: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
+    actionDescription: String? = null
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier.then(
+            if (onClick != null) {
+                Modifier
+                    .semantics {
+                        actionDescription?.let { contentDescription = it }
+                    }
+                    .clickable(role = Role.Button, onClick = onClick)
+            } else {
+                Modifier
+            }
+        ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(

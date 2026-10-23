@@ -41,8 +41,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
-import com.example.wayspot.data.model.ReviewRules
-import com.example.wayspot.data.model.SavedPlace
+import com.example.wayspot.data.model.review.ReviewRules
+import com.example.wayspot.data.model.savedplace.SavedPlace
 import com.example.wayspot.ui.components.WayspotImage
 
 /** Resume un destino guardado y expone acciones independientes para ver su detalle o retirarlo de la lista. */
@@ -53,9 +53,10 @@ fun SavedPlaceCard(
     onRemoveClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
     val place = savedPlace.place
-    val title = stringResource(place.tituloRes)
-    val location = stringResource(place.ubicacionRes)
+    val title = place.titleText ?: stringResource(place.tituloRes)
+    val location = place.locationText ?: stringResource(place.ubicacionRes)
 
     Card(
         modifier = modifier
@@ -111,7 +112,7 @@ fun SavedPlaceCard(
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
-                        text = stringResource(place.categoriaRes),
+                        text = place.categoryText ?: stringResource(place.categoriaRes),
                         modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,

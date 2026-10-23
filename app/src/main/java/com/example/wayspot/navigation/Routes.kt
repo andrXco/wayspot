@@ -1,5 +1,7 @@
 package com.example.wayspot.navigation
 
+import com.example.wayspot.data.model.user.UserRelationshipListType
+
 /** Fuente única de las rutas del `NavHost` y de la construcción de destinos con argumentos. */
 sealed class Screen(val route: String) {
 
@@ -29,9 +31,28 @@ sealed class Screen(val route: String) {
         }
     }
 
-    object NewReview : Screen("new_review/{placeId}") {
-        fun createRoute(placeId: String): String {
-            return "new_review/$placeId"
+    object ReviewDetail : Screen("review_detail/{reviewId}") {
+        fun createRoute(reviewId: String) = "review_detail/$reviewId"
+    }
+
+    object ReviewComment : Screen("review_comment/{reviewId}") {
+        fun createRoute(reviewId: String) = "review_comment/$reviewId"
+    }
+
+    object PublicProfile : Screen("public_profile/{userId}") {
+        fun createRoute(userId: String) = "public_profile/$userId"
+    }
+
+    object UserConnections : Screen("user_connections/{userId}/{type}") {
+        fun createRoute(userId: String, type: UserRelationshipListType) =
+            "user_connections/$userId/${type.name}"
+    }
+
+    object NewReview : Screen("new_review?placeId={placeId}&reviewId={reviewId}") {
+        fun createRoute(placeId: String? = null): String {
+            return placeId?.let { "new_review?placeId=$it" } ?: "new_review"
         }
+
+        fun createEditRoute(reviewId: String) = "new_review?reviewId=$reviewId"
     }
 }

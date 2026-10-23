@@ -1,14 +1,25 @@
+
 package com.example.wayspot.navigation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+
 import com.example.wayspot.data.local.PreviewData
-import com.example.wayspot.data.model.Place
-import com.example.wayspot.data.model.SavedPlaceList
-import com.example.wayspot.data.model.SavedPlacesRules
-import com.example.wayspot.data.model.UserProfile
+import com.example.wayspot.data.model.place.Place
+import com.example.wayspot.data.model.savedplace.SavedPlaceList
+import com.example.wayspot.data.model.savedplace.SavedPlacesRules
+import com.example.wayspot.data.model.user.UserProfile
+import com.example.wayspot.data.model.user.UserStats
+import com.example.wayspot.data.model.user.ProfileNotificationPreferences
 import com.example.wayspot.data.repository.AuthRepository
+import com.example.wayspot.data.repository.UserRepository
+
 import dagger.hilt.android.lifecycle.HiltViewModel
+
 import javax.inject.Inject
+
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -21,11 +32,15 @@ import kotlinx.coroutines.flow.update
  */
 @HiltViewModel
 class AppNavigationViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AppNavigationState())
     val uiState: StateFlow<AppNavigationState> = _uiState
+
+    val currentUserId: String?
+        get() = authRepository.currentUser?.uid
 
     init {
         loadInitialData()
@@ -34,18 +49,119 @@ class AppNavigationViewModel @Inject constructor(
     private fun loadInitialData() {
         _uiState.update { currentState ->
             currentState.copy(
-                savedPlaces = PreviewData.savedPlaces
+                savedPlaces = emptyList()
             )
         }
+
         syncAuthenticatedUser()
     }
 
     fun syncAuthenticatedUser() {
-        val avatarUrl = authRepository.currentUser?.photoUrl?.toString()
+        val firebaseUser = authRepository.currentUser
+
+        if (firebaseUser == null) {
+            resetUserProfile()
+            return
+        }
+
+        val userId = firebaseUser.uid
+
         _uiState.update { currentState ->
             currentState.copy(
-                userProfile = PreviewData.userProfile.copy(avatarUrl = avatarUrl)
+                userProfile = PreviewData.userProfile.copy(
+                    name = "",
+                    username = "",
+                    bio = "",
+                    email = firebaseUser.email.orEmpty(),
+                    location = "",
+                    avatarUrl = firebaseUser.photoUrl?.toString(),
+                    notificationPreferences = ProfileNotificationPreferences(),
+                    initials = "",
+                    isVerified = false,
+                    stats = UserStats(
+                        places = 0,
+                        reviews = 0,
+                        followers = "0",
+                        following = "0"
+                    )
+                )
             )
+        }
+
+        viewModelScope.launch {
+            val result = userRepository.getUserById(userId)
+
+            if (result.isSuccess) {
+                val user = result.getOrNull() ?: return@launch
+
+                if (authRepository.currentUser?.uid != userId) {
+                    return@launch
+                }
+
+                val followersCount = userRepository
+                    .getFollowersCount(userId)
+                    .getOrNull() ?: 0
+
+                val followingCount = userRepository
+                    .getFollowingCount(userId)
+                    .getOrNull() ?: 0
+
+                _uiState.update { currentState ->
+                    val currentProfile = currentState.userProfile
+                        ?: return@update currentState
+
+                    currentState.copy(
+                        userProfile = currentProfile.copy(
+                            name = user.name,
+                            username = user.username,
+                            bio = user.bio.orEmpty(),
+                            location = user.location.orEmpty(),
+                            notificationPreferences = user.notificationPreferences,
+                            initials = user.name.take(1).uppercase(),
+                            stats = currentProfile.stats.copy(
+                                followers = followersCount.toString(),
+                                following = followingCount.toString()
+                            )
+                        )
+                    )
+                }
+
+            } else {
+                Log.e(
+                    "AppNavigationViewModel",
+                    "Error al obtener el perfil",
+                    result.exceptionOrNull()
+                )
+            }
+        }
+    }
+
+    fun refreshFollowStats() {
+        val userId = authRepository.currentUser?.uid ?: return
+
+        viewModelScope.launch {
+            val followersResult = userRepository.getFollowersCount(userId)
+            val followingResult = userRepository.getFollowingCount(userId)
+
+            if (authRepository.currentUser?.uid != userId) {
+                return@launch
+            }
+
+            _uiState.update { currentState ->
+                val currentProfile = currentState.userProfile
+                    ?: return@update currentState
+
+                currentState.copy(
+                    userProfile = currentProfile.copy(
+                        stats = currentProfile.stats.copy(
+                            followers = followersResult.getOrNull()?.toString()
+                                ?: currentProfile.stats.followers,
+                            following = followingResult.getOrNull()?.toString()
+                                ?: currentProfile.stats.following
+                        )
+                    )
+                )
+            }
         }
     }
 
@@ -60,7 +176,9 @@ class AppNavigationViewModel @Inject constructor(
     fun updateUserAvatar(avatarUrl: String) {
         _uiState.update { currentState ->
             currentState.copy(
-                userProfile = currentState.userProfile?.copy(avatarUrl = avatarUrl)
+                userProfile = currentState.userProfile?.copy(
+                    avatarUrl = avatarUrl
+                )
             )
         }
     }
@@ -68,7 +186,9 @@ class AppNavigationViewModel @Inject constructor(
     fun resetUserProfile() {
         _uiState.update { currentState ->
             currentState.copy(
-                userProfile = PreviewData.userProfile.copy(avatarUrl = null)
+                userProfile = PreviewData.userProfile.copy(
+                    avatarUrl = null
+                )
             )
         }
     }
@@ -76,7 +196,7 @@ class AppNavigationViewModel @Inject constructor(
     fun resetSavedPlaces() {
         _uiState.update { currentState ->
             currentState.copy(
-                savedPlaces = PreviewData.savedPlaces
+                savedPlaces = emptyList()
             )
         }
     }
@@ -104,6 +224,31 @@ class AppNavigationViewModel @Inject constructor(
                     place = place
                 )
             )
+        }
+    }
+
+    fun notifyCommentPublished(reviewId: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                commentRefreshReviewId = reviewId,
+                commentRefreshVersion = currentState.commentRefreshVersion + 1
+            )
+        }
+    }
+
+    fun consumeCommentRefresh(reviewId: String, version: Int) {
+        _uiState.update { currentState ->
+            if (
+                currentState.commentRefreshReviewId == reviewId &&
+                currentState.commentRefreshVersion == version
+            ) {
+                currentState.copy(
+                    commentRefreshReviewId = null,
+                    commentRefreshVersion = 0
+                )
+            } else {
+                currentState
+            }
         }
     }
 }

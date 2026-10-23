@@ -55,6 +55,10 @@ fun SignUpScreen(
     SignUpContent(
         nombre = state.nombre,
         onNombreChange = { signUpViewModel.updateNombre(it) },
+        nombreCompleto = state.nombreCompleto,
+        onNombreCompletoChange = {
+            signUpViewModel.updateNombreCompleto(it)
+        },
         correo = state.correo,
         onCorreoChange = { signUpViewModel.updateCorreo(it) },
         contrasena = state.contrasena,
@@ -86,9 +90,12 @@ fun SignUpScreen(
 
 /** Contenido sin dependencia del ViewModel para composición y previsualización del formulario. */
 @Composable
+
 fun SignUpContent(
     nombre: String,
     onNombreChange: (String) -> Unit,
+    nombreCompleto: String,
+    onNombreCompletoChange: (String) -> Unit,
     correo: String,
     onCorreoChange: (String) -> Unit,
     contrasena: String,
@@ -108,6 +115,7 @@ fun SignUpContent(
     onBackToLoginClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
     val passwordsDoNotMatch = confirmarContrasena.isNotEmpty() &&
             contrasena != confirmarContrasena
 
@@ -153,6 +161,8 @@ fun SignUpContent(
         Spacer(modifier = Modifier.height(26.dp))
 
         SignUpFormSection(
+            fullName = nombreCompleto,
+            onFullNameChange = onNombreCompletoChange,
             username = nombre,
             onUsernameChange = onNombreChange,
             email = correo,
@@ -187,6 +197,8 @@ fun SignUpContent(
 private fun SignUpScreenPreview() {
     WayspotTheme {
         SignUpContent(
+            nombreCompleto = "",
+            onNombreCompletoChange = {},
             nombre = "",
             onNombreChange = {},
             correo = "",

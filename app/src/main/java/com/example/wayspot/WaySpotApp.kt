@@ -1,14 +1,18 @@
 package com.example.wayspot
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.pm.PackageManager
 import android.graphics.Color as AndroidColor
 import android.os.Build
 import android.view.animation.DecelerateInterpolator
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -20,17 +24,24 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.splashscreen.SplashScreen
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.wayspot.navigation.AppNavigation
 import com.example.wayspot.navigation.Screen
+import com.example.wayspot.ui.components.WayspotAddReviewButton
 import com.example.wayspot.ui.components.WayspotBottomBar
 import com.example.wayspot.ui.theme.WayspotTheme
 
@@ -56,7 +67,6 @@ internal fun SplashScreen.configureWaySpotExitAnimation() {
             .start()
     }
 }
-
 /**
  * Raíz visual de WaySpot.
  *
@@ -67,6 +77,49 @@ internal fun SplashScreen.configureWaySpotExitAnimation() {
 fun WaySpotApp(
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    var localNetworkPermissionHandled by remember {
+        mutableStateOf(
+            Build.VERSION.SDK_INT < 37 ||
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_LOCAL_NETWORK
+                ) == PackageManager.PERMISSION_GRANTED
+        )
+    }
+    val localNetworkPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {
+        localNetworkPermissionHandled = true
+    }
+    var notificationPermissionHandled by remember {
+        mutableStateOf(
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+        )
+    }
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {
+        notificationPermissionHandled = true
+    }
+
+    LaunchedEffect(localNetworkPermissionHandled, notificationPermissionHandled) {
+        if (!localNetworkPermissionHandled) {
+            localNetworkPermissionLauncher.launch(Manifest.permission.ACCESS_LOCAL_NETWORK)
+            return@LaunchedEffect
+        }
+
+        if (!notificationPermissionHandled) {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+
+    if (!localNetworkPermissionHandled || !notificationPermissionHandled) return
+
     WayspotTheme {
         val navController = rememberNavController()
         val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -76,7 +129,8 @@ fun WaySpotApp(
         val useDarkStatusBarIcons = when (currentRoute) {
             Screen.Splash.route -> false
             Screen.PlaceDetail.route -> false
-            Screen.Profile.route -> MaterialTheme.colorScheme.primary.luminance() > 0.5f
+            Screen.Profile.route, Screen.PublicProfile.route ->
+                MaterialTheme.colorScheme.primary.luminance() > 0.5
             else -> MaterialTheme.colorScheme.background.luminance() > 0.5f
         }
         val useDarkNavigationBarIcons = when (currentRoute) {
@@ -121,6 +175,17 @@ fun WaySpotApp(
                         }
                     )
                 }
+            },
+            floatingActionButton = {
+                if (currentRoute != null && currentRoute in bottomBarRoutes) {
+                    WayspotAddReviewButton(
+                        onClick = {
+                            navController.navigate(
+                                Screen.NewReview.createRoute()
+                            )
+                        }
+                    )
+                }
             }
         ) { innerPadding ->
             Box(
@@ -144,14 +209,18 @@ fun WaySpotApp(
 private val bottomBarRoutes = setOf(
     Screen.Home.route,
     Screen.Explore.route,
+    Screen.Notifications.route,
     Screen.Profile.route
 )
+
 
 private val edgeToEdgeRoutes = setOf(
     Screen.Splash.route,
     Screen.PlaceDetail.route,
-    Screen.Profile.route
+    Screen.Profile.route,
+    Screen.PublicProfile.route
 )
+
 
 private const val SYSTEM_SPLASH_EXIT_DURATION_MS = 450L
 

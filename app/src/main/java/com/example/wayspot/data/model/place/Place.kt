@@ -1,4 +1,4 @@
-package com.example.wayspot.data.model
+package com.example.wayspot.data.model.place
 
 import androidx.annotation.StringRes
 
@@ -10,7 +10,10 @@ data class Place(
     @param:StringRes val ubicacionRes: Int,
     val rating: Double = 5.0,
     val imagen: String? = null,
-    val detail: PlaceDetail
+    val detail: PlaceDetail,
+    val titleText: String? = null,
+    val categoryText: String? = null,
+    val locationText: String? = null
 )
 
 /** Información ampliada de un lugar y sus reseñas recientes. */
@@ -20,7 +23,11 @@ data class PlaceDetail(
     @param:StringRes val altitudeRes: Int,
     @param:StringRes val descriptionRes: Int,
     val reviewCount: Int,
-    val recentReviews: List<PlaceReview>
+    val recentReviews: List<PlaceReview>,
+    val durationText: String? = null,
+    val priceText: String? = null,
+    val altitudeText: String? = null,
+    val descriptionText: String? = null
 )
 
 /** Reseña localizada incluida en el detalle de un lugar. */

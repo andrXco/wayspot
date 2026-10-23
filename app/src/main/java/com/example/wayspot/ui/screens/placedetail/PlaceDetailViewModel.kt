@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+
 @HiltViewModel
 class PlaceDetailViewModel @Inject constructor(
     private val placeRepository: PlaceRepository,
@@ -21,7 +22,16 @@ class PlaceDetailViewModel @Inject constructor(
 
     val uiState: StateFlow<PlaceDetailState> = _uiState
 
+
     fun loadPlace(placeId: String) {
+
+        _uiState.update { currentState ->
+            currentState.copy(
+                place = null,
+                fallbackPlace = null,
+                reviews = emptyList()
+            )
+        }
 
         viewModelScope.launch {
             val result = placeRepository.getPlaceById(placeId)

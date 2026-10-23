@@ -34,22 +34,24 @@ class AuthRepository @Inject constructor(
     }
 
 
+
     suspend fun signUp(email: String, password: String): Result<Unit> {
         return try {
             authRemoteDataSource.signUp(email, password)
             Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(Exception("Error al registrarse"))
-        }  catch (e: FirebaseAuthWeakPasswordException) {
+        } catch (e: FirebaseAuthWeakPasswordException) {
             Result.failure(
-            Exception("La contraseña debe tener al menos 6 caracteres")
-        )
-        }   catch (e: FirebaseAuthInvalidCredentialsException) {
+                Exception("La contraseña debe tener al menos 6 caracteres")
+            )
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
             Result.failure(
                 Exception("El correo no es válido")
             )
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
+
 
 
 

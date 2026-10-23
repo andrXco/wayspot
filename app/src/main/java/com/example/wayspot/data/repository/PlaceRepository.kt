@@ -1,14 +1,14 @@
 package com.example.wayspot.data.repository
 
-import com.example.wayspot.data.datasource.implementation.PlaceRetrofitDataSourceImplementation
-import com.example.wayspot.data.dto.toPlaceInfo
-import com.example.wayspot.data.model.PlaceInfo
+import com.example.wayspot.data.datasource.PlaceRemoteDataSource
+import com.example.wayspot.data.model.place.Place
+import com.example.wayspot.data.model.place.PlaceInfo
 import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
 
 class PlaceRepository @Inject constructor(
-    private val placeRemoteDataSource: PlaceRetrofitDataSourceImplementation
+    private val placeRemoteDataSource: PlaceRemoteDataSource
 ) {
-
     suspend fun getPlaces(): Result<List<PlaceInfo>> {
         return try {
             val places = placeRemoteDataSource.getAllPlaces()
@@ -18,10 +18,20 @@ class PlaceRepository @Inject constructor(
             }
 
             Result.success(placesInfo)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
-            Result.failure(
-                Exception("No se pudieron cargar los lugares")
-            )
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getExplorePlaces(): Result<List<Place>> {
+        return try {
+            Result.success(placeRemoteDataSource.getAllPlaces().map { it.toPlace() })
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 
@@ -30,6 +40,8 @@ class PlaceRepository @Inject constructor(
             val place = placeRemoteDataSource.getPlaceById(id)
 
             Result.success(place.toPlaceInfo())
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }

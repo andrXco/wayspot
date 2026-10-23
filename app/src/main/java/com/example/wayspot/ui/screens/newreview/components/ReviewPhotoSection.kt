@@ -32,7 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
-import com.example.wayspot.data.model.ReviewRules
+import com.example.wayspot.data.model.review.ReviewRules
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.theme.WayspotTheme
 import com.example.wayspot.ui.components.WayspotImage

@@ -1,17 +1,19 @@
 package com.example.wayspot.ui.screens.placedetail.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,39 +23,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
-import com.example.wayspot.data.model.ReviewInfo
+import com.example.wayspot.data.model.review.ReviewInfo
+import com.example.wayspot.ui.components.ProfileAvatar
 import com.example.wayspot.ui.theme.WayspotTheme
 
-/** Lista de reseñas asociadas al lugar seleccionado. */
 @Composable
-internal fun RecentReviewsSection(
-    reviews: List<ReviewInfo>,
-    onSeeAllClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-    ) {
-        RecentReviewsHeader(
-            onSeeAllClick = onSeeAllClick
-        )
-
-        reviews.forEach { review ->
-            PlaceReviewCard(
-                review = review,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(
-                modifier = Modifier.height(10.dp)
-            )
-        }
-    }
-}
-
-@Composable
-private fun RecentReviewsHeader(
-    onSeeAllClick: () -> Unit,
+internal fun RecentReviewsHeader(
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -67,89 +42,124 @@ private fun RecentReviewsHeader(
             fontWeight = FontWeight.Bold
         )
 
-        TextButton(
-            onClick = onSeeAllClick
-        ) {
-            Text(
-                text = stringResource(R.string.see_all)
-            )
-        }
     }
 }
 
 @Composable
-private fun PlaceReviewCard(
+internal fun PlaceReviewCard(
     review: ReviewInfo,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = modifier,
-        shape = RoundedCornerShape(18.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 5.dp)
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.onSurface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.14f)),
+        tonalElevation = 1.dp,
+        shadowElevation = 2.dp
     ) {
         Column(
-            modifier = Modifier.padding(14.dp)
+            modifier = Modifier.padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            ReviewHeader(
-                review = review
-            )
-
-            Spacer(
-                modifier = Modifier.height(8.dp)
-            )
-
+            ReviewAuthorRow(review = review)
+            ReviewTitleAndRating(review = review)
             Text(
                 text = review.description,
-                fontSize = 14.sp,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 lineHeight = 20.sp
             )
+            review.reviewDate?.takeIf(String::isNotBlank)?.let { date ->
+                Text(
+                    text = date,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.78f)
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun ReviewHeader(
+private fun ReviewAuthorRow(
+    review: ReviewInfo,
+    modifier: Modifier = Modifier
+) {
+    val authorName = review.authorName?.takeIf(String::isNotBlank)
+        ?: review.authorUsername?.takeIf(String::isNotBlank)
+        ?: stringResource(R.string.label_user)
+    val avatarDescription = stringResource(
+        R.string.review_author_avatar_content_description,
+        authorName
+    )
+
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        ProfileAvatar(
+            avatarUrl = review.authorAvatarUrl,
+            initials = authorName.take(1).uppercase(),
+            contentDescription = avatarDescription,
+            modifier = Modifier.size(40.dp)
+        )
+        Spacer(modifier = Modifier.width(10.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = authorName,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1
+            )
+            review.authorUsername?.takeIf(String::isNotBlank)?.let { username ->
+                Text(
+                    text = stringResource(R.string.profile_username_format, username),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ReviewTitleAndRating(
     review: ReviewInfo,
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Text(
-            text = review.title,
-            fontWeight = FontWeight.Bold,
-            fontSize = 14.sp
-        )
-
-        Spacer(
-            modifier = Modifier.height(4.dp)
-        )
-
-        RatingStars(
-            rating = review.rating,
-            size = 13.dp
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun RecentReviewsSectionPreview() {
-    WayspotTheme {
-        RecentReviewsSection(
-            reviews = listOf(
-                ReviewInfo(
-                    id = "1",
-                    rating = 5,
-                    title = "Excelente lugar",
-                    description = "Una experiencia muy buena y con una gran vista.",
-                    userId = "1",
-                    placeId = "1"
-                )
-            ),
-            onSeeAllClick = {}
-        )
+        review.title?.takeIf(String::isNotBlank)?.let { title ->
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                maxLines = 2
+            )
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            RatingStars(
+                rating = review.rating,
+                size = 15.dp
+            )
+            Text(
+                text = stringResource(R.string.review_rating_value, review.rating),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }
 
@@ -157,9 +167,7 @@ private fun RecentReviewsSectionPreview() {
 @Composable
 private fun RecentReviewsHeaderPreview() {
     WayspotTheme {
-        RecentReviewsHeader(
-            onSeeAllClick = {}
-        )
+        RecentReviewsHeader()
     }
 }
 
@@ -174,25 +182,11 @@ private fun PlaceReviewCardPreview() {
                 title = "Excelente lugar",
                 description = "Una experiencia muy buena y con una gran vista.",
                 userId = "1",
-                placeId = "1"
-            )
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ReviewHeaderPreview() {
-    WayspotTheme {
-        ReviewHeader(
-            review = ReviewInfo(
-                id = "1",
-                rating = 5,
-                title = "Excelente lugar",
-                description = "Una experiencia muy buena y con una gran vista.",
-                userId = "1",
-                placeId = "1"
-            )
+                placeId = "1",
+                authorName = "Valentina García",
+                authorUsername = "valentina_viaja"
+            ),
+            onClick = {}
         )
     }
 }

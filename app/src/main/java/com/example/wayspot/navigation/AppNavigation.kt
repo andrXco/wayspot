@@ -1,15 +1,20 @@
 package com.example.wayspot.navigation
 
+import android.widget.Toast
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.wayspot.R
+import com.example.wayspot.data.model.user.UserRelationshipListType
 import com.example.wayspot.ui.screens.auth.forgotpassword.ForgotPasswordScreen
 import com.example.wayspot.ui.screens.auth.login.LoginScreen
 import com.example.wayspot.ui.screens.auth.login.LoginViewModel
@@ -33,6 +38,14 @@ import com.example.wayspot.ui.screens.newreview.NewReviewViewModel
 import com.example.wayspot.ui.screens.profile.ProfileViewModel
 import com.example.wayspot.ui.screens.notifications.NotificationsViewModel
 import com.example.wayspot.ui.screens.placedetail.PlaceDetailViewModel
+import com.example.wayspot.ui.screens.reviewdetail.ReviewDetailScreen
+import com.example.wayspot.ui.screens.reviewdetail.ReviewDetailViewModel
+import com.example.wayspot.ui.screens.reviewcomment.ReviewCommentScreen
+import com.example.wayspot.ui.screens.reviewcomment.ReviewCommentViewModel
+import com.example.wayspot.ui.screens.publicprofile.PublicProfileScreen
+import com.example.wayspot.ui.screens.publicprofile.PublicProfileViewModel
+import com.example.wayspot.ui.screens.userconnections.UserConnectionsScreen
+import com.example.wayspot.ui.screens.userconnections.UserConnectionsViewModel
 import com.example.wayspot.ui.screens.splash.SplashViewModel
 
 /**
@@ -47,6 +60,7 @@ fun AppNavigation(
     modifier: Modifier = Modifier
 ) {
 
+    val context = LocalContext.current
     val appNavigationViewModel: AppNavigationViewModel = hiltViewModel()
 
     val appNavigationState by appNavigationViewModel.uiState.collectAsState()
@@ -142,11 +156,15 @@ fun AppNavigation(
             )
         }
 
-        composable(Screen.Profile.route) {
+            composable(Screen.Profile.route) {
 
             val profileViewModel: ProfileViewModel = hiltViewModel()
 
-            ProfileScreen(
+            LaunchedEffect(Unit) {
+                appNavigationViewModel.refreshFollowStats()
+            }
+
+                ProfileScreen(
                 profileViewModel = profileViewModel,
                 userProfile = userProfile,
 
@@ -160,6 +178,36 @@ fun AppNavigation(
                     navController.navigate(
                         Screen.SavedPlaces.route
                     )
+                },
+
+                onReviewClick = { reviewId ->
+                    navController.navigate(Screen.ReviewDetail.createRoute(reviewId))
+                },
+                onReviewCommentClick = { reviewId ->
+                    navController.navigate(Screen.ReviewComment.createRoute(reviewId))
+                },
+                onReviewPlaceClick = { placeId ->
+                    navController.navigate(Screen.PlaceDetail.createRoute(placeId))
+                },
+                onFollowersClick = {
+                    appNavigationViewModel.currentUserId?.let { userId ->
+                        navController.navigate(
+                            Screen.UserConnections.createRoute(
+                                userId,
+                                UserRelationshipListType.FOLLOWERS
+                            )
+                        )
+                    }
+                },
+                onFollowingClick = {
+                    appNavigationViewModel.currentUserId?.let { userId ->
+                        navController.navigate(
+                            Screen.UserConnections.createRoute(
+                                userId,
+                                UserRelationshipListType.FOLLOWING
+                            )
+                        )
+                    }
                 },
 
                 onSignOut = {
@@ -227,6 +275,9 @@ fun AppNavigation(
                         navController.navigate(
                             Screen.NewReview.createRoute(placeId)
                         )
+                    },
+                    onReviewClick = { reviewId ->
+                        navController.navigate(Screen.ReviewDetail.createRoute(reviewId))
                     }
                 )
             }
@@ -294,13 +345,7 @@ fun AppNavigation(
             val notificationsViewModel: NotificationsViewModel = hiltViewModel()
 
             NotificationsScreen(
-                notificationsViewModel = notificationsViewModel,
-
-                onBackClick = {
-                    navController.navigate(
-                        Screen.Home.route
-                    )
-                }
+                notificationsViewModel = notificationsViewModel
             )
         }
 
@@ -316,9 +361,135 @@ fun AppNavigation(
                         Screen.PlaceDetail.createRoute(placeId)
                     )
                 },
-
+                onReviewClick = { reviewId ->
+                    navController.navigate(Screen.ReviewDetail.createRoute(reviewId))
+                },
+                onReviewCommentClick = { reviewId ->
+                    navController.navigate(Screen.ReviewComment.createRoute(reviewId))
+                },
+                onAuthorClick = { userId ->
+                    navController.navigate(
+                        if (userId == appNavigationViewModel.currentUserId)
+                            Screen.Profile.route
+                        else
+                            Screen.PublicProfile.createRoute(userId)
+                    )
+                },
                 onSaveClick = { place ->
                     appNavigationViewModel.toggleSavedPlace(place)
+                }
+            )
+        }
+
+        composable(
+            route = Screen.ReviewDetail.route,
+            arguments = listOf(navArgument("reviewId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val reviewId = backStackEntry.arguments?.getString("reviewId") ?: return@composable
+            val viewModel: ReviewDetailViewModel = hiltViewModel()
+            ReviewDetailScreen(
+                viewModel = viewModel,
+                reviewId = reviewId,
+                onBackClick = { navController.popBackStack() },
+                onCommentClick = { id ->
+                    navController.navigate(Screen.ReviewComment.createRoute(id))
+                },
+                onPlaceClick = { placeId ->
+                    navController.navigate(Screen.PlaceDetail.createRoute(placeId))
+                },
+                commentsRefreshReviewId = appNavigationState.commentRefreshReviewId,
+                commentsRefreshVersion = appNavigationState.commentRefreshVersion,
+                onCommentsRefreshConsumed = appNavigationViewModel::consumeCommentRefresh,
+                onAuthorClick = { userId ->
+                    navController.navigate(
+                        if (userId == appNavigationViewModel.currentUserId)
+                            Screen.Profile.route
+                        else
+                            Screen.PublicProfile.createRoute(userId)
+                    )
+                },
+                onEditClick = { id -> navController.navigate(Screen.NewReview.createEditRoute(id)) },
+                onDeleted = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Home.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
+        composable(
+            route = Screen.ReviewComment.route,
+            arguments = listOf(navArgument("reviewId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val reviewId = backStackEntry.arguments?.getString("reviewId") ?: return@composable
+            val viewModel: ReviewCommentViewModel = hiltViewModel()
+            ReviewCommentScreen(
+                viewModel = viewModel,
+                reviewId = reviewId,
+                onBackClick = { navController.popBackStack() },
+                onPublished = { publishedReviewId ->
+                    appNavigationViewModel.notifyCommentPublished(publishedReviewId)
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(
+            route = Screen.UserConnections.route,
+            arguments = listOf(
+                navArgument("userId") { type = NavType.StringType },
+                navArgument("type") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")
+                ?: return@composable
+            val type = UserRelationshipListType.fromRoute(
+                backStackEntry.arguments?.getString("type")
+            ) ?: UserRelationshipListType.FOLLOWERS
+            val viewModel: UserConnectionsViewModel = hiltViewModel()
+
+            UserConnectionsScreen(
+                viewModel = viewModel,
+                userId = userId,
+                initialType = type,
+                onBackClick = { navController.popBackStack() },
+                onUserClick = { selectedUserId ->
+                    if (selectedUserId == appNavigationViewModel.currentUserId) {
+                        navController.navigate(Screen.Profile.route)
+                    } else {
+                        navController.navigate(Screen.PublicProfile.createRoute(selectedUserId))
+                    }
+                }
+            )
+        }
+
+        composable(
+            route = Screen.PublicProfile.route,
+            arguments = listOf(navArgument("userId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId") ?: return@composable
+            val viewModel: PublicProfileViewModel = hiltViewModel()
+            PublicProfileScreen(
+                viewModel = viewModel,
+                userId = userId,
+                onBackClick = { navController.popBackStack() },
+                onReviewClick = { id -> navController.navigate(Screen.ReviewDetail.createRoute(id)) },
+                onFollowersClick = {
+                    navController.navigate(
+                        Screen.UserConnections.createRoute(
+                            userId,
+                            UserRelationshipListType.FOLLOWERS
+                        )
+                    )
+                },
+                onFollowingClick = {
+                    navController.navigate(
+                        Screen.UserConnections.createRoute(
+                            userId,
+                            UserRelationshipListType.FOLLOWING
+                        )
+                    )
                 }
             )
         }
@@ -354,28 +525,42 @@ fun AppNavigation(
             arguments = listOf(
                 navArgument("placeId") {
                     type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                },
+                navArgument("reviewId") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
                 }
             )
         ) { backStackEntry ->
 
             val placeId =
                 backStackEntry.arguments?.getString("placeId")
+            val reviewId = backStackEntry.arguments?.getString("reviewId")
 
-            if (placeId != null) {
+            val newReviewViewModel: NewReviewViewModel = hiltViewModel()
 
-                val newReviewViewModel: NewReviewViewModel = hiltViewModel()
-
-                NewReviewScreen(
-                    newReviewViewModel = newReviewViewModel,
-                    placeId = placeId,
-
-                    onBackClick = {
-                        navController.navigate(
-                            Screen.PlaceDetail.createRoute(placeId)
-                        )
+            NewReviewScreen(
+                newReviewViewModel = newReviewViewModel,
+                placeId = placeId,
+                reviewId = reviewId,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onPublishReview = {
+                    Toast.makeText(
+                        context,
+                        R.string.new_review_publish_confirmation,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Home.route) { inclusive = true }
+                        launchSingleTop = true
                     }
-                )
-            }
+                }
+            )
         }
     }
 }

@@ -13,8 +13,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.wayspot.ui.theme.WayspotTheme
-import com.example.wayspot.data.model.ExploreCategory
-import com.example.wayspot.data.model.ExploreCategoryRules
+import com.example.wayspot.data.model.explore.ExploreCategory
+import com.example.wayspot.data.model.explore.ExploreCategoryRules
 
 /** Fila de chips que eleva al padre la categoría elegida sin conservar estado propio. */
 @OptIn(ExperimentalMaterial3Api::class)
