@@ -153,14 +153,14 @@ class UserRepository @Inject constructor(
 
     suspend fun getUserConnections(
         userId: String,
-        type: UserRelationshipListType,
-        afterId: String? = null
+        relationshipType: UserRelationshipListType,
+        cursor: String? = null
     ): Result<UserConnectionsPage> {
         return try {
             val page: UserConnectionsPageDto = userRemoteDataSource.getUserConnections(
                 userId = userId,
-                type = type,
-                afterId = afterId,
+                relationshipType = relationshipType,
+                cursor = cursor,
                 pageSize = UserRelationshipRules.PAGE_SIZE
             )
             Result.success(

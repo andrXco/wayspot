@@ -3,21 +3,20 @@ package com.example.wayspot.data.datasource.implementation.firestore
 
 import com.example.wayspot.data.datasource.UserRemoteDataSource
 import com.example.wayspot.data.dto.RegisterUserDto
-import com.example.wayspot.data.dto.UserFirestoreDto
+import com.example.wayspot.data.dto.ReviewFirestoreDto
 import com.example.wayspot.data.dto.UserConnectionsPageDto
+import com.example.wayspot.data.dto.UserFirestoreDto
 import com.example.wayspot.data.model.user.UserRelationshipListType
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.Timestamp
-import com.example.wayspot.data.dto.ReviewFirestoreDto
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class UserFirestoreDataSourceImplementation @Inject constructor(
     private val db: FirebaseFirestore
 ) : UserRemoteDataSource {
-
 
     override suspend fun getUsers(): List<UserFirestoreDto> {
 
@@ -139,46 +138,46 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
 
     override suspend fun getUserConnections(
         userId: String,
-        type: UserRelationshipListType,
-        afterId: String?,
+        relationshipType: UserRelationshipListType,
+        cursor: String?,
         pageSize: Long
     ): UserConnectionsPageDto {
-        val userRef = db.collection("users").document(userId)
-        val relationshipCollection = when (type) {
-            UserRelationshipListType.FOLLOWERS -> userRef.collection("followers")
-            UserRelationshipListType.FOLLOWING -> userRef.collection("following")
+        val userReference = db.collection("users").document(userId)
+        val connectionsCollection = when (relationshipType) {
+            UserRelationshipListType.FOLLOWERS -> userReference.collection("followers")
+            UserRelationshipListType.FOLLOWING -> userReference.collection("following")
         }
 
-        val relationshipQuery = relationshipCollection
+        val connectionsQuery = connectionsCollection
             .orderBy("timestamp")
             .orderBy(FieldPath.documentId())
 
-        val cursor = afterId?.split(CURSOR_SEPARATOR, limit = 3)
-        val timestampSeconds = cursor?.getOrNull(0)?.toLongOrNull()
-        val timestampNanoseconds = cursor?.getOrNull(1)?.toIntOrNull()
-        val cursorDocumentId = cursor?.getOrNull(2)
-        val pagedQuery = if (
-            timestampSeconds != null && timestampNanoseconds != null &&
+        val cursorValues = cursor?.split(CURSOR_SEPARATOR, limit = 3)
+        val cursorTimestampSeconds = cursorValues?.getOrNull(0)?.toLongOrNull()
+        val cursorTimestampNanoseconds = cursorValues?.getOrNull(1)?.toIntOrNull()
+        val cursorDocumentId = cursorValues?.getOrNull(2)
+        val pagedConnectionsQuery = if (
+            cursorTimestampSeconds != null && cursorTimestampNanoseconds != null &&
             !cursorDocumentId.isNullOrBlank()
         ) {
-            relationshipQuery.startAfter(
-                Timestamp(timestampSeconds, timestampNanoseconds),
+            connectionsQuery.startAfter(
+                Timestamp(cursorTimestampSeconds, cursorTimestampNanoseconds),
                 cursorDocumentId
             )
         } else {
-            relationshipQuery
+            connectionsQuery
         }
-        val relationshipSnapshot = pagedQuery
+        val connectionsSnapshot = pagedConnectionsQuery
             .limit(pageSize)
             .get()
             .await()
 
-        val relationIds = relationshipSnapshot.documents.map { it.id }
-        val fetchedUsers = if (relationIds.isEmpty()) {
+        val connectedUserIds = connectionsSnapshot.documents.map { it.id }
+        val usersById = if (connectedUserIds.isEmpty()) {
             emptyMap()
         } else {
             db.collection("users")
-                .whereIn(FieldPath.documentId(), relationIds)
+                .whereIn(FieldPath.documentId(), connectedUserIds)
                 .get()
                 .await()
                 .documents
@@ -190,17 +189,17 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
                 .toMap()
         }
 
-        val users = relationIds.mapNotNull(fetchedUsers::get)
-        val lastDocument = relationshipSnapshot.documents.lastOrNull()
-        val lastTimestamp = lastDocument?.getTimestamp("timestamp")
+        val users = connectedUserIds.mapNotNull(usersById::get)
+        val lastConnectionDocument = connectionsSnapshot.documents.lastOrNull()
+        val lastTimestamp = lastConnectionDocument?.getTimestamp("timestamp")
         val nextCursor = if (
-            lastDocument != null && lastTimestamp != null &&
-            relationshipSnapshot.documents.size.toLong() == pageSize
+            lastConnectionDocument != null && lastTimestamp != null &&
+            connectionsSnapshot.documents.size.toLong() == pageSize
         ) {
             listOf(
                 lastTimestamp.seconds.toString(),
                 lastTimestamp.nanoseconds.toString(),
-                lastDocument.id
+                lastConnectionDocument.id
             ).joinToString(CURSOR_SEPARATOR)
         } else {
             null
@@ -303,5 +302,4 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
     private companion object {
         const val CURSOR_SEPARATOR = ":"
     }
-
 }

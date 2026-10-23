@@ -23,14 +23,17 @@ class UserConnectionsViewModel @Inject constructor(
     val uiState: StateFlow<UserConnectionsState> = _uiState
     private var activeRequestId = 0L
 
-    fun loadConnections(userId: String, type: UserRelationshipListType) {
+    fun loadConnections(
+        userId: String,
+        relationshipType: UserRelationshipListType
+    ) {
         val currentState = _uiState.value
         val restoredType = if (savedStateHandle.get<String>(SAVED_USER_ID_KEY) == userId) {
             UserRelationshipListType.fromRoute(savedStateHandle.get<String>(SAVED_TYPE_KEY))
         } else {
             null
         }
-        val selectedType = restoredType ?: type
+        val selectedType = restoredType ?: relationshipType
 
         if (currentState.userId == userId && currentState.selectedType == selectedType &&
             (currentState.isLoading || currentState.hasLoaded) && !currentState.hasLoadError
@@ -46,19 +49,19 @@ class UserConnectionsViewModel @Inject constructor(
         )
         loadPage(
             userId = userId,
-            type = selectedType,
-            afterId = null,
+            relationshipType = selectedType,
+            cursor = null,
             append = false,
             requestId = requestId
         )
     }
 
-    fun selectType(type: UserRelationshipListType) {
+    fun selectType(relationshipType: UserRelationshipListType) {
         val userId = _uiState.value.userId ?: return
-        if (_uiState.value.selectedType == type) return
+        if (_uiState.value.selectedType == relationshipType) return
         savedStateHandle[SAVED_USER_ID_KEY] = userId
-        savedStateHandle[SAVED_TYPE_KEY] = type.name
-        loadConnections(userId, type)
+        savedStateHandle[SAVED_TYPE_KEY] = relationshipType.name
+        loadConnections(userId, relationshipType)
     }
 
     fun retry() {
@@ -80,8 +83,8 @@ class UserConnectionsViewModel @Inject constructor(
         _uiState.update { it.copy(isLoadingMore = true) }
         loadPage(
             userId = userId,
-            type = state.selectedType,
-            afterId = cursor,
+            relationshipType = state.selectedType,
+            cursor = cursor,
             append = true,
             requestId = activeRequestId
         )
@@ -89,29 +92,34 @@ class UserConnectionsViewModel @Inject constructor(
 
     private fun loadPage(
         userId: String,
-        type: UserRelationshipListType,
-        afterId: String?,
+        relationshipType: UserRelationshipListType,
+        cursor: String?,
         append: Boolean,
         requestId: Long
     ) {
         viewModelScope.launch {
             try {
-                val result = userRepository.getUserConnections(userId, type, afterId)
+                val result = userRepository.getUserConnections(
+                    userId = userId,
+                    relationshipType = relationshipType,
+                    cursor = cursor
+                )
                 result.fold(
                     onSuccess = { page ->
                         if (requestId != activeRequestId) return@fold
                         if (!append && page.users.isEmpty() && page.nextCursor != null) {
                             loadPage(
                                 userId = userId,
-                                type = type,
-                                afterId = page.nextCursor,
+                                relationshipType = relationshipType,
+                                cursor = page.nextCursor,
                                 append = false,
                                 requestId = requestId
                             )
                             return@fold
                         }
                         _uiState.update { current ->
-                            if (current.userId != userId || current.selectedType != type ||
+                            if (current.userId != userId ||
+                                current.selectedType != relationshipType ||
                                 requestId != activeRequestId
                             ) {
                                 current
@@ -134,7 +142,8 @@ class UserConnectionsViewModel @Inject constructor(
                     },
                     onFailure = {
                         _uiState.update { current ->
-                            if (current.userId == userId && current.selectedType == type &&
+                            if (current.userId == userId &&
+                                current.selectedType == relationshipType &&
                                 requestId == activeRequestId
                             ) {
                                 current.copy(

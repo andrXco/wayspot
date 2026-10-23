@@ -39,8 +39,8 @@ interface UserRemoteDataSource {
 
     suspend fun getUserConnections(
         userId: String,
-        type: UserRelationshipListType,
-        afterId: String?,
+        relationshipType: UserRelationshipListType,
+        cursor: String?,
         pageSize: Long
     ): UserConnectionsPageDto
 

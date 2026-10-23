@@ -57,8 +57,8 @@ class UserRetrofitDataSourceImplementation @Inject constructor(
 
     override suspend fun getUserConnections(
         userId: String,
-        type: UserRelationshipListType,
-        afterId: String?,
+        relationshipType: UserRelationshipListType,
+        cursor: String?,
         pageSize: Long
     ): UserConnectionsPageDto {
         throw UnsupportedOperationException("User connections are not available through the REST data source.")
