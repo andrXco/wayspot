@@ -15,6 +15,26 @@ interface UserRemoteDataSource {
         registerUserDto: RegisterUserDto,
         userId: String
     )
+
+    suspend fun updateUser(
+        userDto: RegisterUserDto,
+        userId: String
+    )
+
+    suspend fun updateUserAvatar(
+        userId: String,
+        avatarUrl: String
+    )
+
+    suspend fun isFollowing(
+        followerId: String,
+        followedId: String
+    ): Boolean
+
+    suspend fun getFollowersCount(userId: String): Int
+
+    suspend fun getFollowingCount(userId: String): Int
+
     suspend fun getReviewsByUserId(
         userId: String
     ): List<ReviewDtoGeneric>

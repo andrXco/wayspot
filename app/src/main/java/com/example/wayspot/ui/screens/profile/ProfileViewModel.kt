@@ -61,34 +61,30 @@ class ProfileViewModel @Inject constructor(
             val result = userRepository.getReviewsByUserId(userId)
             val placesResult = placeRepository.getPlaces()
 
-            val reviews = result.getOrNull().orEmpty().toMutableList()
+            val reviews = result.getOrNull().orEmpty()
             val places = placesResult.getOrNull().orEmpty()
-            val likedReviewIds = mutableSetOf<String>()
+            val likedReviewsResult = reviewRepository.getLikedReviewIds(
+                reviews.map { review -> review.id }
+            )
 
-            for (index in reviews.indices) {
-                val reviewResult = reviewRepository.getReviewById(reviews[index].id)
-                val review = reviewResult.getOrNull()
-
-                if (review == null) {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            isLoading = false,
-                            errorMessage = reviewResult.exceptionOrNull()?.message
-                                ?: "No se pudieron cargar los likes"
-                        )
-                    }
-                    return@launch
+            val likedReviewIds = likedReviewsResult.getOrNull()
+            if (likedReviewIds == null) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        isLoading = false,
+                        errorMessage = likedReviewsResult.exceptionOrNull()?.message
+                            ?: "No se pudieron cargar los likes"
+                    )
                 }
+                return@launch
+            }
 
-                reviews[index] = review
-
-                if (review.liked) {
-                    likedReviewIds.add(review.id)
-                }
+            val reviewsWithLikes = reviews.map { review ->
+                review.copy(liked = review.id in likedReviewIds)
             }
 
             val profile = _uiState.value.userProfile
-            val reviewFeedItems = reviews.mapNotNull { review ->
+            val reviewFeedItems = reviewsWithLikes.mapNotNull { review ->
                 val place = places.firstOrNull { it.id == review.placeId } ?: return@mapNotNull null
                 val author = UserInfo(
                     id = review.userId,
@@ -106,10 +102,10 @@ class ProfileViewModel @Inject constructor(
 
             _uiState.update { currentState ->
                 currentState.copy(
-                    reviews = reviews,
+                    reviews = reviewsWithLikes,
                     reviewFeedItems = reviewFeedItems,
                     likedReviewIds = likedReviewIds,
-                    reviewLikeCounts = reviews.associate { review ->
+                    reviewLikeCounts = reviewsWithLikes.associate { review ->
                         review.id to review.likesCount
                     },
                     isLoading = false,

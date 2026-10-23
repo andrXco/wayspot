@@ -20,9 +20,7 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
         review: SaveReviewDto
     ): ReviewFirestoreDto {
 
-        val docRef = db.collection("reviews")
-            .add(review)
-            .await()
+        val docRef = db.collection("reviews").add(review).await()
 
         return ReviewFirestoreDto(
             id = docRef.id,
@@ -84,12 +82,6 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
             false
         }
 
-        android.util.Log.d(
-            "WaySpotLikes",
-            "Review: $id | Usuario: $currentUserId | Liked: $liked | Contador: ${review.likesCount}"
-        )
-
-
         return review.copy(
             id = snapshot.id,
             liked = liked
@@ -146,16 +138,22 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
 
     override suspend fun deleteReview(id: String) {
 
+        val docRef = db.collection("reviews").document(id)
+
         val commentsSnapshot = db.collection("comments")
             .whereEqualTo("reviewId", id)
             .get()
             .await()
 
-        for (document in commentsSnapshot.documents) {
-            document.reference.delete().await()
+        for (comment in commentsSnapshot.documents) {
+            comment.reference.delete().await()
         }
 
-        val docRef = db.collection("reviews").document(id)
+        val likesSnapshot = docRef.collection("likes").get().await()
+
+        for (like in likesSnapshot.documents) {
+            like.reference.delete().await()
+        }
 
         docRef.delete().await()
     }
@@ -201,6 +199,17 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
         }.await()
     }
 
+    override suspend fun isReviewLiked(
+        reviewId: String,
+        userId: String
+    ): Boolean = db.collection("reviews")
+        .document(reviewId)
+        .collection("likes")
+        .document(userId)
+        .get()
+        .await()
+        .exists()
+
     override suspend fun createComment(
         reviewId: String,
         comment: CreateCommentDto
@@ -244,5 +253,4 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
             comment.copy(id = document.id)
         }
     }
-
 }

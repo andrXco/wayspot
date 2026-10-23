@@ -3,17 +3,20 @@ package com.example.wayspot.data.repository
 import com.example.wayspot.data.model.user.UserInfo
 import com.example.wayspot.data.dto.RegisterUserDto
 import com.example.wayspot.data.model.review.ReviewInfo
-import com.example.wayspot.data.datasource.implementation.firestore.UserFirestoreDataSourceImplementation
+import com.example.wayspot.data.datasource.UserRemoteDataSource
 import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
 
 class UserRepository @Inject constructor(
-    private val userFirestoreDataSource: UserFirestoreDataSourceImplementation
+    private val userRemoteDataSource: UserRemoteDataSource
 ) {
 
     suspend fun getUsers(): Result<List<UserInfo>> {
         return try {
-            val users = userFirestoreDataSource.getUsers()
+            val users = userRemoteDataSource.getUsers()
             Result.success(users.map { it.toUserInfo() })
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -21,8 +24,10 @@ class UserRepository @Inject constructor(
 
     suspend fun getUserById(id: String): Result<UserInfo> {
         return try {
-            val user = userFirestoreDataSource.getUserById(id)
+            val user = userRemoteDataSource.getUserById(id)
             Result.success(user.toUserInfo())
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -43,12 +48,14 @@ class UserRepository @Inject constructor(
                 bio = bio
             )
 
-            userFirestoreDataSource.registerUser(
+            userRemoteDataSource.registerUser(
                 registerUserDto,
                 userId
             )
 
             Result.success(Unit)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -71,9 +78,11 @@ class UserRepository @Inject constructor(
                 avatarUrl = avatarUrl
             )
 
-            userFirestoreDataSource.updateUser(userDto, userId)
+            userRemoteDataSource.updateUser(userDto, userId)
 
             Result.success(Unit)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -84,12 +93,14 @@ class UserRepository @Inject constructor(
         avatarUrl: String
     ): Result<Unit> {
         return try {
-            userFirestoreDataSource.updateUserAvatar(
+            userRemoteDataSource.updateUserAvatar(
                 userId,
                 avatarUrl
             )
 
             Result.success(Unit)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -97,7 +108,9 @@ class UserRepository @Inject constructor(
 
     suspend fun isFollowing(followerId: String, followedId: String): Result<Boolean> {
         return try {
-            Result.success(userFirestoreDataSource.isFollowing(followerId, followedId))
+            Result.success(userRemoteDataSource.isFollowing(followerId, followedId))
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -105,7 +118,9 @@ class UserRepository @Inject constructor(
 
     suspend fun getFollowersCount(userId: String): Result<Int> {
         return try {
-            Result.success(userFirestoreDataSource.getFollowersCount(userId))
+            Result.success(userRemoteDataSource.getFollowersCount(userId))
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -113,7 +128,9 @@ class UserRepository @Inject constructor(
 
     suspend fun getFollowingCount(userId: String): Result<Int> {
         return try {
-            Result.success(userFirestoreDataSource.getFollowingCount(userId))
+            Result.success(userRemoteDataSource.getFollowingCount(userId))
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -124,13 +141,15 @@ class UserRepository @Inject constructor(
         targetUserId: String
     ): Result<Unit> {
         return try {
-            userFirestoreDataSource.followOrUnfollowUser(
+            userRemoteDataSource.followOrUnfollowUser(
                 currentUserId,
                 targetUserId
             )
 
             Result.success(Unit)
 
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -140,7 +159,7 @@ class UserRepository @Inject constructor(
         userId: String
     ): Result<List<ReviewInfo>> {
         return try {
-            val reviews = userFirestoreDataSource.getReviewsByUserId(
+            val reviews = userRemoteDataSource.getReviewsByUserId(
                 userId
             )
 
@@ -150,6 +169,8 @@ class UserRepository @Inject constructor(
 
             Result.success(reviewsInfo)
 
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }

@@ -1,14 +1,18 @@
 package com.example.wayspot.data.repository
 
 import com.example.wayspot.data.model.review.ReviewComment
+import com.example.wayspot.data.datasource.implementation.firestore.ReviewFirestoreDataSourceImplementation
 import com.example.wayspot.data.model.review.ReviewDraft
 import com.example.wayspot.data.model.review.ReviewInfo
-import com.example.wayspot.data.datasource.implementation.firestore.ReviewFirestoreDataSourceImplementation
 import com.example.wayspot.data.dto.CreateCommentDto
 import com.example.wayspot.data.dto.ReviewUserDto
 import com.example.wayspot.data.dto.SaveReviewDto
 import com.example.wayspot.data.dto.CommentFirestoreUserDto
 import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 
 class ReviewRepository @Inject constructor(
     private val reviewFirestoreDataSource: ReviewFirestoreDataSourceImplementation,
@@ -25,6 +29,8 @@ class ReviewRepository @Inject constructor(
 
             Result.success(reviewsInfo)
 
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -41,6 +47,8 @@ class ReviewRepository @Inject constructor(
 
             Result.success(review.toReviewInfo())
 
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -80,6 +88,8 @@ class ReviewRepository @Inject constructor(
 
             Result.success(savedReview.toReviewInfo())
 
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -118,6 +128,8 @@ class ReviewRepository @Inject constructor(
 
             Result.success(updatedReview.toReviewInfo())
 
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -138,6 +150,8 @@ class ReviewRepository @Inject constructor(
 
             Result.success(Unit)
 
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -157,6 +171,36 @@ class ReviewRepository @Inject constructor(
 
             Result.success(Unit)
 
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getLikedReviewIds(reviewIds: List<String>): Result<Set<String>> {
+        val userId = authRepository.currentUser?.uid
+            ?: return Result.success(emptySet())
+
+        return try {
+            val likedReviews = reviewIds.distinct().chunked(LIKE_LOOKUP_BATCH_SIZE)
+                .flatMap { batch ->
+                    coroutineScope {
+                        batch.map { reviewId ->
+                            async {
+                                reviewId to reviewFirestoreDataSource.isReviewLiked(reviewId, userId)
+                            }
+                        }.awaitAll()
+                    }
+                }
+
+            Result.success(
+                likedReviews.filter { (_, liked) -> liked }
+                    .map { (reviewId, _) -> reviewId }
+                    .toSet()
+            )
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -220,6 +264,8 @@ class ReviewRepository @Inject constructor(
 
             Result.success(updatedComments)
 
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -258,6 +304,8 @@ class ReviewRepository @Inject constructor(
 
             Result.success(savedComment.toReviewComment())
 
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -278,9 +326,15 @@ class ReviewRepository @Inject constructor(
 
             Result.success(reviewsInfo)
 
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    private companion object {
+        const val LIKE_LOOKUP_BATCH_SIZE = 10
     }
 
 }

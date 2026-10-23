@@ -142,33 +142,27 @@ class HomeViewModel @Inject constructor(
                 }
             }
 
-            val feedWithLikes = mutableListOf<ReviewFeedItem>()
-            val likedReviewIds = mutableSetOf<String>()
+            val likedReviewsResult = reviewRepository.getLikedReviewIds(
+                feed.map { item -> item.review.id }
+            )
 
-            for (item in feed) {
-                val result = reviewRepository.getReviewById(
-                    item.review.id
-                )
-
-                val review = result.getOrNull()
-
-                if (review == null) {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            isLoading = false,
-                            errorMessage = result.exceptionOrNull()?.message
-                                ?: "No se pudieron cargar los likes"
-                        )
-                    }
-                    return@launch
+            val likedReviewIds = likedReviewsResult.getOrNull()
+            if (likedReviewIds == null) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        isLoading = false,
+                        errorMessage = likedReviewsResult.exceptionOrNull()?.message
+                            ?: "No se pudieron cargar los likes"
+                    )
                 }
+                return@launch
+            }
 
-                if (review.liked) {
-                    likedReviewIds.add(review.id)
-                }
-
-                feedWithLikes.add(
-                    item.copy(review = review)
+            val feedWithLikes = feed.map { item ->
+                item.copy(
+                    review = item.review.copy(
+                        liked = item.review.id in likedReviewIds
+                    )
                 )
             }
 

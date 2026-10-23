@@ -32,6 +32,11 @@ interface ReviewRemoteDataSource {
         userId: String
     )
 
+    suspend fun isReviewLiked(
+        reviewId: String,
+        userId: String
+    ): Boolean
+
     suspend fun getComments(
         reviewId: String
     ): List<CommentDtoGeneric>

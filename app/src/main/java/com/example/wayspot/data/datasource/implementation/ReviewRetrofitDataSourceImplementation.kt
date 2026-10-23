@@ -32,6 +32,14 @@ class ReviewRetrofitDataSourceImplementation @Inject constructor(
         reviewId: String,
         userId: String
     ) {
+        throw UnsupportedOperationException("Review likes are not available through the REST data source.")
+    }
+
+    override suspend fun isReviewLiked(
+        reviewId: String,
+        userId: String
+    ): Boolean {
+        throw UnsupportedOperationException("Review like state is not available through the REST data source.")
     }
     override suspend fun getComments(reviewId: String): List<CommentDto> = service.getComments(reviewId)
     override suspend fun createComment(reviewId: String, comment: CreateCommentDto) =

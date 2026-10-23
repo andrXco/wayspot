@@ -56,7 +56,7 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
         docRef.set(registerUserDto).await()
     }
 
-    suspend fun updateUser(
+    override suspend fun updateUser(
         userDto: RegisterUserDto,
         userId: String
     ) {
@@ -73,7 +73,7 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
         ).await()
     }
 
-    suspend fun updateUserAvatar(
+    override suspend fun updateUserAvatar(
         userId: String,
         avatarUrl: String
     ) {
@@ -91,7 +91,7 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
     }
 
 
-    suspend fun isFollowing(
+    override suspend fun isFollowing(
         followerId: String,
         followedId: String
     ): Boolean {
@@ -105,7 +105,7 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
     }
 
 
-    suspend fun getFollowersCount(userId: String): Int {
+    override suspend fun getFollowersCount(userId: String): Int {
         val snapshot = db.collection("users")
             .document(userId)
             .get()
@@ -116,7 +116,7 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
 
 
 
-    suspend fun getFollowingCount(userId: String): Int {
+    override suspend fun getFollowingCount(userId: String): Int {
         val snapshot = db.collection("users")
             .document(userId)
             .get()
