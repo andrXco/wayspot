@@ -11,7 +11,7 @@ enum class UserRelationshipListType {
     }
 }
 
-/** Límites compartidos para cargar listas de relaciones en páginas. */
+/** Máximo de identificadores permitido por consulta de perfiles en Firestore. */
 object UserRelationshipRules {
-    const val PAGE_SIZE = 30L
+    const val MAX_USER_IDS_PER_QUERY = 30
 }

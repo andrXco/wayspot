@@ -1,7 +1,6 @@
 package com.example.wayspot.ui.screens.userconnections
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.example.wayspot.data.model.user.UserRelationshipListType
 import com.example.wayspot.data.repository.UserRepository
@@ -15,8 +14,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class UserConnectionsViewModel @Inject constructor(
-    private val userRepository: UserRepository,
-    private val savedStateHandle: SavedStateHandle
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UserConnectionsState())
@@ -28,14 +26,7 @@ class UserConnectionsViewModel @Inject constructor(
         relationshipType: UserRelationshipListType
     ) {
         val currentState = _uiState.value
-        val restoredType = if (savedStateHandle.get<String>(SAVED_USER_ID_KEY) == userId) {
-            UserRelationshipListType.fromRoute(savedStateHandle.get<String>(SAVED_TYPE_KEY))
-        } else {
-            null
-        }
-        val selectedType = restoredType ?: relationshipType
-
-        if (currentState.userId == userId && currentState.selectedType == selectedType &&
+        if (currentState.userId == userId && currentState.selectedType == relationshipType &&
             (currentState.isLoading || currentState.hasLoaded) && !currentState.hasLoadError
         ) {
             return
@@ -44,79 +35,38 @@ class UserConnectionsViewModel @Inject constructor(
         val requestId = ++activeRequestId
         _uiState.value = UserConnectionsState(
             userId = userId,
-            selectedType = selectedType,
+            selectedType = relationshipType,
             isLoading = true
         )
-        loadPage(
-            userId = userId,
-            relationshipType = selectedType,
-            cursor = null,
-            append = false,
-            requestId = requestId
-        )
+        loadConnections(userId, relationshipType, requestId)
     }
 
     fun selectType(relationshipType: UserRelationshipListType) {
         val userId = _uiState.value.userId ?: return
         if (_uiState.value.selectedType == relationshipType) return
-        savedStateHandle[SAVED_USER_ID_KEY] = userId
-        savedStateHandle[SAVED_TYPE_KEY] = relationshipType.name
         loadConnections(userId, relationshipType)
     }
 
     fun retry() {
         val state = _uiState.value
         val userId = state.userId ?: return
-        if (state.users.isNotEmpty() && state.nextCursor != null) {
-            _uiState.update { it.copy(hasLoadError = false) }
-            loadNextPage()
-            return
-        }
         loadConnections(userId, state.selectedType)
     }
 
-    fun loadNextPage() {
-        val state = _uiState.value
-        val cursor = state.nextCursor ?: return
-        val userId = state.userId ?: return
-        if (state.isLoading || state.isLoadingMore || state.hasLoadError) return
-        _uiState.update { it.copy(isLoadingMore = true) }
-        loadPage(
-            userId = userId,
-            relationshipType = state.selectedType,
-            cursor = cursor,
-            append = true,
-            requestId = activeRequestId
-        )
-    }
-
-    private fun loadPage(
+    private fun loadConnections(
         userId: String,
         relationshipType: UserRelationshipListType,
-        cursor: String?,
-        append: Boolean,
         requestId: Long
     ) {
         viewModelScope.launch {
             try {
                 val result = userRepository.getUserConnections(
                     userId = userId,
-                    relationshipType = relationshipType,
-                    cursor = cursor
+                    relationshipType = relationshipType
                 )
                 result.fold(
-                    onSuccess = { page ->
+                    onSuccess = { users ->
                         if (requestId != activeRequestId) return@fold
-                        if (!append && page.users.isEmpty() && page.nextCursor != null) {
-                            loadPage(
-                                userId = userId,
-                                relationshipType = relationshipType,
-                                cursor = page.nextCursor,
-                                append = false,
-                                requestId = requestId
-                            )
-                            return@fold
-                        }
                         _uiState.update { current ->
                             if (current.userId != userId ||
                                 current.selectedType != relationshipType ||
@@ -124,16 +74,9 @@ class UserConnectionsViewModel @Inject constructor(
                             ) {
                                 current
                             } else {
-                                val users = if (append) {
-                                    (current.users + page.users).distinctBy { it.id }
-                                } else {
-                                    page.users
-                                }
                                 current.copy(
                                     users = users,
-                                    nextCursor = page.nextCursor,
                                     isLoading = false,
-                                    isLoadingMore = false,
                                     hasLoadError = false,
                                     hasLoaded = true
                                 )
@@ -148,7 +91,6 @@ class UserConnectionsViewModel @Inject constructor(
                             ) {
                                 current.copy(
                                     isLoading = false,
-                                    isLoadingMore = false,
                                     hasLoadError = true,
                                     hasLoaded = true
                                 )
@@ -164,8 +106,4 @@ class UserConnectionsViewModel @Inject constructor(
         }
     }
 
-    private companion object {
-        const val SAVED_USER_ID_KEY = "userConnections.userId"
-        const val SAVED_TYPE_KEY = "userConnections.type"
-    }
 }

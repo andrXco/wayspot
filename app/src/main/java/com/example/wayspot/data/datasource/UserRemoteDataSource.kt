@@ -4,7 +4,6 @@ package com.example.wayspot.data.datasource
 import com.example.wayspot.data.dto.RegisterUserDto
 import com.example.wayspot.data.dto.UserDtoGeneric
 import com.example.wayspot.data.dto.ReviewDtoGeneric
-import com.example.wayspot.data.dto.UserConnectionsPageDto
 import com.example.wayspot.data.model.user.UserRelationshipListType
 
 interface UserRemoteDataSource {
@@ -39,10 +38,13 @@ interface UserRemoteDataSource {
 
     suspend fun getUserConnections(
         userId: String,
-        relationshipType: UserRelationshipListType,
-        cursor: String?,
-        pageSize: Long
-    ): UserConnectionsPageDto
+        relationshipType: UserRelationshipListType
+    ): List<UserDtoGeneric>
+
+    suspend fun getUserConnectionIds(
+        userId: String,
+        relationshipType: UserRelationshipListType
+    ): List<String>
 
     suspend fun getReviewsByUserId(
         userId: String

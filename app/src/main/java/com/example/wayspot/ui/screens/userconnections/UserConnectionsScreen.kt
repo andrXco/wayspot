@@ -2,14 +2,12 @@ package com.example.wayspot.ui.screens.userconnections
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.Button
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -53,7 +51,6 @@ fun UserConnectionsScreen(
         onTypeSelected = viewModel::selectType,
         onUserClick = onUserClick,
         onRetry = viewModel::retry,
-        onLoadMore = viewModel::loadNextPage,
         modifier = modifier
     )
 }
@@ -65,7 +62,6 @@ fun UserConnectionsContent(
     onTypeSelected: (UserRelationshipListType) -> Unit,
     onUserClick: (String) -> Unit,
     onRetry: () -> Unit,
-    onLoadMore: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val title = stringResource(
@@ -138,35 +134,15 @@ fun UserConnectionsContent(
             }
         }
 
-        itemsIndexed(
+        items(
             items = state.users,
-            key = { _, user -> user.id }
-        ) { index, user ->
+            key = { user -> user.id }
+        ) { user ->
             UserConnectionListItem(
                 user = user,
                 onClick = { onUserClick(user.id) },
                 modifier = Modifier.fillMaxWidth()
             )
-            if (index >= state.users.lastIndex - 3 && state.nextCursor != null) {
-                LaunchedEffect(user.id, state.nextCursor) {
-                    onLoadMore()
-                }
-            }
-        }
-
-        if (state.isLoadingMore) {
-            item(key = "connections-loading-more") {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    CircularProgressIndicator()
-                    Text(text = stringResource(R.string.user_connections_loading))
-                }
-            }
         }
     }
 }
@@ -184,8 +160,7 @@ private fun UserConnectionsPreview() {
             onBackClick = {},
             onTypeSelected = {},
             onUserClick = {},
-            onRetry = {},
-            onLoadMore = {}
+            onRetry = {}
         )
     }
 }

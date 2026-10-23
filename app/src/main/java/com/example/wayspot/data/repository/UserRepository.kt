@@ -2,13 +2,10 @@ package com.example.wayspot.data.repository
 
 import com.example.wayspot.data.model.user.UserInfo
 import com.example.wayspot.data.dto.RegisterUserDto
-import com.example.wayspot.data.dto.UserConnectionsPageDto
 import com.example.wayspot.data.model.review.ReviewInfo
 import com.example.wayspot.data.datasource.UserRemoteDataSource
 import com.example.wayspot.data.model.user.ProfileNotificationPreferences
-import com.example.wayspot.data.model.user.UserConnectionsPage
 import com.example.wayspot.data.model.user.UserRelationshipListType
-import com.example.wayspot.data.model.user.UserRelationshipRules
 import com.google.firebase.messaging.FirebaseMessaging
 import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
@@ -153,22 +150,14 @@ class UserRepository @Inject constructor(
 
     suspend fun getUserConnections(
         userId: String,
-        relationshipType: UserRelationshipListType,
-        cursor: String? = null
-    ): Result<UserConnectionsPage> {
+        relationshipType: UserRelationshipListType
+    ): Result<List<UserInfo>> {
         return try {
-            val page: UserConnectionsPageDto = userRemoteDataSource.getUserConnections(
+            val users = userRemoteDataSource.getUserConnections(
                 userId = userId,
-                relationshipType = relationshipType,
-                cursor = cursor,
-                pageSize = UserRelationshipRules.PAGE_SIZE
+                relationshipType = relationshipType
             )
-            Result.success(
-                UserConnectionsPage(
-                    users = page.users.map { it.toUserInfo() },
-                    nextCursor = page.nextCursor
-                )
-            )
+            Result.success(users.map { it.toUserInfo() })
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -178,20 +167,10 @@ class UserRepository @Inject constructor(
 
     suspend fun getFollowingUserIds(userId: String): Result<Set<String>> {
         return try {
-            val followingUserIds = linkedSetOf<String>()
-            var cursor: String? = null
-
-            do {
-                val page = userRemoteDataSource.getUserConnections(
-                    userId = userId,
-                    relationshipType = UserRelationshipListType.FOLLOWING,
-                    cursor = cursor,
-                    pageSize = UserRelationshipRules.PAGE_SIZE
-                )
-                followingUserIds.addAll(page.users.map { user -> user.toUserInfo().id })
-                cursor = page.nextCursor
-            } while (cursor != null)
-
+            val followingUserIds = userRemoteDataSource.getUserConnectionIds(
+                userId = userId,
+                relationshipType = UserRelationshipListType.FOLLOWING
+            )
             Result.success(followingUserIds.toSet())
         } catch (e: CancellationException) {
             throw e
