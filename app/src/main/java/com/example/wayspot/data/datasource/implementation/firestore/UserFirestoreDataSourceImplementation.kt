@@ -68,7 +68,13 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
                 "name" to userDto.name,
                 "country" to userDto.country,
                 "bio" to userDto.bio,
-                "avatarUrl" to userDto.avatarUrl
+                "avatarUrl" to userDto.avatarUrl,
+                "fcmToken" to userDto.fcmToken,
+                "notificationPreferences" to mapOf(
+                    "newFollowers" to userDto.notificationPreferences.newFollowers,
+                    "reviewComments" to userDto.notificationPreferences.reviewComments,
+                    "likesReceived" to userDto.notificationPreferences.likesReceived
+                )
             )
         ).await()
     }
@@ -82,9 +88,11 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
         val userDto = RegisterUserDto(
             username = user.username,
             name = user.name,
+            fcmToken = user.fcmToken,
             country = user.country,
             bio = user.bio,
-            avatarUrl = avatarUrl
+            avatarUrl = avatarUrl,
+            notificationPreferences = user.notificationPreferences
         )
 
         updateUser(userDto, userId)

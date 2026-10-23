@@ -16,9 +16,9 @@ data class UserProfile(
 
 /** Preferencias de los tipos de notificación que muestra el perfil. */
 data class ProfileNotificationPreferences(
-    val newFollowers: Boolean,
-    val reviewComments: Boolean,
-    val likesReceived: Boolean
+    val newFollowers: Boolean = false,
+    val reviewComments: Boolean = false,
+    val likesReceived: Boolean = false
 )
 
 /** Métricas resumidas que acompañan al perfil. */

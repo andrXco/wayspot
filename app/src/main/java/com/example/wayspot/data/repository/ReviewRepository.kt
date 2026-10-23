@@ -13,6 +13,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class ReviewRepository @Inject constructor(
     private val reviewFirestoreDataSource: ReviewFirestoreDataSourceImplementation,
@@ -35,6 +37,11 @@ class ReviewRepository @Inject constructor(
             Result.failure(e)
         }
     }
+
+    fun getAllReviews(): Flow<List<ReviewInfo>> =
+        reviewFirestoreDataSource.listenAllReviews().map { reviews ->
+            reviews.map { review -> review.toReviewInfo() }
+        }
 
     suspend fun getReviewById(id: String): Result<ReviewInfo> {
         return try {

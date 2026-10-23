@@ -11,6 +11,7 @@ import com.example.wayspot.data.model.savedplace.SavedPlaceList
 import com.example.wayspot.data.model.savedplace.SavedPlacesRules
 import com.example.wayspot.data.model.user.UserProfile
 import com.example.wayspot.data.model.user.UserStats
+import com.example.wayspot.data.model.user.ProfileNotificationPreferences
 import com.example.wayspot.data.repository.AuthRepository
 import com.example.wayspot.data.repository.UserRepository
 
@@ -74,6 +75,7 @@ class AppNavigationViewModel @Inject constructor(
                     email = firebaseUser.email.orEmpty(),
                     location = "",
                     avatarUrl = firebaseUser.photoUrl?.toString(),
+                    notificationPreferences = ProfileNotificationPreferences(),
                     initials = "",
                     isVerified = false,
                     stats = UserStats(
@@ -114,6 +116,7 @@ class AppNavigationViewModel @Inject constructor(
                             username = user.username,
                             bio = user.bio.orEmpty(),
                             location = user.location.orEmpty(),
+                            notificationPreferences = user.notificationPreferences,
                             initials = user.name.take(1).uppercase(),
                             stats = currentProfile.stats.copy(
                                 followers = followersCount.toString(),
