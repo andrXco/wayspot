@@ -6,6 +6,7 @@ import com.example.wayspot.data.dto.RegisterUserDto
 import com.example.wayspot.data.dto.ReviewFirestoreDto
 import com.example.wayspot.data.dto.UserDtoGeneric
 import com.example.wayspot.data.dto.UserFirestoreDto
+import com.example.wayspot.data.dto.NotificationActorEventDto
 import com.example.wayspot.data.model.user.UserRelationshipListType
 import com.example.wayspot.data.model.user.UserRelationshipRules
 import com.google.firebase.firestore.FieldPath
@@ -37,6 +38,18 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
         }
 
         return users
+    }
+
+    override suspend fun getUsersByIds(userIds: List<String>): List<UserFirestoreDto> {
+        if (userIds.isEmpty()) return emptyList()
+        return db.collection("users")
+            .whereIn(FieldPath.documentId(), userIds)
+            .get()
+            .await()
+            .documents
+            .mapNotNull { document ->
+                document.toObject(UserFirestoreDto::class.java)?.copy(id = document.id)
+            }
     }
 
     override suspend fun getUserById(id: String): UserFirestoreDto {
@@ -86,19 +99,10 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
         userId: String,
         avatarUrl: String
     ) {
-        val user = getUserById(userId)
-
-        val userDto = RegisterUserDto(
-            username = user.username,
-            name = user.name,
-            fcmToken = user.fcmToken,
-            country = user.country,
-            bio = user.bio,
-            avatarUrl = avatarUrl,
-            notificationPreferences = user.notificationPreferences
-        )
-
-        updateUser(userDto, userId)
+        db.collection("users")
+            .document(userId)
+            .update("avatarUrl", avatarUrl)
+            .await()
     }
 
 
@@ -176,6 +180,31 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
             .await()
             .documents
             .map { it.id }
+    }
+
+    override suspend fun getNotificationActorEvents(
+        userId: String,
+        relationshipType: UserRelationshipListType
+    ): List<NotificationActorEventDto> {
+        val collectionName = when (relationshipType) {
+            UserRelationshipListType.FOLLOWERS -> "followers"
+            UserRelationshipListType.FOLLOWING -> "following"
+        }
+
+        return db.collection("users")
+            .document(userId)
+            .collection(collectionName)
+            .get()
+            .await()
+            .documents
+            .mapNotNull { document ->
+                document.getTimestamp("timestamp")?.toDate()?.time?.let { timestamp ->
+                    NotificationActorEventDto(
+                        actorId = document.id,
+                        timestampMillis = timestamp
+                    )
+                }
+            }
     }
 
     override suspend fun followOrUnfollowUser(

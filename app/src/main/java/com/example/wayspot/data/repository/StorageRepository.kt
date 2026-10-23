@@ -4,6 +4,7 @@ import android.net.Uri
 import com.example.wayspot.data.datasource.AuthRemoteDataSource
 import com.example.wayspot.data.datasource.StorageRemoteDataSource
 import javax.inject.Inject
+import java.util.UUID
 
 class StorageRepository @Inject constructor(
     private val storage: StorageRemoteDataSource,
@@ -17,7 +18,7 @@ class StorageRepository @Inject constructor(
             )
 
         return try {
-            val path = "profileImages/$userId.jpg"
+            val path = "profileImages/$userId/${UUID.randomUUID()}.jpg"
 
             val url = storage.uploadImage(path, uri)
 

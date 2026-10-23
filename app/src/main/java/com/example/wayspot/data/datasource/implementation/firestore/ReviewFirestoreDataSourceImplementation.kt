@@ -7,6 +7,7 @@ import com.example.wayspot.data.dto.CommentFirestoreDto
 import com.example.wayspot.data.dto.CreateCommentFirestoreDto
 import com.example.wayspot.data.datasource.ReviewRemoteDataSource
 import com.example.wayspot.data.dto.CreateCommentDto
+import com.example.wayspot.data.dto.NotificationActorEventDto
 import com.google.firebase.firestore.FieldValue
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -211,6 +212,22 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
         .get()
         .await()
         .exists()
+
+    override suspend fun getReviewLikeEvents(reviewId: String): List<NotificationActorEventDto> =
+        db.collection("reviews")
+            .document(reviewId)
+            .collection("likes")
+            .get()
+            .await()
+            .documents
+            .mapNotNull { document ->
+                document.getTimestamp("timestamp")?.toDate()?.time?.let { timestamp ->
+                    NotificationActorEventDto(
+                        actorId = document.id,
+                        timestampMillis = timestamp
+                    )
+                }
+            }
 
     override suspend fun createComment(
         reviewId: String,
