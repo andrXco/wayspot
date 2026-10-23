@@ -142,14 +142,44 @@ class HomeViewModel @Inject constructor(
                 }
             }
 
+            val likedReviewsResult = reviewRepository.getLikedReviewIds(
+                feed.map { item -> item.review.id }
+            )
+
+            val likedReviewIds = likedReviewsResult.getOrNull()
+            if (likedReviewIds == null) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        isLoading = false,
+                        errorMessage = likedReviewsResult.exceptionOrNull()?.message
+                            ?: "No se pudieron cargar los likes"
+                    )
+                }
+                return@launch
+            }
+
+            val feedWithLikes = feed.map { item ->
+                item.copy(
+                    review = item.review.copy(
+                        liked = item.review.id in likedReviewIds
+                    )
+                )
+            }
+
             _uiState.update { currentState ->
                 currentState.copy(
                     places = places,
-                    reviews = feed,
+                    reviews = feedWithLikes,
+                    likedReviewIds = likedReviewIds,
+                    reviewLikeCounts = feedWithLikes.associate { item ->
+                        item.review.id to item.review.likesCount
+                    },
                     isLoading = false,
                     errorMessage = null
                 )
             }
+
+
         }
     }
 
@@ -207,20 +237,35 @@ class HomeViewModel @Inject constructor(
             }
         }
 
-        fun toggleReviewLike(reviewId: String) {
-            _uiState.update { currentState ->
-                val wasLiked = reviewId in currentState.likedReviewIds
-                currentState.copy(
-                    likedReviewIds = currentState.likedReviewIds.toggle(reviewId),
-                    reviewLikeCounts = currentState.reviewLikeCounts.withAdjustedCount(
-                        id = reviewId,
-                        delta = if (wasLiked) -1 else 1
+    fun toggleReviewLike(reviewId: String) {
+        viewModelScope.launch {
+            val result = reviewRepository.sendOrDeleteReviewLike(reviewId)
+
+            if (result.isSuccess) {
+                _uiState.update { currentState ->
+                    val wasLiked = reviewId in currentState.likedReviewIds
+
+                    currentState.copy(
+                        likedReviewIds = currentState.likedReviewIds.toggle(reviewId),
+                        reviewLikeCounts = currentState.reviewLikeCounts.withAdjustedCount(
+                            id = reviewId,
+                            delta = if (wasLiked) -1 else 1
+                        ),
+                        errorMessage = null
                     )
-                )
+                }
+            } else {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        errorMessage = result.exceptionOrNull()?.message
+                            ?: "No se pudo actualizar el like"
+                    )
+                }
             }
         }
+    }
 
-        fun toggleReviewExpanded(reviewId: String) {
+    fun toggleReviewExpanded(reviewId: String) {
             _uiState.update { currentState ->
                 currentState.copy(
                     expandedReviewIds = currentState.expandedReviewIds.toggle(reviewId)

@@ -7,6 +7,7 @@ import com.example.wayspot.data.dto.CommentFirestoreDto
 import com.example.wayspot.data.dto.CreateCommentFirestoreDto
 import com.example.wayspot.data.datasource.ReviewRemoteDataSource
 import com.example.wayspot.data.dto.CreateCommentDto
+import com.google.firebase.firestore.FieldValue
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -19,9 +20,7 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
         review: SaveReviewDto
     ): ReviewFirestoreDto {
 
-        val docRef = db.collection("reviews")
-            .add(review)
-            .await()
+        val docRef = db.collection("reviews").add(review).await()
 
         return ReviewFirestoreDto(
             id = docRef.id,
@@ -58,7 +57,10 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
         return reviews
     }
 
-    override suspend fun getReviewById(id: String): ReviewFirestoreDto {
+    override suspend fun getReviewById(
+        id: String,
+        currentUserId: String?
+    ): ReviewFirestoreDto {
 
         val docRef = db.collection("reviews").document(id)
 
@@ -67,7 +69,23 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
         val review = snapshot.toObject(ReviewFirestoreDto::class.java)
             ?: throw Exception("No se pudo obtener la reseña")
 
-        return review.copy(id = snapshot.id)
+        val liked = if (!currentUserId.isNullOrBlank()) {
+
+            val likeSnapshot = docRef.collection("likes")
+                .document(currentUserId)
+                .get()
+                .await()
+
+            likeSnapshot.exists()
+
+        } else {
+            false
+        }
+
+        return review.copy(
+            id = snapshot.id,
+            liked = liked
+        )
     }
 
     override suspend fun updateReview(
@@ -85,7 +103,13 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
 
         val docRef = db.collection("reviews").document(id)
 
-        docRef.set(updatedReview).await()
+        docRef.update(
+            mapOf(
+                "rating" to review.rating,
+                "title" to review.title,
+                "description" to review.description
+            )
+        ).await()
 
         return updatedReview
     }
@@ -114,19 +138,77 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
 
     override suspend fun deleteReview(id: String) {
 
+        val docRef = db.collection("reviews").document(id)
+
         val commentsSnapshot = db.collection("comments")
             .whereEqualTo("reviewId", id)
             .get()
             .await()
 
-        for (document in commentsSnapshot.documents) {
-            document.reference.delete().await()
+        for (comment in commentsSnapshot.documents) {
+            comment.reference.delete().await()
         }
 
-        val docRef = db.collection("reviews").document(id)
+        val likesSnapshot = docRef.collection("likes").get().await()
+
+        for (like in likesSnapshot.documents) {
+            like.reference.delete().await()
+        }
 
         docRef.delete().await()
     }
+
+    override suspend fun sendOrDeleteReviewLike(
+        reviewId: String,
+        userId: String
+    ) {
+        val reviewRef = db.collection("reviews")
+            .document(reviewId)
+
+        val likeRef = reviewRef.collection("likes")
+            .document(userId)
+
+        db.runTransaction { transaction ->
+
+            val likeDoc = transaction.get(likeRef)
+
+            if (likeDoc.exists()) {
+                transaction.delete(likeRef)
+
+                transaction.update(
+                    reviewRef,
+                    "likesCount",
+                    FieldValue.increment(-1L)
+                )
+
+            } else {
+                transaction.set(
+                    likeRef,
+                    mapOf(
+                        "timestamp" to FieldValue.serverTimestamp()
+                    )
+                )
+
+                transaction.update(
+                    reviewRef,
+                    "likesCount",
+                    FieldValue.increment(1L)
+                )
+            }
+
+        }.await()
+    }
+
+    override suspend fun isReviewLiked(
+        reviewId: String,
+        userId: String
+    ): Boolean = db.collection("reviews")
+        .document(reviewId)
+        .collection("likes")
+        .document(userId)
+        .get()
+        .await()
+        .exists()
 
     override suspend fun createComment(
         reviewId: String,
@@ -171,5 +253,4 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
             comment.copy(id = document.id)
         }
     }
-
 }
