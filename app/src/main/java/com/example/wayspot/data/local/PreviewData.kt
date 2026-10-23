@@ -32,6 +32,26 @@ object PreviewData {
         avatarUrl = null
     )
 
+    val connectionUsers = listOf(
+        reviewDetailAuthor,
+        UserInfo(
+            id = "preview-user-3",
+            name = "Juan Pérez",
+            username = "juan.perez",
+            bio = null,
+            location = "Medellín",
+            avatarUrl = null
+        ),
+        UserInfo(
+            id = "preview-user-4",
+            name = "Camila Torres",
+            username = "cami.torres",
+            bio = null,
+            location = "Bogotá",
+            avatarUrl = null
+        )
+    )
+
     val reviewDetailReview = ReviewInfo(
         id = reviewCommentPreviewReviewId,
         rating = 5,

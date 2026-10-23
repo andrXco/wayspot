@@ -4,8 +4,12 @@ package com.example.wayspot.data.datasource.implementation.firestore
 import com.example.wayspot.data.datasource.UserRemoteDataSource
 import com.example.wayspot.data.dto.RegisterUserDto
 import com.example.wayspot.data.dto.UserFirestoreDto
+import com.example.wayspot.data.dto.UserConnectionsPageDto
+import com.example.wayspot.data.model.user.UserRelationshipListType
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.Timestamp
 import com.example.wayspot.data.dto.ReviewFirestoreDto
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -133,6 +137,81 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
         return snapshot.getLong("followingCount")?.toInt() ?: 0
     }
 
+    override suspend fun getUserConnections(
+        userId: String,
+        type: UserRelationshipListType,
+        afterId: String?,
+        pageSize: Long
+    ): UserConnectionsPageDto {
+        val userRef = db.collection("users").document(userId)
+        val relationshipCollection = when (type) {
+            UserRelationshipListType.FOLLOWERS -> userRef.collection("followers")
+            UserRelationshipListType.FOLLOWING -> userRef.collection("following")
+        }
+
+        val relationshipQuery = relationshipCollection
+            .orderBy("timestamp")
+            .orderBy(FieldPath.documentId())
+
+        val cursor = afterId?.split(CURSOR_SEPARATOR, limit = 3)
+        val timestampSeconds = cursor?.getOrNull(0)?.toLongOrNull()
+        val timestampNanoseconds = cursor?.getOrNull(1)?.toIntOrNull()
+        val cursorDocumentId = cursor?.getOrNull(2)
+        val pagedQuery = if (
+            timestampSeconds != null && timestampNanoseconds != null &&
+            !cursorDocumentId.isNullOrBlank()
+        ) {
+            relationshipQuery.startAfter(
+                Timestamp(timestampSeconds, timestampNanoseconds),
+                cursorDocumentId
+            )
+        } else {
+            relationshipQuery
+        }
+        val relationshipSnapshot = pagedQuery
+            .limit(pageSize)
+            .get()
+            .await()
+
+        val relationIds = relationshipSnapshot.documents.map { it.id }
+        val fetchedUsers = if (relationIds.isEmpty()) {
+            emptyMap()
+        } else {
+            db.collection("users")
+                .whereIn(FieldPath.documentId(), relationIds)
+                .get()
+                .await()
+                .documents
+                .mapNotNull { document ->
+                    document.toObject(UserFirestoreDto::class.java)
+                        ?.copy(id = document.id)
+                        ?.let { document.id to it }
+                }
+                .toMap()
+        }
+
+        val users = relationIds.mapNotNull(fetchedUsers::get)
+        val lastDocument = relationshipSnapshot.documents.lastOrNull()
+        val lastTimestamp = lastDocument?.getTimestamp("timestamp")
+        val nextCursor = if (
+            lastDocument != null && lastTimestamp != null &&
+            relationshipSnapshot.documents.size.toLong() == pageSize
+        ) {
+            listOf(
+                lastTimestamp.seconds.toString(),
+                lastTimestamp.nanoseconds.toString(),
+                lastDocument.id
+            ).joinToString(CURSOR_SEPARATOR)
+        } else {
+            null
+        }
+
+        return UserConnectionsPageDto(
+            users = users,
+            nextCursor = nextCursor
+        )
+    }
+
     override suspend fun followOrUnfollowUser(
         currentUserId: String,
         targetUserId: String
@@ -219,6 +298,10 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
 
             review.copy(id = document.id)
         }
+    }
+
+    private companion object {
+        const val CURSOR_SEPARATOR = ":"
     }
 
 }

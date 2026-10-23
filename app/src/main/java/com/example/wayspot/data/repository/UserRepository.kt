@@ -2,9 +2,13 @@ package com.example.wayspot.data.repository
 
 import com.example.wayspot.data.model.user.UserInfo
 import com.example.wayspot.data.dto.RegisterUserDto
+import com.example.wayspot.data.dto.UserConnectionsPageDto
 import com.example.wayspot.data.model.review.ReviewInfo
 import com.example.wayspot.data.datasource.UserRemoteDataSource
 import com.example.wayspot.data.model.user.ProfileNotificationPreferences
+import com.example.wayspot.data.model.user.UserConnectionsPage
+import com.example.wayspot.data.model.user.UserRelationshipListType
+import com.example.wayspot.data.model.user.UserRelationshipRules
 import com.google.firebase.messaging.FirebaseMessaging
 import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
@@ -140,6 +144,31 @@ class UserRepository @Inject constructor(
     suspend fun getFollowingCount(userId: String): Result<Int> {
         return try {
             Result.success(userRemoteDataSource.getFollowingCount(userId))
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getUserConnections(
+        userId: String,
+        type: UserRelationshipListType,
+        afterId: String? = null
+    ): Result<UserConnectionsPage> {
+        return try {
+            val page: UserConnectionsPageDto = userRemoteDataSource.getUserConnections(
+                userId = userId,
+                type = type,
+                afterId = afterId,
+                pageSize = UserRelationshipRules.PAGE_SIZE
+            )
+            Result.success(
+                UserConnectionsPage(
+                    users = page.users.map { it.toUserInfo() },
+                    nextCursor = page.nextCursor
+                )
+            )
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {

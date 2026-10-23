@@ -14,6 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.wayspot.R
+import com.example.wayspot.data.model.user.UserRelationshipListType
 import com.example.wayspot.ui.screens.auth.forgotpassword.ForgotPasswordScreen
 import com.example.wayspot.ui.screens.auth.login.LoginScreen
 import com.example.wayspot.ui.screens.auth.login.LoginViewModel
@@ -43,6 +44,8 @@ import com.example.wayspot.ui.screens.reviewcomment.ReviewCommentScreen
 import com.example.wayspot.ui.screens.reviewcomment.ReviewCommentViewModel
 import com.example.wayspot.ui.screens.publicprofile.PublicProfileScreen
 import com.example.wayspot.ui.screens.publicprofile.PublicProfileViewModel
+import com.example.wayspot.ui.screens.userconnections.UserConnectionsScreen
+import com.example.wayspot.ui.screens.userconnections.UserConnectionsViewModel
 import com.example.wayspot.ui.screens.splash.SplashViewModel
 
 /**
@@ -185,6 +188,26 @@ fun AppNavigation(
                 },
                 onReviewPlaceClick = { placeId ->
                     navController.navigate(Screen.PlaceDetail.createRoute(placeId))
+                },
+                onFollowersClick = {
+                    appNavigationViewModel.currentUserId?.let { userId ->
+                        navController.navigate(
+                            Screen.UserConnections.createRoute(
+                                userId,
+                                UserRelationshipListType.FOLLOWERS
+                            )
+                        )
+                    }
+                },
+                onFollowingClick = {
+                    appNavigationViewModel.currentUserId?.let { userId ->
+                        navController.navigate(
+                            Screen.UserConnections.createRoute(
+                                userId,
+                                UserRelationshipListType.FOLLOWING
+                            )
+                        )
+                    }
                 },
 
                 onSignOut = {
@@ -413,6 +436,35 @@ fun AppNavigation(
         }
 
         composable(
+            route = Screen.UserConnections.route,
+            arguments = listOf(
+                navArgument("userId") { type = NavType.StringType },
+                navArgument("type") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")
+                ?: return@composable
+            val type = UserRelationshipListType.fromRoute(
+                backStackEntry.arguments?.getString("type")
+            ) ?: UserRelationshipListType.FOLLOWERS
+            val viewModel: UserConnectionsViewModel = hiltViewModel()
+
+            UserConnectionsScreen(
+                viewModel = viewModel,
+                userId = userId,
+                initialType = type,
+                onBackClick = { navController.popBackStack() },
+                onUserClick = { selectedUserId ->
+                    if (selectedUserId == appNavigationViewModel.currentUserId) {
+                        navController.navigate(Screen.Profile.route)
+                    } else {
+                        navController.navigate(Screen.PublicProfile.createRoute(selectedUserId))
+                    }
+                }
+            )
+        }
+
+        composable(
             route = Screen.PublicProfile.route,
             arguments = listOf(navArgument("userId") { type = NavType.StringType })
         ) { backStackEntry ->
@@ -422,7 +474,23 @@ fun AppNavigation(
                 viewModel = viewModel,
                 userId = userId,
                 onBackClick = { navController.popBackStack() },
-                onReviewClick = { id -> navController.navigate(Screen.ReviewDetail.createRoute(id)) }
+                onReviewClick = { id -> navController.navigate(Screen.ReviewDetail.createRoute(id)) },
+                onFollowersClick = {
+                    navController.navigate(
+                        Screen.UserConnections.createRoute(
+                            userId,
+                            UserRelationshipListType.FOLLOWERS
+                        )
+                    )
+                },
+                onFollowingClick = {
+                    navController.navigate(
+                        Screen.UserConnections.createRoute(
+                            userId,
+                            UserRelationshipListType.FOLLOWING
+                        )
+                    )
+                }
             )
         }
 

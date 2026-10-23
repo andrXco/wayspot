@@ -55,6 +55,8 @@ fun ProfileContent(
     onReviewCommentClick: (String) -> Unit = {},
     onReviewShareClick: (String) -> Unit = {},
     onReviewPlaceClick: (String) -> Unit = {},
+    onFollowersClick: () -> Unit = {},
+    onFollowingClick: () -> Unit = {},
     canFollow: Boolean = false,
     isFollowing: Boolean = false,
     isFollowActionInProgress: Boolean = false,
@@ -106,6 +108,8 @@ fun ProfileContent(
 
                 ProfileStats(
                     stats = user.stats.copy(reviews = reviews.size),
+                    onFollowersClick = onFollowersClick,
+                    onFollowingClick = onFollowingClick,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(

@@ -92,6 +92,9 @@
     <string name="profile_label_reviews">Reseñas</string>
     <string name="profile_label_followers">Seguidores</string>
     <string name="profile_label_following">Seguidos</string>
+    <string name="profile_open_followers">Ver seguidores</string>
+    <string name="profile_open_following">Ver seguidos</string>
+    <string name="profile_stats_action_description">%1$s %2$s. %3$s.</string>
     <string name="profile_button_edit">Editar perfil</string>
     <string name="profile_button_sign_out">Cerrar sesión</string>
     <string name="profile_tab_my_reviews">Mis reseñas</string>
@@ -107,6 +110,15 @@
     <string name="profile_saved_empty_title">Sin elementos guardados</string>
     <string name="profile_saved_empty_description">Los lugares y publicaciones que guardes aparecerán aquí para fácil acceso.</string>
     <string name="profile_saved_empty_icon_content_description">Icono de guardados vacío</string>
+    <string name="user_connections_title_followers">Seguidores</string>
+    <string name="user_connections_title_following">Seguidos</string>
+    <string name="user_connections_empty_followers_title">Aún no tiene seguidores</string>
+    <string name="user_connections_empty_following_title">Aún no sigue a nadie</string>
+    <string name="user_connections_empty_description">Cuando haya personas aquí, aparecerán en esta lista.</string>
+    <string name="user_connections_loading">Cargando personas</string>
+    <string name="user_connections_load_error">No se pudo cargar la lista. Inténtalo de nuevo.</string>
+    <string name="user_connections_retry">Reintentar</string>
+    <string name="user_connections_avatar_content_description">Foto de perfil de %1$s</string>
 
     <!-- Saved Places Screen Strings -->
     <string name="saved_places_title">Mis Lugares Guardados</string>
