@@ -27,7 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
-import com.example.wayspot.data.model.PlaceInfo
+import com.example.wayspot.data.model.place.PlaceInfo
 import com.example.wayspot.ui.theme.EstrellaAmarilla
 import com.example.wayspot.ui.theme.WayspotTheme
 

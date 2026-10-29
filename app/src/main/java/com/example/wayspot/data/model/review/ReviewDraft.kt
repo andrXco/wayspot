@@ -1,4 +1,4 @@
-package com.example.wayspot.data.model
+package com.example.wayspot.data.model.review
 
 /** Borrador inmutable de una reseña antes de aplicar las reglas de publicación. */
 data class ReviewDraft(

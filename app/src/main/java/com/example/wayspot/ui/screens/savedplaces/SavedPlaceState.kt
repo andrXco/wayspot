@@ -1,8 +1,8 @@
 package com.example.wayspot.ui.screens.savedplaces
 
-import com.example.wayspot.data.model.SavedPlace
-import com.example.wayspot.data.model.SavedPlaceList
-import com.example.wayspot.data.model.SavedPlacesRules
+import com.example.wayspot.data.model.savedplace.SavedPlace
+import com.example.wayspot.data.model.savedplace.SavedPlaceList
+import com.example.wayspot.data.model.savedplace.SavedPlacesRules
 
 /** Estado derivado de la búsqueda, la lista seleccionada y los lugares guardados visibles. */
 data class SavedPlacesState(

@@ -1,8 +1,10 @@
 package com.example.wayspot.data.repository
 
 import com.example.wayspot.data.datasource.implementation.PlaceRetrofitDataSourceImplementation
-import com.example.wayspot.data.dto.toPlaceInfo
-import com.example.wayspot.data.model.PlaceInfo
+import com.example.wayspot.data.mapper.toPlace
+import com.example.wayspot.data.mapper.toPlaceInfo
+import com.example.wayspot.data.model.place.Place
+import com.example.wayspot.data.model.place.PlaceInfo
 import javax.inject.Inject
 
 class PlaceRepository @Inject constructor(
@@ -22,6 +24,14 @@ class PlaceRepository @Inject constructor(
             Result.failure(
                 Exception("No se pudieron cargar los lugares")
             )
+        }
+    }
+
+    suspend fun getExplorePlaces(): Result<List<Place>> {
+        return try {
+            Result.success(placeRemoteDataSource.getAllPlaces().map { it.toPlace() })
+        } catch (e: Exception) {
+            Result.failure(Exception("No se pudieron cargar los lugares"))
         }
     }
 

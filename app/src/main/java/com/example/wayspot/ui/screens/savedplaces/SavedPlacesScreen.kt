@@ -18,9 +18,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
 import com.example.wayspot.data.local.PreviewData
-import com.example.wayspot.data.model.SavedPlace
-import com.example.wayspot.data.model.SavedPlaceList
-import com.example.wayspot.data.model.SavedPlacesRules
+import com.example.wayspot.data.model.savedplace.SavedPlace
+import com.example.wayspot.data.model.savedplace.SavedPlaceList
+import com.example.wayspot.data.model.savedplace.SavedPlacesRules
 import com.example.wayspot.ui.components.WaySpotSearchBar
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.savedplaces.components.SavedPlaceCard
@@ -45,9 +45,9 @@ fun SavedPlacesScreen(
 
     val localizedSearchTerms = savedPlaces.associate { savedPlace ->
         savedPlace.place.id to listOf(
-            stringResource(savedPlace.place.tituloRes),
-            stringResource(savedPlace.place.ubicacionRes),
-            stringResource(savedPlace.place.categoriaRes)
+            savedPlace.place.titleText ?: stringResource(savedPlace.place.tituloRes),
+            savedPlace.place.locationText ?: stringResource(savedPlace.place.ubicacionRes),
+            savedPlace.place.categoryText ?: stringResource(savedPlace.place.categoriaRes)
         )
     }
 

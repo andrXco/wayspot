@@ -1,4 +1,6 @@
-package com.example.wayspot.data.model
+package com.example.wayspot.data.model.savedplace
+
+import com.example.wayspot.data.model.place.Place
 
 /** Listas personales a las que puede pertenecer un lugar guardado. */
 enum class SavedPlaceList {
