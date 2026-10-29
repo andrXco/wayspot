@@ -14,20 +14,44 @@ import kotlinx.coroutines.launch
 
 
 /** Expone los datos del perfil y delega el cierre de sesión al repositorio de autenticación. */
+
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository
 ) : ViewModel() {
 
+
+
     private val _uiState = MutableStateFlow(ProfileState())
 
     val uiState: StateFlow<ProfileState> = _uiState
 
-    fun loadReviews(userId: String) {
-        _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+
+    fun loadReviews() {
+        val userId = authRepository.currentUser?.uid
+
+        if (userId == null) {
+            _uiState.update {
+                it.copy(
+                    reviews = emptyList(),
+                    isLoading = false,
+                    errorMessage = "Usuario no autenticado"
+                )
+            }
+            return
+        }
+
+        _uiState.update {
+            it.copy(
+                isLoading = true,
+                errorMessage = null
+            )
+        }
+
         viewModelScope.launch {
             val result = userRepository.getReviewsByUserId(userId)
+
             _uiState.update { currentState ->
                 currentState.copy(
                     reviews = result.getOrNull().orEmpty(),

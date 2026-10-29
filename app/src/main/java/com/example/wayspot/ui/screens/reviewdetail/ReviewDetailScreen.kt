@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
-import com.example.wayspot.data.dto.BackendSession
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.ui.preview.WayspotMultiPreview
@@ -69,6 +68,7 @@ fun ReviewDetailScreen(
         onDeleteClick = viewModel::requestDelete,
         onConfirmDelete = viewModel::deleteReview,
         onDismissDelete = viewModel::dismissDelete,
+        currentUserId = viewModel.currentUserId,
         modifier = modifier
     )
 }
@@ -83,6 +83,7 @@ fun ReviewDetailContent(
     onDeleteClick: () -> Unit,
     onConfirmDelete: () -> Unit,
     onDismissDelete: () -> Unit,
+    currentUserId: String?,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -130,7 +131,7 @@ fun ReviewDetailContent(
                         review = review,
                         place = state.place,
                         author = state.author,
-                        canManage = review.userId == BackendSession.USER_ID,
+                        canManage = currentUserId != null && review.userId == currentUserId,
                         isDeleting = state.isDeleting,
                         onAuthorClick = { onAuthorClick(review.userId) },
                         onEditClick = onEditClick,
@@ -211,7 +212,8 @@ private fun ReviewDetailScreenPreview() {
             onEditClick = {},
             onDeleteClick = {},
             onConfirmDelete = {},
-            onDismissDelete = {}
+            onDismissDelete = {},
+            currentUserId = null
         )
     }
 }

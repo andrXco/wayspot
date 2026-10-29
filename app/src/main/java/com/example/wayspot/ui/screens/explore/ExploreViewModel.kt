@@ -2,7 +2,6 @@ package com.example.wayspot.ui.screens.explore
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.data.repository.PlaceRepository
 import com.example.wayspot.data.model.explore.ExploreCategory
 import com.example.wayspot.data.model.explore.ExploreCategoryRules
@@ -35,27 +34,26 @@ class ExploreViewModel @Inject constructor(
         loadPlaces()
     }
 
+
     private fun loadPlaces() {
-        allPlaces = PreviewDataPopular.listPlaces
 
         _uiState.update { currentState ->
             currentState.copy(
                 categories = ExploreCategoryRules.categories,
-                places = ExploreCategoryRules.filterPlaces(
-                    places = allPlaces,
-                    selectedCategory = currentState.selectedCategory
-                )
+                places = emptyList()
             )
         }
 
         viewModelScope.launch {
             val result = placeRepository.getExplorePlaces()
-            result.getOrNull()?.let { remotePlaces ->
-                allPlaces = remotePlaces
+
+            result.getOrNull()?.let { firestorePlaces ->
+                allPlaces = firestorePlaces
+
                 _uiState.update { currentState ->
                     currentState.copy(
                         places = ExploreCategoryRules.filterPlaces(
-                            places = remotePlaces,
+                            places = allPlaces,
                             selectedCategory = currentState.selectedCategory
                         )
                     )

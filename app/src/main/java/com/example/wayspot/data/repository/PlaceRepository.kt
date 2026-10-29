@@ -1,16 +1,13 @@
 package com.example.wayspot.data.repository
 
-import com.example.wayspot.data.datasource.implementation.PlaceRetrofitDataSourceImplementation
-import com.example.wayspot.data.mapper.toPlace
-import com.example.wayspot.data.mapper.toPlaceInfo
+import com.example.wayspot.data.datasource.implementation.firestore.PlaceFirestoreDataSourceImplementation
 import com.example.wayspot.data.model.place.Place
 import com.example.wayspot.data.model.place.PlaceInfo
 import javax.inject.Inject
 
 class PlaceRepository @Inject constructor(
-    private val placeRemoteDataSource: PlaceRetrofitDataSourceImplementation
+    private val placeRemoteDataSource: PlaceFirestoreDataSourceImplementation
 ) {
-
     suspend fun getPlaces(): Result<List<PlaceInfo>> {
         return try {
             val places = placeRemoteDataSource.getAllPlaces()

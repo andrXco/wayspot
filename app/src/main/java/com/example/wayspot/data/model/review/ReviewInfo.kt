@@ -8,5 +8,7 @@ data class ReviewInfo(
     val userId: String,
     val placeId: String,
     val reviewDate: String? = null,
-    val authorName: String? = null
+    val authorName: String? = null,
+    val authorUsername: String? = null,
+    val authorAvatarUrl: String? = null
 )
