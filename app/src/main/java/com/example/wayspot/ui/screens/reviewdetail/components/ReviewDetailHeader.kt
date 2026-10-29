@@ -1,6 +1,7 @@
 package com.example.wayspot.ui.screens.reviewdetail.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
@@ -43,6 +45,7 @@ fun ReviewDetailHeader(
     author: UserInfo?,
     canManage: Boolean,
     isDeleting: Boolean,
+    onPlaceClick: (String) -> Unit,
     onAuthorClick: () -> Unit,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
@@ -68,8 +71,12 @@ fun ReviewDetailHeader(
                 color = MaterialTheme.colorScheme.onSurface
             )
 
-            place?.let {
+            place?.let { placeInfo ->
                 Surface(
+                    modifier = Modifier.clickable(
+                        role = Role.Button,
+                        onClick = { onPlaceClick(placeInfo.id) }
+                    ),
                     shape = RoundedCornerShape(50),
                     color = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -85,7 +92,7 @@ fun ReviewDetailHeader(
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = it.title,
+                            text = placeInfo.title,
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.SemiBold
                         )

@@ -11,6 +11,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.model.user.ProfileNotificationPreferences
 import com.example.wayspot.data.model.user.UserProfile
 import com.example.wayspot.data.model.user.UserStats
@@ -36,6 +37,7 @@ fun PublicProfileScreen(
         state = state,
         onBackClick = onBackClick,
         onReviewClick = onReviewClick,
+        onFollowClick = viewModel::toggleFollow,
         modifier = modifier
     )
 }
@@ -45,6 +47,7 @@ fun PublicProfileContent(
     state: PublicProfileState,
     onBackClick: () -> Unit,
     onReviewClick: (String) -> Unit,
+    onFollowClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxSize()) {
@@ -69,7 +72,8 @@ fun PublicProfileContent(
                 stats = UserStats(
                     places = 0,
                     reviews = state.reviews.size,
-                    followers = "0"
+                    followers = state.followersCount.toString(),
+                    following = state.followingCount.toString()
                 )
             )
 
@@ -84,6 +88,11 @@ fun PublicProfileContent(
                 isLoading = state.isLoading,
                 errorMessage = state.errorMessage,
                 onBackClick = onBackClick,
+                canFollow = state.canFollow,
+                isFollowing = state.isFollowing,
+                isFollowActionInProgress = state.isFollowActionInProgress,
+                hasFollowError = state.hasFollowError,
+                onFollowClick = onFollowClick,
                 modifier = Modifier.weight(1f)
             )
         } else if (state.isLoading) {
@@ -104,9 +113,16 @@ fun PublicProfileContent(
 private fun PublicProfileScreenPreview() {
     WayspotTheme {
         PublicProfileContent(
-            state = PublicProfileState(),
+            state = PublicProfileState(
+                user = PreviewData.reviewDetailAuthor,
+                reviews = listOf(PreviewData.reviewDetailReview),
+                canFollow = true,
+                followersCount = 128,
+                followingCount = 42
+            ),
             onBackClick = {},
-            onReviewClick = {}
+            onReviewClick = {},
+            onFollowClick = {}
         )
     }
 }

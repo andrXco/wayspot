@@ -3,6 +3,8 @@ package com.example.wayspot.ui.screens.profile
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.wayspot.data.local.PreviewData
+import com.example.wayspot.data.local.PreviewDataPopular
+import com.example.wayspot.data.model.review.ReviewFeedItem
 import com.example.wayspot.data.model.user.UserProfile
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.profile.components.ProfileContent
@@ -20,7 +22,9 @@ fun ProfileScreen(
     modifier: Modifier = Modifier,
     onEditProfileClick: () -> Unit = {},
     onSavedPlacesClick: () -> Unit = {},
-    onReviewClick: (String) -> Unit = {}
+    onReviewClick: (String) -> Unit = {},
+    onReviewCommentClick: (String) -> Unit = {},
+    onReviewPlaceClick: (String) -> Unit = {}
 ) {
     val state by profileViewModel.uiState.collectAsState()
 
@@ -47,6 +51,16 @@ fun ProfileScreen(
                 onSignOut()
             },
             onReviewClick = onReviewClick,
+            reviewFeedItems = state.reviewFeedItems,
+            reviewLikeCounts = state.reviewLikeCounts,
+            likedReviewIds = state.likedReviewIds,
+            expandedReviewIds = state.expandedReviewIds,
+            sharedReviewIds = state.sharedReviewIds,
+            onReviewLikeClick = profileViewModel::toggleReviewLike,
+            onReviewExpandClick = profileViewModel::toggleReviewExpanded,
+            onReviewCommentClick = onReviewCommentClick,
+            onReviewShareClick = profileViewModel::toggleReviewShared,
+            onReviewPlaceClick = onReviewPlaceClick,
             modifier = modifier
         )
     }
@@ -56,9 +70,17 @@ fun ProfileScreen(
 @Composable
 private fun ProfileScreenPreview() {
     WayspotTheme {
+        val review = PreviewData.reviewDetailReview
         ProfileContent(
             user = PreviewData.userProfile,
-            reviews = emptyList(),
+            reviews = listOf(review),
+            reviewFeedItems = listOf(
+                ReviewFeedItem(
+                    review = review,
+                    place = PreviewDataPopular.previewPlaceInfo,
+                    author = PreviewData.reviewDetailAuthor
+                )
+            ),
             onEditProfileClick = {},
             onSavedPlacesClick = {},
             onSignOutClick = {},

@@ -33,6 +33,9 @@ class ReviewDetailViewModel @Inject constructor(
             it.copy(
                 isLoading = true,
                 errorMessage = null,
+                review = null,
+                place = null,
+                author = null,
                 comments = emptyList()
             )
         }
@@ -70,6 +73,40 @@ class ReviewDetailViewModel @Inject constructor(
                 )
             }
 
+        }
+    }
+
+    fun toggleReviewLike() {
+        val reviewId = _uiState.value.review?.id ?: return
+
+        viewModelScope.launch {
+            val result = reviewRepository.sendOrDeleteReviewLike(reviewId)
+
+            if (result.isSuccess) {
+                _uiState.update { state ->
+                    val review = state.review
+
+                    if (review == null || review.id != reviewId) {
+                        state
+                    } else {
+                        val delta = if (review.liked) -1 else 1
+
+                        state.copy(
+                            review = review.copy(
+                                liked = !review.liked,
+                                likesCount = review.likesCount + delta
+                            ),
+                            errorMessage = null
+                        )
+                    }
+                }
+            } else {
+                _uiState.update { state ->
+                    state.copy(
+                        errorMessage = result.exceptionOrNull()?.message
+                    )
+                }
+            }
         }
     }
 

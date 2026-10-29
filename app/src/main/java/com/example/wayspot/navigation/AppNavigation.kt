@@ -2,6 +2,7 @@ package com.example.wayspot.navigation
 
 import android.widget.Toast
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -152,11 +153,15 @@ fun AppNavigation(
             )
         }
 
-        composable(Screen.Profile.route) {
+            composable(Screen.Profile.route) {
 
             val profileViewModel: ProfileViewModel = hiltViewModel()
 
-            ProfileScreen(
+            LaunchedEffect(Unit) {
+                appNavigationViewModel.refreshFollowStats()
+            }
+
+                ProfileScreen(
                 profileViewModel = profileViewModel,
                 userProfile = userProfile,
 
@@ -174,6 +179,12 @@ fun AppNavigation(
 
                 onReviewClick = { reviewId ->
                     navController.navigate(Screen.ReviewDetail.createRoute(reviewId))
+                },
+                onReviewCommentClick = { reviewId ->
+                    navController.navigate(Screen.ReviewComment.createRoute(reviewId))
+                },
+                onReviewPlaceClick = { placeId ->
+                    navController.navigate(Screen.PlaceDetail.createRoute(placeId))
                 },
 
                 onSignOut = {
@@ -359,6 +370,9 @@ fun AppNavigation(
                 onBackClick = { navController.popBackStack() },
                 onCommentClick = { id ->
                     navController.navigate(Screen.ReviewComment.createRoute(id))
+                },
+                onPlaceClick = { placeId ->
+                    navController.navigate(Screen.PlaceDetail.createRoute(placeId))
                 },
                 commentsRefreshReviewId = appNavigationState.commentRefreshReviewId,
                 commentsRefreshVersion = appNavigationState.commentRefreshVersion,

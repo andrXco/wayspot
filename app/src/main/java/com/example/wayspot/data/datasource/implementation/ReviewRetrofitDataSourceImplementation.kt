@@ -13,7 +13,11 @@ class ReviewRetrofitDataSourceImplementation @Inject constructor(
 ) : ReviewRemoteDataSource {
 
     override suspend fun getReviews() = service.getReviews()
-    override suspend fun getReviewById(id: String) = service.getReviewById(id)
+
+    override suspend fun getReviewById(
+        id: String,
+        currentUserId: String?
+    ) = service.getReviewById(id)
 
     override suspend fun getReviewsByPlaceId(
         placeId: String
@@ -24,6 +28,19 @@ class ReviewRetrofitDataSourceImplementation @Inject constructor(
     override suspend fun createReview(review: SaveReviewDto) = service.createReview(review)
     override suspend fun updateReview(id: String, review: SaveReviewDto) = service.updateReview(id, review)
     override suspend fun deleteReview(id: String) = service.deleteReview(id)
+    override suspend fun sendOrDeleteReviewLike(
+        reviewId: String,
+        userId: String
+    ) {
+        throw UnsupportedOperationException("Review likes are not available through the REST data source.")
+    }
+
+    override suspend fun isReviewLiked(
+        reviewId: String,
+        userId: String
+    ): Boolean {
+        throw UnsupportedOperationException("Review like state is not available through the REST data source.")
+    }
     override suspend fun getComments(reviewId: String): List<CommentDto> = service.getComments(reviewId)
     override suspend fun createComment(reviewId: String, comment: CreateCommentDto) =
         service.createComment(reviewId, comment)

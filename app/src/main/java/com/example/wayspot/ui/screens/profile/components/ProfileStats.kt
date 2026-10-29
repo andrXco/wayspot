@@ -54,34 +54,34 @@ fun ProfileStats(
             verticalAlignment = Alignment.CenterVertically
         ) {
             ProfileStat(
-                value = stats.places.toString(),
-                label = stringResource(R.string.profile_label_places),
-                modifier = Modifier.weight(1f)
-            )
-
-            VerticalDivider(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(1.dp),
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.22f)
-            )
-
-            ProfileStat(
-                value = stats.reviews.toString(),
-                label = stringResource(R.string.profile_label_reviews),
-                modifier = Modifier.weight(1f)
-            )
-
-            VerticalDivider(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(1.dp),
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.22f)
-            )
-
-            ProfileStat(
                 value = stats.followers,
                 label = stringResource(R.string.profile_label_followers),
+                modifier = Modifier.weight(1f)
+            )
+
+            VerticalDivider(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(1.dp),
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.22f)
+            )
+
+            ProfileStat(
+                value = stats.following,
+                label = stringResource(R.string.profile_label_following),
+                modifier = Modifier.weight(1f)
+            )
+
+            VerticalDivider(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(1.dp),
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.22f)
+            )
+
+            ProfileStat(
+                value = stats.places.toString(),
+                label = stringResource(R.string.profile_label_places),
                 modifier = Modifier.weight(1f)
             )
         }

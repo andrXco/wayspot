@@ -23,6 +23,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.rounded.FavoriteBorder
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import com.example.wayspot.R
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.local.PreviewDataPopular
@@ -40,6 +45,7 @@ fun ReviewDetailScreen(
     reviewId: String,
     onBackClick: () -> Unit,
     onCommentClick: (String) -> Unit,
+    onPlaceClick: (String) -> Unit,
     commentsRefreshReviewId: String?,
     commentsRefreshVersion: Int,
     onCommentsRefreshConsumed: (String, Int) -> Unit,
@@ -63,13 +69,15 @@ fun ReviewDetailScreen(
         state = state,
         onBackClick = onBackClick,
         onCommentClick = { onCommentClick(reviewId) },
+        onPlaceClick = { placeId -> onPlaceClick(placeId) },
         onAuthorClick = onAuthorClick,
         onEditClick = { onEditClick(reviewId) },
         onDeleteClick = viewModel::requestDelete,
         onConfirmDelete = viewModel::deleteReview,
         onDismissDelete = viewModel::dismissDelete,
         currentUserId = viewModel.currentUserId,
-        modifier = modifier
+        modifier = modifier,
+        onLikeClick = viewModel::toggleReviewLike,
     )
 }
 
@@ -78,13 +86,15 @@ fun ReviewDetailContent(
     state: ReviewDetailState,
     onBackClick: () -> Unit,
     onCommentClick: () -> Unit,
+    onPlaceClick: (String) -> Unit,
     onAuthorClick: (String) -> Unit,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onConfirmDelete: () -> Unit,
     onDismissDelete: () -> Unit,
     currentUserId: String?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onLikeClick: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -133,12 +143,57 @@ fun ReviewDetailContent(
                         author = state.author,
                         canManage = currentUserId != null && review.userId == currentUserId,
                         isDeleting = state.isDeleting,
+                        onPlaceClick = onPlaceClick,
                         onAuthorClick = { onAuthorClick(review.userId) },
                         onEditClick = onEditClick,
                         onDeleteClick = onDeleteClick,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
+
+                item(key = "review-likes") {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        IconButton(
+                            onClick = onLikeClick,
+                            enabled = currentUserId != null
+                        ) {
+                            Icon(
+                                imageVector = if (review.liked) {
+                                    Icons.Filled.Favorite
+                                } else {
+                                    Icons.Rounded.FavoriteBorder
+                                },
+                                contentDescription = stringResource(
+                                    if (review.liked) {
+                                        R.string.home_review_unlike_content_description
+                                    } else {
+                                        R.string.home_review_like_content_description
+                                    },
+                                    state.author?.name.orEmpty()
+                                ),
+                                tint = if (review.liked) {
+                                    MaterialTheme.colorScheme.tertiary
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                }
+                            )
+                        }
+
+                        Text(
+                            text = stringResource(
+                                R.string.home_review_action_count,
+                                review.likesCount
+                            ),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
                 item(key = "comments-header") {
                     ReviewCommentsHeader(
                         count = state.comments.size,
@@ -208,12 +263,14 @@ private fun ReviewDetailScreenPreview() {
             ),
             onBackClick = {},
             onCommentClick = {},
+            onPlaceClick = {},
             onAuthorClick = {},
             onEditClick = {},
             onDeleteClick = {},
             onConfirmDelete = {},
             onDismissDelete = {},
-            currentUserId = null
+            currentUserId = null,
+            onLikeClick = {},
         )
     }
 }

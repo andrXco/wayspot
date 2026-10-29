@@ -21,7 +21,36 @@ class UserRetrofitDataSourceImplementation @Inject constructor(
         registerUserDto: RegisterUserDto,
         userId: String
     ) {
-        TODO("Not yet implemented")
+        throw UnsupportedOperationException("User registration is not available through the REST data source.")
+    }
+
+    override suspend fun updateUser(
+        userDto: RegisterUserDto,
+        userId: String
+    ) {
+        throw UnsupportedOperationException("User updates are not available through the REST data source.")
+    }
+
+    override suspend fun updateUserAvatar(
+        userId: String,
+        avatarUrl: String
+    ) {
+        throw UnsupportedOperationException("Avatar updates are not available through the REST data source.")
+    }
+
+    override suspend fun isFollowing(
+        followerId: String,
+        followedId: String
+    ): Boolean {
+        throw UnsupportedOperationException("Follow state is not available through the REST data source.")
+    }
+
+    override suspend fun getFollowersCount(userId: String): Int {
+        throw UnsupportedOperationException("Follower counts are not available through the REST data source.")
+    }
+
+    override suspend fun getFollowingCount(userId: String): Int {
+        throw UnsupportedOperationException("Following counts are not available through the REST data source.")
     }
 
     override suspend fun getReviewsByUserId(
@@ -29,6 +58,14 @@ class UserRetrofitDataSourceImplementation @Inject constructor(
     ): List<ReviewDto> {
         return service.getReviewsByUserId(userId)
     }
+
+    override suspend fun followOrUnfollowUser(
+        currentUserId: String,
+        targetUserId: String
+    ) {
+        throw UnsupportedOperationException("Follow operations are not available through the REST data source.")
+    }
+
 
 }
 
