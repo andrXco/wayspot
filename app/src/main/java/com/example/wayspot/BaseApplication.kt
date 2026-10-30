@@ -16,8 +16,8 @@ class BaseApplication : Application() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
 
-        // En modo debug la app se conecta al Firebase CLI (emulador local) y no al real.
-        if (BuildConfig.DEBUG) {
+        // La propiedad Gradle selecciona explícitamente Firebase local o Firebase Cloud.
+        if (BuildConfig.USE_FIREBASE_EMULATORS) {
             Firebase.firestore.useEmulator("10.0.2.2", 8080)
             Firebase.auth.useEmulator("10.0.2.2", 9099)
         }

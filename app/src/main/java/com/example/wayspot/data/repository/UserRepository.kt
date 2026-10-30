@@ -1,5 +1,6 @@
 package com.example.wayspot.data.repository
 
+import com.example.wayspot.BuildConfig
 import com.example.wayspot.data.model.user.UserInfo
 import com.example.wayspot.data.dto.RegisterUserDto
 import com.example.wayspot.data.model.review.ReviewInfo
@@ -50,7 +51,7 @@ class UserRepository @Inject constructor(
         userId: String
     ): Result<Unit> {
         return try {
-            val fcmToken = FirebaseMessaging.getInstance().token.await()
+            val fcmToken = getFcmTokenForCurrentEnvironment()
             val registerUserDto = RegisterUserDto(
                 username = username,
                 name = name,
@@ -84,7 +85,7 @@ class UserRepository @Inject constructor(
             ProfileNotificationPreferences()
     ): Result<Unit> {
         return try {
-            val fcmToken = FirebaseMessaging.getInstance().token.await()
+            val fcmToken = getFcmTokenForCurrentEnvironment()
             val userDto = RegisterUserDto(
                 username = username,
                 name = name,
@@ -104,6 +105,13 @@ class UserRepository @Inject constructor(
             Result.failure(e)
         }
     }
+
+    private suspend fun getFcmTokenForCurrentEnvironment(): String =
+        if (BuildConfig.USE_FIREBASE_EMULATORS) {
+            ""
+        } else {
+            FirebaseMessaging.getInstance().token.await()
+        }
 
     suspend fun updateUserAvatar(
         userId: String,

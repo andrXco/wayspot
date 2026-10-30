@@ -1,9 +1,9 @@
-package com.example.wayspot.data.repository
+package com.example.wayspot.repository
 
 import com.example.wayspot.data.datasource.UserRemoteDataSource
 import com.example.wayspot.data.dto.UserFirestoreDto
 import com.example.wayspot.data.repository.UserRepository
-import com.google.common.truth.Truth.assertThat
+import com.google.common.truth.Truth
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -28,10 +28,10 @@ class UserRepositoryTest {
 
         val result = repository.getUserById("user_1")
 
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()?.id).isEqualTo("user_1")
-        assertThat(result.getOrNull()?.name).isEqualTo("Usuario Uno")
-        assertThat(result.getOrNull()?.location).isEqualTo("Colombia")
+        Truth.assertThat(result.isSuccess).isTrue()
+        Truth.assertThat(result.getOrNull()?.id).isEqualTo("user_1")
+        Truth.assertThat(result.getOrNull()?.name).isEqualTo("Usuario Uno")
+        Truth.assertThat(result.getOrNull()?.location).isEqualTo("Colombia")
     }
 
     // Simula un error del data source y comprueba que el repositorio conserva esa misma causa.
@@ -42,8 +42,8 @@ class UserRepositoryTest {
 
         val result = repository.getUserById("missing")
 
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isSameInstanceAs(exception)
+        Truth.assertThat(result.isFailure).isTrue()
+        Truth.assertThat(result.exceptionOrNull()).isSameInstanceAs(exception)
     }
 
     // Simula una búsqueda sin resultado y verifica que el repositorio la convierte en un fallo.
@@ -53,8 +53,9 @@ class UserRepositoryTest {
 
         val result = repository.getUserById("user_999")
 
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()?.message).isEqualTo("Usuario user_999 no encontrado")
+        Truth.assertThat(result.isFailure).isTrue()
+        Truth.assertThat(result.exceptionOrNull()?.message)
+            .isEqualTo("Usuario user_999 no encontrado")
     }
 
     // Simula varios usuarios y comprueba que el repositorio devuelve sus perfiles mapeados.
@@ -67,8 +68,8 @@ class UserRepositoryTest {
 
         val result = repository.getUsers()
 
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()?.map { it.id }).containsExactly("user_1", "user_2")
+        Truth.assertThat(result.isSuccess).isTrue()
+        Truth.assertThat(result.getOrNull()?.map { it.id }).containsExactly("user_1", "user_2")
     }
 
     // Pide IDs repetidos y comprueba que el repositorio consulta cada ID una sola vez.
@@ -81,8 +82,8 @@ class UserRepositoryTest {
 
         val result = repository.getUsersByIds(listOf("user_1", "user_2", "user_1"))
 
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()?.map { it.id }).containsExactly("user_1", "user_2")
+        Truth.assertThat(result.isSuccess).isTrue()
+        Truth.assertThat(result.getOrNull()?.map { it.id }).containsExactly("user_1", "user_2")
         coVerify(exactly = 1) { dataSource.getUsersByIds(listOf("user_1", "user_2")) }
     }
 
@@ -97,9 +98,9 @@ class UserRepositoryTest {
 
         val result = repository.getUserById("user_1")
 
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()?.bio).isNull()
-        assertThat(result.getOrNull()?.location).isNull()
+        Truth.assertThat(result.isSuccess).isTrue()
+        Truth.assertThat(result.getOrNull()?.bio).isNull()
+        Truth.assertThat(result.getOrNull()?.location).isNull()
     }
 
     // Simula que un usuario sigue a otro y comprueba que el resultado se conserva.
@@ -109,8 +110,8 @@ class UserRepositoryTest {
 
         val result = repository.isFollowing("user_1", "user_2")
 
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).isTrue()
+        Truth.assertThat(result.isSuccess).isTrue()
+        Truth.assertThat(result.getOrNull()).isTrue()
     }
 
     // Simula una actualización correcta y verifica que el repositorio envía el ID y la URL al data source.
@@ -122,7 +123,7 @@ class UserRepositoryTest {
 
         val result = repository.updateUserAvatar("user_1", "https://example.test/avatar.png")
 
-        assertThat(result.isSuccess).isTrue()
+        Truth.assertThat(result.isSuccess).isTrue()
         coVerify(exactly = 1) {
             dataSource.updateUserAvatar("user_1", "https://example.test/avatar.png")
         }
@@ -137,8 +138,8 @@ class UserRepositoryTest {
 
         val result = repository.getFollowingUserIds("user_1")
 
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).containsExactly("user_2", "user_3")
+        Truth.assertThat(result.isSuccess).isTrue()
+        Truth.assertThat(result.getOrNull()).containsExactly("user_2", "user_3")
     }
 
     private fun userDto(
