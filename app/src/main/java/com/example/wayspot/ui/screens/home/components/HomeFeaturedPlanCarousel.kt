@@ -39,7 +39,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -350,9 +350,9 @@ private fun HomeCarouselDots(
 @WayspotMultiPreview
 @Composable
 private fun HomeFeaturedPlanCarouselPreview() {
-    val context = LocalContext.current
+    val resources = LocalResources.current
     val samplePlaces = PreviewDataPopular.listPlaces.map { place ->
-        place.toPlaceInfo { context.getString(it) }
+        place.toPlaceInfo { resources.getString(it) }
     }
     WayspotTheme {
         Surface {
