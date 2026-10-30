@@ -13,7 +13,7 @@ interface UserRemoteDataSource {
 
     suspend fun getUsersByIds(userIds: List<String>): List<UserDtoGeneric>
 
-    suspend fun getUserById(id: String): UserDtoGeneric
+    suspend fun getUserById(id: String): UserDtoGeneric?
 
     suspend fun registerUser(
         registerUserDto: RegisterUserDto,

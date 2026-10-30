@@ -31,6 +31,9 @@ class UserRepository @Inject constructor(
     suspend fun getUserById(id: String): Result<UserInfo> {
         return try {
             val user = userRemoteDataSource.getUserById(id)
+            if (user == null) {
+                return Result.failure(NoSuchElementException("Usuario $id no encontrado"))
+            }
             Result.success(user.toUserInfo())
         } catch (e: CancellationException) {
             throw e

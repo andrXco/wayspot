@@ -7,11 +7,13 @@ import com.example.wayspot.data.dto.ReviewFirestoreDto
 import com.example.wayspot.data.dto.UserDtoGeneric
 import com.example.wayspot.data.dto.UserFirestoreDto
 import com.example.wayspot.data.dto.NotificationActorEventDto
+import com.example.wayspot.data.model.user.UserProfile
 import com.example.wayspot.data.model.user.UserRelationshipListType
 import com.example.wayspot.data.model.user.UserRelationshipRules
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -52,14 +54,14 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
             }
     }
 
-    override suspend fun getUserById(id: String): UserFirestoreDto {
+    override suspend fun getUserById(id: String): UserFirestoreDto? {
 
         val docRef = db.collection("users").document(id)
 
         val snapshot = docRef.get().await()
 
         val user = snapshot.toObject(UserFirestoreDto::class.java)
-            ?: throw Exception("No se pudieron obtener los datos del usuario")
+            ?: return null
 
         return user.copy(id = snapshot.id)
     }
