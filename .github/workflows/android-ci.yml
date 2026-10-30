@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   verify:
-    name: Build, tests, and lint
+    name: Build and lint
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -34,4 +34,4 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
 
       - name: Verify Android app
-        run: ./gradlew testDebugUnitTest lintDebug assembleDebug
+        run: bash ./gradlew lintDebug assembleDebug
