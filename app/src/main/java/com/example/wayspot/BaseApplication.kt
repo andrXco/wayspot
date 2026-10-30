@@ -1,7 +1,6 @@
 package com.example.wayspot
 
 import android.app.Application
-import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.auth
@@ -16,8 +15,8 @@ class BaseApplication : Application() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
 
-        // La propiedad Gradle selecciona explícitamente Firebase local o Firebase Cloud.
-        if (BuildConfig.USE_FIREBASE_EMULATORS) {
+        // En la variante debug, Auth y Firestore usan los emuladores locales.
+        if (BuildConfig.DEBUG) {
             Firebase.firestore.useEmulator("10.0.2.2", 8080)
             Firebase.auth.useEmulator("10.0.2.2", 9099)
         }

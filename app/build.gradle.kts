@@ -7,10 +7,6 @@ plugins {
     alias(libs.plugins.firebase.crashlytics)
 }
 
-val useFirebaseEmulators = providers.gradleProperty("useFirebaseEmulators")
-    .getOrElse("true")
-    .toBoolean()
-
 android {
     namespace = "com.example.wayspot"
     compileSdk {
@@ -23,7 +19,6 @@ android {
         targetSdk = 37
         versionCode = 1
         versionName = "1.0"
-        buildConfigField("boolean", "USE_FIREBASE_EMULATORS", useFirebaseEmulators.toString())
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

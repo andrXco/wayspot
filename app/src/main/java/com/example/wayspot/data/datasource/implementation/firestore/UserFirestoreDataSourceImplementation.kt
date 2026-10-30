@@ -80,21 +80,22 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
     ) {
         val docRef = db.collection("users").document(userId)
 
-        docRef.update(
-            mapOf(
-                "username" to userDto.username,
-                "name" to userDto.name,
-                "country" to userDto.country,
-                "bio" to userDto.bio,
-                "avatarUrl" to userDto.avatarUrl,
-                "fcmToken" to userDto.fcmToken,
-                "notificationPreferences" to mapOf(
-                    "newFollowers" to userDto.notificationPreferences.newFollowers,
-                    "reviewComments" to userDto.notificationPreferences.reviewComments,
-                    "likesReceived" to userDto.notificationPreferences.likesReceived
-                )
+        val updates = mutableMapOf<String, Any?>(
+            "username" to userDto.username,
+            "name" to userDto.name,
+            "country" to userDto.country,
+            "bio" to userDto.bio,
+            "avatarUrl" to userDto.avatarUrl,
+            "notificationPreferences" to mapOf(
+                "newFollowers" to userDto.notificationPreferences.newFollowers,
+                "reviewComments" to userDto.notificationPreferences.reviewComments,
+                "likesReceived" to userDto.notificationPreferences.likesReceived
             )
-        ).await()
+        )
+        if (userDto.fcmToken.isNotBlank()) {
+            updates["fcmToken"] = userDto.fcmToken
+        }
+        docRef.update(updates).await()
     }
 
     override suspend fun updateUserAvatar(
