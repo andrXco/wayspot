@@ -67,7 +67,6 @@ internal fun SplashScreen.configureWaySpotExitAnimation() {
             .start()
     }
 }
-
 /**
  * Raíz visual de WaySpot.
  *
@@ -93,14 +92,33 @@ fun WaySpotApp(
     ) {
         localNetworkPermissionHandled = true
     }
+    var notificationPermissionHandled by remember {
+        mutableStateOf(
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+        )
+    }
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {
+        notificationPermissionHandled = true
+    }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(localNetworkPermissionHandled, notificationPermissionHandled) {
         if (!localNetworkPermissionHandled) {
             localNetworkPermissionLauncher.launch(Manifest.permission.ACCESS_LOCAL_NETWORK)
+            return@LaunchedEffect
+        }
+
+        if (!notificationPermissionHandled) {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
 
-    if (!localNetworkPermissionHandled) return
+    if (!localNetworkPermissionHandled || !notificationPermissionHandled) return
 
     WayspotTheme {
         val navController = rememberNavController()

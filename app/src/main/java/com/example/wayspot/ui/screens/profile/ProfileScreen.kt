@@ -24,7 +24,9 @@ fun ProfileScreen(
     onSavedPlacesClick: () -> Unit = {},
     onReviewClick: (String) -> Unit = {},
     onReviewCommentClick: (String) -> Unit = {},
-    onReviewPlaceClick: (String) -> Unit = {}
+    onReviewPlaceClick: (String) -> Unit = {},
+    onFollowersClick: () -> Unit = {},
+    onFollowingClick: () -> Unit = {}
 ) {
     val state by profileViewModel.uiState.collectAsState()
 
@@ -61,6 +63,8 @@ fun ProfileScreen(
             onReviewCommentClick = onReviewCommentClick,
             onReviewShareClick = profileViewModel::toggleReviewShared,
             onReviewPlaceClick = onReviewPlaceClick,
+            onFollowersClick = onFollowersClick,
+            onFollowingClick = onFollowingClick,
             modifier = modifier
         )
     }

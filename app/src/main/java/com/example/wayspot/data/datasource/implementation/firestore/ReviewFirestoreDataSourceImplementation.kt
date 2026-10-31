@@ -8,13 +8,15 @@ import com.example.wayspot.data.dto.CreateCommentFirestoreDto
 import com.example.wayspot.data.datasource.ReviewRemoteDataSource
 import com.example.wayspot.data.dto.CreateCommentDto
 import com.google.firebase.firestore.FieldValue
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class ReviewFirestoreDataSourceImplementation @Inject constructor(
     private val db: FirebaseFirestore
 ) : ReviewRemoteDataSource {
-
 
     override suspend fun createReview(
         review: SaveReviewDto
@@ -251,6 +253,32 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
             ) ?: throw Exception("No se pudo obtener el comentario")
 
             comment.copy(id = document.id)
+        }
+    }
+
+    fun listenAllReviews(): Flow<List<ReviewFirestoreDto>> = callbackFlow {
+        val listenerRegistration = db.collection("reviews")
+            .addSnapshotListener { snapshots, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+
+                if (snapshots == null) {
+                    close(IllegalStateException("No se recibió una instantánea de reseñas"))
+                    return@addSnapshotListener
+                }
+
+                val reviews = snapshots.documents.mapNotNull { document ->
+                    document.toObject(ReviewFirestoreDto::class.java)
+                        ?.copy(id = document.id)
+                }
+
+                trySend(reviews)
+            }
+
+        awaitClose {
+            listenerRegistration.remove()
         }
     }
 }

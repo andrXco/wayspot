@@ -6,5 +6,7 @@ data class UserInfo(
     val username: String,
     val bio: String?,
     val location: String?,
-    val avatarUrl: String?
+    val avatarUrl: String?,
+    val notificationPreferences: ProfileNotificationPreferences =
+        ProfileNotificationPreferences()
 )

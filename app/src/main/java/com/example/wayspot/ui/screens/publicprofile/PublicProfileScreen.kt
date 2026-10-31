@@ -25,6 +25,8 @@ fun PublicProfileScreen(
     userId: String,
     onBackClick: () -> Unit,
     onReviewClick: (String) -> Unit,
+    onFollowersClick: () -> Unit,
+    onFollowingClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -37,6 +39,8 @@ fun PublicProfileScreen(
         state = state,
         onBackClick = onBackClick,
         onReviewClick = onReviewClick,
+        onFollowersClick = onFollowersClick,
+        onFollowingClick = onFollowingClick,
         onFollowClick = viewModel::toggleFollow,
         modifier = modifier
     )
@@ -47,6 +51,8 @@ fun PublicProfileContent(
     state: PublicProfileState,
     onBackClick: () -> Unit,
     onReviewClick: (String) -> Unit,
+    onFollowersClick: () -> Unit,
+    onFollowingClick: () -> Unit,
     onFollowClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -84,6 +90,8 @@ fun PublicProfileContent(
                 onSavedPlacesClick = {},
                 onSignOutClick = {},
                 onReviewClick = onReviewClick,
+                onFollowersClick = onFollowersClick,
+                onFollowingClick = onFollowingClick,
                 isOwnProfile = false,
                 isLoading = state.isLoading,
                 errorMessage = state.errorMessage,
@@ -122,6 +130,8 @@ private fun PublicProfileScreenPreview() {
             ),
             onBackClick = {},
             onReviewClick = {},
+            onFollowersClick = {},
+            onFollowingClick = {},
             onFollowClick = {}
         )
     }

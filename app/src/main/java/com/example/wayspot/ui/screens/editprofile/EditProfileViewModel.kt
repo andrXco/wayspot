@@ -241,7 +241,8 @@ class EditProfileViewModel @Inject constructor(
                 country = updatedProfile.location,
                 bio = updatedProfile.bio,
                 userId = firebaseUser.uid,
-                avatarUrl = updatedProfile.avatarUrl
+                avatarUrl = updatedProfile.avatarUrl,
+                notificationPreferences = updatedProfile.notificationPreferences
             )
 
 

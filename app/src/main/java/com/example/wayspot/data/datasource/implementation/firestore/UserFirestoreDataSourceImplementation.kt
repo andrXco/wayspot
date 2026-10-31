@@ -3,17 +3,20 @@ package com.example.wayspot.data.datasource.implementation.firestore
 
 import com.example.wayspot.data.datasource.UserRemoteDataSource
 import com.example.wayspot.data.dto.RegisterUserDto
+import com.example.wayspot.data.dto.ReviewFirestoreDto
+import com.example.wayspot.data.dto.UserDtoGeneric
 import com.example.wayspot.data.dto.UserFirestoreDto
+import com.example.wayspot.data.model.user.UserRelationshipListType
+import com.example.wayspot.data.model.user.UserRelationshipRules
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.example.wayspot.data.dto.ReviewFirestoreDto
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class UserFirestoreDataSourceImplementation @Inject constructor(
     private val db: FirebaseFirestore
 ) : UserRemoteDataSource {
-
 
     override suspend fun getUsers(): List<UserFirestoreDto> {
 
@@ -68,7 +71,13 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
                 "name" to userDto.name,
                 "country" to userDto.country,
                 "bio" to userDto.bio,
-                "avatarUrl" to userDto.avatarUrl
+                "avatarUrl" to userDto.avatarUrl,
+                "fcmToken" to userDto.fcmToken,
+                "notificationPreferences" to mapOf(
+                    "newFollowers" to userDto.notificationPreferences.newFollowers,
+                    "reviewComments" to userDto.notificationPreferences.reviewComments,
+                    "likesReceived" to userDto.notificationPreferences.likesReceived
+                )
             )
         ).await()
     }
@@ -82,9 +91,11 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
         val userDto = RegisterUserDto(
             username = user.username,
             name = user.name,
+            fcmToken = user.fcmToken,
             country = user.country,
             bio = user.bio,
-            avatarUrl = avatarUrl
+            avatarUrl = avatarUrl,
+            notificationPreferences = user.notificationPreferences
         )
 
         updateUser(userDto, userId)
@@ -123,6 +134,48 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
             .await()
 
         return snapshot.getLong("followingCount")?.toInt() ?: 0
+    }
+
+    override suspend fun getUserConnections(
+        userId: String,
+        relationshipType: UserRelationshipListType
+    ): List<UserDtoGeneric> {
+        val connectedUserIds = getUserConnectionIds(userId, relationshipType)
+        val usersById = connectedUserIds
+            .chunked(UserRelationshipRules.MAX_USER_IDS_PER_QUERY)
+            .flatMap { userIds ->
+                db.collection("users")
+                    .whereIn(FieldPath.documentId(), userIds)
+                    .get()
+                    .await()
+                    .documents
+                    .mapNotNull { document ->
+                        document.toObject(UserFirestoreDto::class.java)
+                            ?.copy(id = document.id)
+                            ?.let { document.id to it }
+                    }
+            }
+            .toMap()
+
+        return connectedUserIds.mapNotNull(usersById::get)
+    }
+
+    override suspend fun getUserConnectionIds(
+        userId: String,
+        relationshipType: UserRelationshipListType
+    ): List<String> {
+        val collectionName = when (relationshipType) {
+            UserRelationshipListType.FOLLOWERS -> "followers"
+            UserRelationshipListType.FOLLOWING -> "following"
+        }
+
+        return db.collection("users")
+            .document(userId)
+            .collection(collectionName)
+            .get()
+            .await()
+            .documents
+            .map { it.id }
     }
 
     override suspend fun followOrUnfollowUser(
@@ -212,5 +265,4 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
             review.copy(id = document.id)
         }
     }
-
 }

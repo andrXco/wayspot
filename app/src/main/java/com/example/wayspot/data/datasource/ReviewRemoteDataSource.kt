@@ -45,5 +45,4 @@ interface ReviewRemoteDataSource {
         reviewId: String,
         comment: CreateCommentDto
     ): CommentDtoGeneric
-
 }

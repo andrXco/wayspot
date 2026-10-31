@@ -1,6 +1,7 @@
 package com.example.wayspot.ui.screens.home
 
 import androidx.lifecycle.ViewModel
+import com.example.wayspot.data.repository.AuthRepository
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.model.home.HomeCategoryId
 import com.example.wayspot.data.model.home.HomeRules
@@ -18,6 +19,9 @@ import com.example.wayspot.data.repository.PlaceRepository
 import com.example.wayspot.data.repository.ReviewRepository
 import com.example.wayspot.data.repository.UserRepository
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 
 
 /**
@@ -28,17 +32,21 @@ import kotlinx.coroutines.launch
 class HomeViewModel @Inject constructor(
     private val placeRepository: PlaceRepository,
     private val reviewRepository: ReviewRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeState())
     val uiState: StateFlow<HomeState> = _uiState
+    private var homeLoadJob: Job? = null
+    private var followingLoadJob: Job? = null
 
     fun refresh() {
         if (!_uiState.value.isLoading) loadHome()
     }
 
     private fun loadHome() {
+        homeLoadJob?.cancel()
         val selectedCategory = _uiState.value.selectedCategory ?: HomeCategoryId.NATURE
 
         _uiState.update { currentState ->
@@ -60,126 +68,172 @@ class HomeViewModel @Inject constructor(
         }
 
 
-        viewModelScope.launch {
-
+        homeLoadJob = viewModelScope.launch {
             val placesResult = placeRepository.getPlaces()
-            val reviewsResult = reviewRepository.getReviews()
-
-            val reviews = reviewsResult.getOrNull().orEmpty()
-
-
-            val needsUserFallback = reviews.any {
-                it.authorName.isNullOrBlank() ||
-                        it.authorUsername.isNullOrBlank() ||
-                        it.authorAvatarUrl.isNullOrBlank()
-            }
-
-            val usersResult = if (needsUserFallback) {
-                userRepository.getUsers()
-            } else {
-                Result.success(emptyList<UserInfo>())
-            }
-
-            val needsUserData = reviews.any {
-                it.authorName.isNullOrBlank() ||
-                        it.authorUsername.isNullOrBlank()
-            }
-
-            val error = placesResult.exceptionOrNull()
-                ?: reviewsResult.exceptionOrNull()
-                ?: if (needsUserData) usersResult.exceptionOrNull() else null
-
-            if (error != null) {
+            val places = placesResult.getOrNull()
+            if (places == null) {
                 _uiState.update { currentState ->
                     currentState.copy(
                         isLoading = false,
-                        errorMessage = error.message
+                        errorMessage = placesResult.exceptionOrNull()?.message
+                            ?: "No se pudieron cargar los lugares"
                     )
                 }
                 return@launch
             }
 
-            val places = placesResult.getOrNull().orEmpty()
+            val usersResult = userRepository.getUsers()
             val users = usersResult.getOrNull().orEmpty()
-            val feed = mutableListOf<ReviewFeedItem>()
-
-            for (index in reviews.size - 1 downTo 0) {
-                val review = reviews[index]
-
-                val place = places.find {
-                    it.id == review.placeId
-                }
-
-
-                val storedAuthor = users.find {
-                    it.id == review.userId
-                }
-
-                val author = if (
-                    !review.authorName.isNullOrBlank() &&
-                    !review.authorUsername.isNullOrBlank()
-                ) {
-                    UserInfo(
-                        id = review.userId,
-                        name = review.authorName,
-                        username = review.authorUsername,
-                        bio = null,
-                        location = null,
-                        avatarUrl = review.authorAvatarUrl
-                            ?.takeIf { it.isNotBlank() }
-                            ?: storedAuthor?.avatarUrl
-                    )
-
-                } else {
-                    storedAuthor
-                }
-
-
-                if (place != null && author != null) {
-                    feed.add(
-                        ReviewFeedItem(review, place, author)
-                    )
-                }
-            }
-
-            val likedReviewsResult = reviewRepository.getLikedReviewIds(
-                feed.map { item -> item.review.id }
-            )
-
-            val likedReviewIds = likedReviewsResult.getOrNull()
-            if (likedReviewIds == null) {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        isLoading = false,
-                        errorMessage = likedReviewsResult.exceptionOrNull()?.message
-                            ?: "No se pudieron cargar los likes"
-                    )
-                }
-                return@launch
-            }
-
-            val feedWithLikes = feed.map { item ->
-                item.copy(
-                    review = item.review.copy(
-                        liked = item.review.id in likedReviewIds
-                    )
-                )
-            }
-
             _uiState.update { currentState ->
-                currentState.copy(
-                    places = places,
-                    reviews = feedWithLikes,
-                    likedReviewIds = likedReviewIds,
-                    reviewLikeCounts = feedWithLikes.associate { item ->
-                        item.review.id to item.review.likesCount
-                    },
-                    isLoading = false,
-                    errorMessage = null
-                )
+                currentState.copy(places = places)
             }
 
+            reviewRepository.getAllReviews()
+                .catch { error ->
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            isLoading = false,
+                            errorMessage = error.message
+                                ?: "No se pudieron escuchar las reseñas"
+                        )
+                    }
+                }
+                .collect { reviews ->
+                    val feed = mutableListOf<ReviewFeedItem>()
 
+                    for (index in reviews.size - 1 downTo 0) {
+                        val review = reviews[index]
+                        val place = places.find { it.id == review.placeId }
+                        val storedAuthor = users.find { it.id == review.userId }
+                        val author = if (
+                            !review.authorName.isNullOrBlank() &&
+                            !review.authorUsername.isNullOrBlank()
+                        ) {
+                            UserInfo(
+                                id = review.userId,
+                                name = review.authorName,
+                                username = review.authorUsername,
+                                bio = storedAuthor?.bio,
+                                location = storedAuthor?.location,
+                                avatarUrl = review.authorAvatarUrl
+                                    ?.takeIf { it.isNotBlank() }
+                                    ?: storedAuthor?.avatarUrl
+                            )
+                        } else {
+                            storedAuthor
+                        }
+
+                        if (place != null && author != null) {
+                            feed.add(ReviewFeedItem(review, place, author))
+                        }
+                    }
+
+                    val needsMissingAuthor = reviews.any { review ->
+                        (review.authorName.isNullOrBlank() || review.authorUsername.isNullOrBlank()) &&
+                            users.none { user -> user.id == review.userId }
+                    }
+                    if (needsMissingAuthor && usersResult.isFailure) {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                isLoading = false,
+                                errorMessage = usersResult.exceptionOrNull()?.message
+                                    ?: "No se pudieron cargar los usuarios"
+                            )
+                        }
+                        return@collect
+                    }
+
+                    val likedReviewsResult = reviewRepository.getLikedReviewIds(
+                        feed.map { item -> item.review.id }
+                    )
+                    val likedReviewIds = likedReviewsResult.getOrNull()
+                    if (likedReviewIds == null) {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                isLoading = false,
+                                errorMessage = likedReviewsResult.exceptionOrNull()?.message
+                                    ?: "No se pudieron cargar los likes"
+                            )
+                        }
+                        return@collect
+                    }
+
+                    val feedWithLikes = feed.map { item ->
+                        item.copy(
+                            review = item.review.copy(
+                                liked = item.review.id in likedReviewIds
+                            )
+                        )
+                    }
+
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            reviews = feedWithLikes,
+                            likedReviewIds = likedReviewIds,
+                            reviewLikeCounts = feedWithLikes.associate { item ->
+                                item.review.id to item.review.likesCount
+                            },
+                            isLoading = false,
+                            errorMessage = null
+                        )
+                    }
+                }
+        }
+    }
+
+    fun toggleFollowingFilter() {
+        val currentState = _uiState.value
+        if (currentState.isLoadingFollowingUsers) return
+
+        if (currentState.isFollowingOnly) {
+            _uiState.update { state ->
+                state.copy(
+                    isFollowingOnly = false,
+                    followingUsersLoadFailed = false
+                )
+            }
+            return
+        }
+
+        val currentUserId = authRepository.currentUser?.uid
+        if (currentUserId.isNullOrBlank()) {
+            _uiState.update { state ->
+                state.copy(followingUsersLoadFailed = true)
+            }
+            return
+        }
+
+        followingLoadJob?.cancel()
+        _uiState.update { state ->
+            state.copy(
+                isFollowingOnly = true,
+                isLoadingFollowingUsers = true,
+                followingUsersLoadFailed = false
+            )
+        }
+
+        followingLoadJob = viewModelScope.launch {
+            val result = userRepository.getFollowingUserIds(currentUserId)
+            result.fold(
+                onSuccess = { userIds ->
+                    _uiState.update { state ->
+                        state.copy(
+                            followingUserIds = userIds,
+                            isLoadingFollowingUsers = false,
+                            followingUsersLoadFailed = false
+                        )
+                    }
+                },
+                onFailure = {
+                    _uiState.update { state ->
+                        state.copy(
+                            isFollowingOnly = false,
+                            isLoadingFollowingUsers = false,
+                            followingUsersLoadFailed = true
+                        )
+                    }
+                }
+            )
         }
     }
 

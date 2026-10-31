@@ -4,8 +4,12 @@ import com.example.wayspot.data.model.user.UserInfo
 import com.example.wayspot.data.dto.RegisterUserDto
 import com.example.wayspot.data.model.review.ReviewInfo
 import com.example.wayspot.data.datasource.UserRemoteDataSource
+import com.example.wayspot.data.model.user.ProfileNotificationPreferences
+import com.example.wayspot.data.model.user.UserRelationshipListType
+import com.google.firebase.messaging.FirebaseMessaging
 import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.tasks.await
 
 class UserRepository @Inject constructor(
     private val userRemoteDataSource: UserRemoteDataSource
@@ -41,11 +45,14 @@ class UserRepository @Inject constructor(
         userId: String
     ): Result<Unit> {
         return try {
+            val fcmToken = FirebaseMessaging.getInstance().token.await()
             val registerUserDto = RegisterUserDto(
                 username = username,
                 name = name,
+                fcmToken = fcmToken,
                 country = country,
-                bio = bio
+                bio = bio,
+                notificationPreferences = ProfileNotificationPreferences()
             )
 
             userRemoteDataSource.registerUser(
@@ -67,15 +74,20 @@ class UserRepository @Inject constructor(
         country: String?,
         bio: String?,
         userId: String,
-        avatarUrl: String? = null
+        avatarUrl: String? = null,
+        notificationPreferences: ProfileNotificationPreferences =
+            ProfileNotificationPreferences()
     ): Result<Unit> {
         return try {
+            val fcmToken = FirebaseMessaging.getInstance().token.await()
             val userDto = RegisterUserDto(
                 username = username,
                 name = name,
+                fcmToken = fcmToken,
                 country = country,
                 bio = bio,
-                avatarUrl = avatarUrl
+                avatarUrl = avatarUrl,
+                notificationPreferences = notificationPreferences
             )
 
             userRemoteDataSource.updateUser(userDto, userId)
@@ -129,6 +141,37 @@ class UserRepository @Inject constructor(
     suspend fun getFollowingCount(userId: String): Result<Int> {
         return try {
             Result.success(userRemoteDataSource.getFollowingCount(userId))
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getUserConnections(
+        userId: String,
+        relationshipType: UserRelationshipListType
+    ): Result<List<UserInfo>> {
+        return try {
+            val users = userRemoteDataSource.getUserConnections(
+                userId = userId,
+                relationshipType = relationshipType
+            )
+            Result.success(users.map { it.toUserInfo() })
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getFollowingUserIds(userId: String): Result<Set<String>> {
+        return try {
+            val followingUserIds = userRemoteDataSource.getUserConnectionIds(
+                userId = userId,
+                relationshipType = UserRelationshipListType.FOLLOWING
+            )
+            Result.success(followingUserIds.toSet())
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
