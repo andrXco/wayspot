@@ -50,14 +50,13 @@ fun ProfileReviewItem(
     feedItem: ReviewFeedItem? = null,
     likeCount: Int = 0,
     isLiked: Boolean = false,
+    isLikeActionVisible: Boolean = true,
     isExpanded: Boolean = false,
-    isShared: Boolean = false,
     onAuthorClick: () -> Unit = {},
     onPlaceClick: () -> Unit = {},
     onLikeClick: () -> Unit = {},
     onExpandClick: () -> Unit = {},
-    onCommentClick: () -> Unit = {},
-    onShareClick: () -> Unit = {}
+    onCommentClick: () -> Unit = {}
 ) {
     if (feedItem != null) {
         HomeReviewCard(
@@ -65,15 +64,18 @@ fun ProfileReviewItem(
             likeCount = likeCount,
             isLiked = isLiked,
             isExpanded = isExpanded,
-            isShared = isShared,
+            isShared = false,
             onReviewClick = onClick,
             onAuthorClick = onAuthorClick,
             onPlaceClick = onPlaceClick,
             onLikeClick = onLikeClick,
             onExpandClick = onExpandClick,
             onCommentClick = onCommentClick,
-            onShareClick = onShareClick,
-            modifier = modifier
+            onShareClick = {},
+            modifier = modifier,
+            isAuthorClickable = false,
+            isLikeActionVisible = isLikeActionVisible,
+            showShareAction = false
         )
         return
     }

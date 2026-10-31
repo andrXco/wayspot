@@ -475,6 +475,12 @@ fun AppNavigation(
                 userId = userId,
                 onBackClick = { navController.popBackStack() },
                 onReviewClick = { id -> navController.navigate(Screen.ReviewDetail.createRoute(id)) },
+                onReviewCommentClick = { id ->
+                    navController.navigate(Screen.ReviewComment.createRoute(id))
+                },
+                onReviewPlaceClick = { id ->
+                    navController.navigate(Screen.PlaceDetail.createRoute(id))
+                },
                 onFollowersClick = {
                     navController.navigate(
                         Screen.UserConnections.createRoute(

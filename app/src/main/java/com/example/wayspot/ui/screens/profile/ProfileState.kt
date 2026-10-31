@@ -13,7 +13,7 @@ data class ProfileState(
     val reviewLikeCounts: Map<String, Int> = emptyMap(),
     val likedReviewIds: Set<String> = emptySet(),
     val expandedReviewIds: Set<String> = emptySet(),
-    val sharedReviewIds: Set<String> = emptySet(),
+    val areReviewLikesLoaded: Boolean = false,
     val isLoading: Boolean = false,
     val errorMessage: String? = null
 )

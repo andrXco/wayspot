@@ -48,12 +48,11 @@ fun ProfileContent(
     reviewFeedItems: List<ReviewFeedItem> = emptyList(),
     reviewLikeCounts: Map<String, Int> = emptyMap(),
     likedReviewIds: Set<String> = emptySet(),
+    areReviewLikesLoaded: Boolean = true,
     expandedReviewIds: Set<String> = emptySet(),
-    sharedReviewIds: Set<String> = emptySet(),
     onReviewLikeClick: (String) -> Unit = {},
     onReviewExpandClick: (String) -> Unit = {},
     onReviewCommentClick: (String) -> Unit = {},
-    onReviewShareClick: (String) -> Unit = {},
     onReviewPlaceClick: (String) -> Unit = {},
     onFollowersClick: () -> Unit = {},
     onFollowingClick: () -> Unit = {},
@@ -211,11 +210,11 @@ fun ProfileContent(
             ProfileReviewItem(
                 review = review,
                 author = user,
-                feedItem = feedItem.takeIf { isOwnProfile },
+                feedItem = feedItem,
                 likeCount = reviewLikeCounts[review.id] ?: 0,
                 isLiked = review.id in likedReviewIds,
+                isLikeActionVisible = areReviewLikesLoaded,
                 isExpanded = review.id in expandedReviewIds,
-                isShared = review.id in sharedReviewIds,
                 onClick = { onReviewClick(review.id) },
                 onAuthorClick = {},
                 onPlaceClick = {
@@ -224,8 +223,7 @@ fun ProfileContent(
                 onLikeClick = { onReviewLikeClick(review.id) },
                 onExpandClick = { onReviewExpandClick(review.id) },
                 onCommentClick = { onReviewCommentClick(review.id) },
-                onShareClick = { onReviewShareClick(review.id) },
-                modifier = if (feedItem != null && isOwnProfile) {
+                modifier = if (feedItem != null) {
                     Modifier.padding(horizontal = 16.dp, vertical = 7.dp)
                 } else {
                     Modifier.fillMaxWidth()

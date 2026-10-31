@@ -1,8 +1,10 @@
 package com.example.wayspot.ui.screens.placedetail
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
@@ -11,7 +13,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.unit.dp
+import com.example.wayspot.data.local.PreviewData
+import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.data.model.place.PlaceInfo
 import com.example.wayspot.data.model.review.ReviewInfo
 import com.example.wayspot.data.model.place.toPlaceInfo
@@ -72,7 +77,9 @@ fun PlaceDetailContent(
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface),
         contentPadding = PaddingValues(bottom = 32.dp)
     ) {
         item {
@@ -94,7 +101,14 @@ fun PlaceDetailContent(
             )
         }
         if (reviews.isNotEmpty()) {
-            item(key = "reviews-header") { RecentReviewsHeader() }
+            item(key = "reviews-header") {
+                RecentReviewsHeader(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp)
+                        .padding(top = 20.dp, bottom = 8.dp)
+                )
+            }
             items(reviews, key = { it.id }) { review ->
                 PlaceReviewCard(
                     review = review,
@@ -111,16 +125,8 @@ fun PlaceDetailContent(
 private fun PlaceDetailScreenPreview() {
     WayspotTheme {
         PlaceDetailContent(
-            place = PlaceInfo(
-                id = "1",
-                title = "Monserrate",
-                category = "Turismo",
-                location = "Bogotá, Colombia",
-                rating = 4.7,
-                imageUrl = null,
-                description = "Lugar turístico ubicado en Bogotá"
-            ),
-            reviews = emptyList(),
+            place = PreviewDataPopular.previewPlaceInfo,
+            reviews = listOf(PreviewData.reviewDetailReview),
             onBackClick = {},
             onSaveClick = {},
             onShareClick = {},

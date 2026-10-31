@@ -58,7 +58,10 @@ fun HomeReviewCard(
     onExpandClick: () -> Unit,
     onCommentClick: () -> Unit,
     onShareClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isAuthorClickable: Boolean = true,
+    isLikeActionVisible: Boolean = true,
+    showShareAction: Boolean = true
 ) {
     val rating = HomeRules.normalizedReviewRating(item.review.rating)
     val authorName = item.author.name
@@ -85,6 +88,7 @@ fun HomeReviewCard(
                 username = item.author.username,
                 avatarUrl = item.author.avatarUrl,
                 onClick = onAuthorClick,
+                isClickable = isAuthorClickable,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
 
@@ -132,6 +136,8 @@ fun HomeReviewCard(
                 likeCount = likeCount,
                 isLiked = isLiked,
                 isShared = isShared,
+                isLikeActionVisible = isLikeActionVisible,
+                showShareAction = showShareAction,
                 onLikeClick = onLikeClick,
                 onCommentClick = onCommentClick,
                 onShareClick = onShareClick,
@@ -148,12 +154,15 @@ private fun HomeReviewAuthorRow(
     username: String,
     avatarUrl: String?,
     onClick: () -> Unit,
+    isClickable: Boolean,
     modifier: Modifier = Modifier
 )
  {
     val avatarDescription = stringResource(R.string.home_review_avatar_content_description, name)
     Row(
-        modifier = modifier.fillMaxWidth().clickable(onClick = onClick),
+        modifier = modifier
+            .fillMaxWidth()
+            .then(if (isClickable) Modifier.clickable(onClick = onClick) else Modifier),
         verticalAlignment = Alignment.CenterVertically
     ) {
 
@@ -246,30 +255,34 @@ private fun HomeReviewActions(
     likeCount: Int,
     isLiked: Boolean,
     isShared: Boolean,
+    isLikeActionVisible: Boolean,
+    showShareAction: Boolean,
     onLikeClick: () -> Unit,
     onCommentClick: () -> Unit,
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        IconButton(onClick = onLikeClick) {
-            Icon(
-                imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Rounded.FavoriteBorder,
-                contentDescription = stringResource(
-                    if (isLiked) R.string.home_review_unlike_content_description
-                    else R.string.home_review_like_content_description,
-                    authorName
-                ),
-                tint = if (isLiked) MaterialTheme.colorScheme.tertiary
-                    else MaterialTheme.colorScheme.onSurfaceVariant
+        if (isLikeActionVisible) {
+            IconButton(onClick = onLikeClick) {
+                Icon(
+                    imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Rounded.FavoriteBorder,
+                    contentDescription = stringResource(
+                        if (isLiked) R.string.home_review_unlike_content_description
+                        else R.string.home_review_like_content_description,
+                        authorName
+                    ),
+                    tint = if (isLiked) MaterialTheme.colorScheme.tertiary
+                        else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Text(
+                text = stringResource(R.string.home_review_action_count, likeCount),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            Spacer(modifier = Modifier.width(10.dp))
         }
-        Text(
-            text = stringResource(R.string.home_review_action_count, likeCount),
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(modifier = Modifier.width(10.dp))
         IconButton(onClick = onCommentClick) {
             Icon(
                 imageVector = Icons.Rounded.ChatBubbleOutline,
@@ -277,18 +290,20 @@ private fun HomeReviewActions(
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-        Spacer(modifier = Modifier.weight(1f))
-        IconButton(onClick = onShareClick) {
-            Icon(
-                imageVector = Icons.Rounded.Share,
-                contentDescription = stringResource(
-                    if (isShared) R.string.home_review_shared_content_description
-                    else R.string.home_review_share_content_description,
-                    authorName
-                ),
-                tint = if (isShared) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.onSurfaceVariant
-            )
+        if (showShareAction) {
+            Spacer(modifier = Modifier.weight(1f))
+            IconButton(onClick = onShareClick) {
+                Icon(
+                    imageVector = Icons.Rounded.Share,
+                    contentDescription = stringResource(
+                        if (isShared) R.string.home_review_shared_content_description
+                        else R.string.home_review_share_content_description,
+                        authorName
+                    ),
+                    tint = if (isShared) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }

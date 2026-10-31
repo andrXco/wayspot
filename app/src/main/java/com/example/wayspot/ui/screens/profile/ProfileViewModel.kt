@@ -42,6 +42,9 @@ class ProfileViewModel @Inject constructor(
                 it.copy(
                     reviews = emptyList(),
                     reviewFeedItems = emptyList(),
+                    reviewLikeCounts = emptyMap(),
+                    likedReviewIds = emptySet(),
+                    areReviewLikesLoaded = false,
                     isLoading = false,
                     errorMessage = "Usuario no autenticado"
                 )
@@ -52,6 +55,7 @@ class ProfileViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 isLoading = true,
+                areReviewLikesLoaded = false,
                 errorMessage = null
             )
         }
@@ -72,6 +76,7 @@ class ProfileViewModel @Inject constructor(
                 _uiState.update { currentState ->
                     currentState.copy(
                         isLoading = false,
+                        areReviewLikesLoaded = false,
                         errorMessage = likedReviewsResult.exceptionOrNull()?.message
                             ?: "No se pudieron cargar los likes"
                     )
@@ -108,6 +113,7 @@ class ProfileViewModel @Inject constructor(
                     reviewLikeCounts = reviewsWithLikes.associate { review ->
                         review.id to review.likesCount
                     },
+                    areReviewLikesLoaded = true,
                     isLoading = false,
                     errorMessage = result.exceptionOrNull()?.message
                 )
@@ -161,14 +167,6 @@ class ProfileViewModel @Inject constructor(
         _uiState.update { currentState ->
             currentState.copy(
                 expandedReviewIds = currentState.expandedReviewIds.toggle(reviewId)
-            )
-        }
-    }
-
-    fun toggleReviewShared(reviewId: String) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                sharedReviewIds = currentState.sharedReviewIds.toggle(reviewId)
             )
         }
     }
