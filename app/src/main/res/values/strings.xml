@@ -459,4 +459,5 @@
     <string name="profile_follow_action">Seguir</string>
     <string name="profile_following_action">Siguiendo</string>
     <string name="profile_follow_error">No se pudo actualizar el seguimiento. Inténtalo de nuevo.</string>
+    <string name="public_profile_data_load_error">No se pudo cargar toda la información del perfil. Inténtalo de nuevo.</string>
 </resources>
