@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.model.notification.Notification
+import com.example.wayspot.data.model.notification.NotificationType
+import com.example.wayspot.ui.components.ProfileAvatar
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.theme.WayspotTheme
 
@@ -47,8 +49,11 @@ fun NotificationItem(
         verticalAlignment = Alignment.Top
     ) {
 
-        NotificationAvatar(
-            username = notification.username
+        ProfileAvatar(
+            avatarUrl = notification.avatarUrl,
+            initials = notification.username.split(" ").take(2).mapNotNull { it.firstOrNull()?.uppercase() }.joinToString(""),
+            contentDescription = stringResource(R.string.notifications_actor_avatar_description, notification.username),
+            modifier = Modifier.size(40.dp)
         )
 
         Spacer(
@@ -78,49 +83,21 @@ fun NotificationItem(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     ) {
-                        append(notification.message)
+                        append(
+                            stringResource(
+                                if (notification.type == NotificationType.FOLLOW) {
+                                    R.string.notifications_follow_message
+                                } else {
+                                    R.string.notifications_like_message
+                                }
+                            )
+                        )
                     }
                 },
                 style = MaterialTheme.typography.bodySmall
             )
 
-            if (notification.username == "Andrés Torres") {
-
-                Row(
-                    modifier = Modifier.padding(top = 3.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                    Text(
-                        text = stringResource(R.string.parque_tayrona),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
-                    Spacer(
-                        modifier = Modifier.width(4.dp)
-                    )
-
-                    Icon(
-                        imageVector = Icons.Filled.Star,
-                        contentDescription = null,
-                        modifier = Modifier.size(13.dp),
-                        tint = MaterialTheme.colorScheme.tertiary
-                    )
-
-                    Spacer(
-                        modifier = Modifier.width(3.dp)
-                    )
-
-                    Text(
-                        text = stringResource(R.string._4_8),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-
-            } else {
-
+            if (notification.detail.isNotBlank()) {
                 Text(
                     text = notification.detail,
                     modifier = Modifier.padding(top = 3.dp),
@@ -130,51 +107,17 @@ fun NotificationItem(
             }
 
             Text(
-                text = notification.time,
+                text = android.text.format.DateUtils.getRelativeTimeSpanString(
+                    notification.timestampMillis,
+                    System.currentTimeMillis(),
+                    android.text.format.DateUtils.MINUTE_IN_MILLIS,
+                    android.text.format.DateUtils.FORMAT_ABBREV_RELATIVE
+                ).toString(),
                 modifier = Modifier.padding(top = 3.dp),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.primary
             )
         }
-    }
-}
-
-@Composable
-private fun NotificationAvatar(
-    username: String,
-    modifier: Modifier = Modifier
-) {
-    val initials = username
-        .split(" ")
-        .take(2)
-        .mapNotNull {
-            it.firstOrNull()?.uppercase()
-        }
-        .joinToString("")
-
-    val avatarColor = when (username) {
-        "Carlos Medina" -> MaterialTheme.colorScheme.primary
-        "Laura Sánchez" -> MaterialTheme.colorScheme.tertiary
-        "Andrés Torres" -> MaterialTheme.colorScheme.secondary
-        "Sofía Herrera" -> MaterialTheme.colorScheme.error
-        "WaySpot" -> MaterialTheme.colorScheme.primaryContainer
-        "Playa Blanca" -> MaterialTheme.colorScheme.tertiaryContainer
-        else -> MaterialTheme.colorScheme.primary
-    }
-
-    Box(
-        modifier = modifier
-            .size(40.dp)
-            .clip(CircleShape)
-            .background(avatarColor),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = initials,
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onPrimary
-        )
     }
 }
 

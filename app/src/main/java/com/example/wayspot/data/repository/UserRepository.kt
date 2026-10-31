@@ -6,6 +6,8 @@ import com.example.wayspot.data.model.review.ReviewInfo
 import com.example.wayspot.data.datasource.UserRemoteDataSource
 import com.example.wayspot.data.model.user.ProfileNotificationPreferences
 import com.example.wayspot.data.model.user.UserRelationshipListType
+import com.example.wayspot.data.model.user.UserRelationshipRules
+import com.example.wayspot.data.model.notification.NotificationActorEvent
 import com.google.firebase.messaging.FirebaseMessaging
 import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
@@ -29,6 +31,9 @@ class UserRepository @Inject constructor(
     suspend fun getUserById(id: String): Result<UserInfo> {
         return try {
             val user = userRemoteDataSource.getUserById(id)
+            if (user == null) {
+                return Result.failure(NoSuchElementException("Usuario $id no encontrado"))
+            }
             Result.success(user.toUserInfo())
         } catch (e: CancellationException) {
             throw e
@@ -45,7 +50,7 @@ class UserRepository @Inject constructor(
         userId: String
     ): Result<Unit> {
         return try {
-            val fcmToken = FirebaseMessaging.getInstance().token.await()
+            val fcmToken = getFcmTokenOrEmpty()
             val registerUserDto = RegisterUserDto(
                 username = username,
                 name = name,
@@ -79,7 +84,7 @@ class UserRepository @Inject constructor(
             ProfileNotificationPreferences()
     ): Result<Unit> {
         return try {
-            val fcmToken = FirebaseMessaging.getInstance().token.await()
+            val fcmToken = getFcmTokenOrEmpty()
             val userDto = RegisterUserDto(
                 username = username,
                 name = name,
@@ -98,6 +103,14 @@ class UserRepository @Inject constructor(
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    private suspend fun getFcmTokenOrEmpty(): String = try {
+        FirebaseMessaging.getInstance().token.await()
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        ""
     }
 
     suspend fun updateUserAvatar(
@@ -163,6 +176,30 @@ class UserRepository @Inject constructor(
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    suspend fun getFollowerNotificationEvents(userId: String): Result<List<NotificationActorEvent>> = try {
+        Result.success(
+            userRemoteDataSource.getNotificationActorEvents(
+                userId = userId,
+                relationshipType = UserRelationshipListType.FOLLOWERS
+            ).map { NotificationActorEvent(it.actorId, it.timestampMillis) }
+        )
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+
+    suspend fun getUsersByIds(userIds: List<String>): Result<List<UserInfo>> = try {
+        val users = userIds.distinct()
+            .chunked(UserRelationshipRules.MAX_USER_IDS_PER_QUERY)
+            .flatMap { ids -> userRemoteDataSource.getUsersByIds(ids) }
+        Result.success(users.map { it.toUserInfo() })
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        Result.failure(e)
     }
 
     suspend fun getFollowingUserIds(userId: String): Result<Set<String>> {

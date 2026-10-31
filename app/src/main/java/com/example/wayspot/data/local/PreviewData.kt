@@ -6,6 +6,7 @@ import com.example.wayspot.data.model.home.HomeCategoryId
 import com.example.wayspot.data.model.home.HomeFeaturedPlan
 import com.example.wayspot.data.model.home.HomeReview
 import com.example.wayspot.data.model.notification.Notification
+import com.example.wayspot.data.model.notification.NotificationType
 import com.example.wayspot.data.model.user.ProfileNotificationPreferences
 import com.example.wayspot.data.model.review.Review
 import com.example.wayspot.data.model.review.ReviewComment
@@ -281,46 +282,18 @@ object PreviewData {
 
     val notifications = listOf(
         Notification(
-            id = 1,
+            id = "preview-follow-1",
             username = "Carlos Medina",
-            message = "comenzó a seguirte.",
-            detail = "847 seguidores · 22 reseñas",
-            time = "Hace 5 min"
+            type = NotificationType.FOLLOW,
+            detail = "",
+            timestampMillis = System.currentTimeMillis() - 5 * 60 * 1000L
         ),
         Notification(
-            id = 2,
+            id = "preview-like-1",
             username = "Laura Sánchez",
-            message = "comentó tu reseña de Monserrate.",
-            detail = "\"Totalmente de acuerdo! El atardecer es...\"",
-            time = "Hace 23 min"
-        ),
-        Notification(
-            id = 3,
-            username = "Andrés Torres",
-            message = "y 14 personas más les gustó tu reseña.",
-            detail = "Parque Tayrona · 4.8",
-            time = "Hace 1 h"
-        ),
-        Notification(
-            id = 4,
-            username = "Sofía Herrera",
-            message = "le gustó tu foto en Cartagena.",
-            detail = "Centro Histórico de Cartagena",
-            time = "Hace 5 h"
-        ),
-        Notification(
-            id = 5,
-            username = "WaySpot",
-            message = "te recomienda un nuevo destino.",
-            detail = "Ciudad Perdida, Sierra Nevada · Basado en tus visitas",
-            time = "Hace 3 h"
-        ),
-        Notification(
-            id = 6,
-            username = "Playa Blanca",
-            message = "actualizó su información.",
-            detail = "Horarios de acceso modificados · Guardado en tu lista",
-            time = "Hace 1 día"
+            type = NotificationType.REVIEW_LIKE,
+            detail = "Una experiencia increíble",
+            timestampMillis = System.currentTimeMillis() - 23 * 60 * 1000L
         )
     )
 

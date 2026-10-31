@@ -29,6 +29,9 @@ android {
                 enable = false
             }
         }
+        debug {
+            isDebuggable = true
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -36,6 +39,13 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
+    }
+    packaging {
+        resources {
+            excludes += "META-INF/LICENSE.md"
+            excludes += "META-INF/LICENSE-notice.md"
+        }
     }
 }
 
@@ -76,10 +86,23 @@ dependencies {
     implementation(libs.retrofit.converter.gson)
 
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.truth)
+    testImplementation(kotlin("test"))
+
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.truth.android.test)
+    androidTestImplementation(libs.hilt.android.testing)
+    androidTestImplementation(libs.androidx.test.uiautomator)
+    androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.mockk.android)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
+    kspAndroidTest(libs.dagger.hilt.compiler)
+
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 }

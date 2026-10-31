@@ -116,6 +116,7 @@ class AppNavigationViewModel @Inject constructor(
                             username = user.username,
                             bio = user.bio.orEmpty(),
                             location = user.location.orEmpty(),
+                            avatarUrl = user.avatarUrl ?: currentProfile.avatarUrl,
                             notificationPreferences = user.notificationPreferences,
                             initials = user.name.take(1).uppercase(),
                             stats = currentProfile.stats.copy(

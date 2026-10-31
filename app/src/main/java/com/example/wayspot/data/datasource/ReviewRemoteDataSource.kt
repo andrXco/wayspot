@@ -5,6 +5,7 @@ import com.example.wayspot.data.dto.ReviewDtoGeneric
 import com.example.wayspot.data.dto.SaveReviewDto
 import com.example.wayspot.data.dto.CommentDtoGeneric
 import com.example.wayspot.data.dto.CreateCommentDto
+import com.example.wayspot.data.dto.NotificationActorEventDto
 
 
 interface ReviewRemoteDataSource {
@@ -36,6 +37,8 @@ interface ReviewRemoteDataSource {
         reviewId: String,
         userId: String
     ): Boolean
+
+    suspend fun getReviewLikeEvents(reviewId: String): List<NotificationActorEventDto>
 
     suspend fun getComments(
         reviewId: String

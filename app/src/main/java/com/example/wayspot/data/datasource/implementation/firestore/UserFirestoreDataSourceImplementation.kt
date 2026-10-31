@@ -6,11 +6,14 @@ import com.example.wayspot.data.dto.RegisterUserDto
 import com.example.wayspot.data.dto.ReviewFirestoreDto
 import com.example.wayspot.data.dto.UserDtoGeneric
 import com.example.wayspot.data.dto.UserFirestoreDto
+import com.example.wayspot.data.dto.NotificationActorEventDto
+import com.example.wayspot.data.model.user.UserProfile
 import com.example.wayspot.data.model.user.UserRelationshipListType
 import com.example.wayspot.data.model.user.UserRelationshipRules
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -39,14 +42,26 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
         return users
     }
 
-    override suspend fun getUserById(id: String): UserFirestoreDto {
+    override suspend fun getUsersByIds(userIds: List<String>): List<UserFirestoreDto> {
+        if (userIds.isEmpty()) return emptyList()
+        return db.collection("users")
+            .whereIn(FieldPath.documentId(), userIds)
+            .get()
+            .await()
+            .documents
+            .mapNotNull { document ->
+                document.toObject(UserFirestoreDto::class.java)?.copy(id = document.id)
+            }
+    }
+
+    override suspend fun getUserById(id: String): UserFirestoreDto? {
 
         val docRef = db.collection("users").document(id)
 
         val snapshot = docRef.get().await()
 
         val user = snapshot.toObject(UserFirestoreDto::class.java)
-            ?: throw Exception("No se pudieron obtener los datos del usuario")
+            ?: return null
 
         return user.copy(id = snapshot.id)
     }
@@ -65,40 +80,32 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
     ) {
         val docRef = db.collection("users").document(userId)
 
-        docRef.update(
-            mapOf(
-                "username" to userDto.username,
-                "name" to userDto.name,
-                "country" to userDto.country,
-                "bio" to userDto.bio,
-                "avatarUrl" to userDto.avatarUrl,
-                "fcmToken" to userDto.fcmToken,
-                "notificationPreferences" to mapOf(
-                    "newFollowers" to userDto.notificationPreferences.newFollowers,
-                    "reviewComments" to userDto.notificationPreferences.reviewComments,
-                    "likesReceived" to userDto.notificationPreferences.likesReceived
-                )
+        val updates = mutableMapOf<String, Any?>(
+            "username" to userDto.username,
+            "name" to userDto.name,
+            "country" to userDto.country,
+            "bio" to userDto.bio,
+            "avatarUrl" to userDto.avatarUrl,
+            "notificationPreferences" to mapOf(
+                "newFollowers" to userDto.notificationPreferences.newFollowers,
+                "reviewComments" to userDto.notificationPreferences.reviewComments,
+                "likesReceived" to userDto.notificationPreferences.likesReceived
             )
-        ).await()
+        )
+        if (userDto.fcmToken.isNotBlank()) {
+            updates["fcmToken"] = userDto.fcmToken
+        }
+        docRef.update(updates).await()
     }
 
     override suspend fun updateUserAvatar(
         userId: String,
         avatarUrl: String
     ) {
-        val user = getUserById(userId)
-
-        val userDto = RegisterUserDto(
-            username = user.username,
-            name = user.name,
-            fcmToken = user.fcmToken,
-            country = user.country,
-            bio = user.bio,
-            avatarUrl = avatarUrl,
-            notificationPreferences = user.notificationPreferences
-        )
-
-        updateUser(userDto, userId)
+        db.collection("users")
+            .document(userId)
+            .update("avatarUrl", avatarUrl)
+            .await()
     }
 
 
@@ -176,6 +183,31 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
             .await()
             .documents
             .map { it.id }
+    }
+
+    override suspend fun getNotificationActorEvents(
+        userId: String,
+        relationshipType: UserRelationshipListType
+    ): List<NotificationActorEventDto> {
+        val collectionName = when (relationshipType) {
+            UserRelationshipListType.FOLLOWERS -> "followers"
+            UserRelationshipListType.FOLLOWING -> "following"
+        }
+
+        return db.collection("users")
+            .document(userId)
+            .collection(collectionName)
+            .get()
+            .await()
+            .documents
+            .mapNotNull { document ->
+                document.getTimestamp("timestamp")?.toDate()?.time?.let { timestamp ->
+                    NotificationActorEventDto(
+                        actorId = document.id,
+                        timestampMillis = timestamp
+                    )
+                }
+            }
     }
 
     override suspend fun followOrUnfollowUser(

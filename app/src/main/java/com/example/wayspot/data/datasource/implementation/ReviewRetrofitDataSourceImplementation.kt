@@ -6,6 +6,7 @@ import com.example.wayspot.data.dto.ReviewDto
 import com.example.wayspot.data.dto.SaveReviewDto
 import com.example.wayspot.data.dto.CommentDto
 import com.example.wayspot.data.dto.CreateCommentDto
+import com.example.wayspot.data.dto.NotificationActorEventDto
 import javax.inject.Inject
 
 class ReviewRetrofitDataSourceImplementation @Inject constructor(
@@ -40,6 +41,10 @@ class ReviewRetrofitDataSourceImplementation @Inject constructor(
         userId: String
     ): Boolean {
         throw UnsupportedOperationException("Review like state is not available through the REST data source.")
+    }
+
+    override suspend fun getReviewLikeEvents(reviewId: String): List<NotificationActorEventDto> {
+        throw UnsupportedOperationException("Review like notifications are not available through the REST data source.")
     }
     override suspend fun getComments(reviewId: String): List<CommentDto> = service.getComments(reviewId)
     override suspend fun createComment(reviewId: String, comment: CreateCommentDto) =

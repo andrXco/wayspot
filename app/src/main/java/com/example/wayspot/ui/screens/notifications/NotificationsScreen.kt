@@ -14,8 +14,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -37,9 +41,20 @@ fun NotificationsScreen(
     modifier: Modifier = Modifier
 ) {
     val state by notificationsViewModel.uiState.collectAsState()
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner, notificationsViewModel) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) notificationsViewModel.loadNotifications()
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     NotificationsContent(
         notifications = state.notifications,
+        isLoading = state.isLoading,
+        hasLoadError = state.hasLoadError,
+        onRetry = notificationsViewModel::loadNotifications,
         modifier = modifier
     )
 }
@@ -48,6 +63,9 @@ fun NotificationsScreen(
 @Composable
 fun NotificationsContent(
     notifications: List<Notification>,
+    isLoading: Boolean = false,
+    hasLoadError: Boolean = false,
+    onRetry: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -64,7 +82,26 @@ fun NotificationsContent(
             color = MaterialTheme.colorScheme.outlineVariant
         )
 
-        if (notifications.isEmpty()) {
+        if (isLoading && notifications.isEmpty()) {
+            androidx.compose.material3.CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.CenterHorizontally).padding(32.dp)
+            )
+        } else if (hasLoadError && notifications.isEmpty()) {
+            Column(
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.notifications_load_error),
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                androidx.compose.material3.TextButton(onClick = onRetry) {
+                    Text(text = stringResource(R.string.notifications_retry))
+                }
+            }
+        } else if (notifications.isEmpty()) {
 
             NotificationsEmptySection(
                 modifier = Modifier
@@ -74,8 +111,12 @@ fun NotificationsContent(
 
         } else {
 
-            val todayNotifications = notifications.take(4)
-            val previousNotifications = notifications.drop(4)
+            val todayNotifications = notifications.filter {
+                android.text.format.DateUtils.isToday(it.timestampMillis)
+            }
+            val previousNotifications = notifications.filterNot {
+                android.text.format.DateUtils.isToday(it.timestampMillis)
+            }
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize()

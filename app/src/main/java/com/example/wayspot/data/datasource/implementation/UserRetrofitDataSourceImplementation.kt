@@ -4,6 +4,7 @@ package com.example.wayspot.data.datasource.implementation
 import com.example.wayspot.data.datasource.UserRemoteDataSource
 import com.example.wayspot.data.datasource.services.UserRetrofitService
 import com.example.wayspot.data.dto.RegisterUserDto
+import com.example.wayspot.data.dto.NotificationActorEventDto
 import com.example.wayspot.data.dto.UserDtoGeneric
 import com.example.wayspot.data.model.user.UserRelationshipListType
 import com.example.wayspot.data.dto.ReviewDto
@@ -15,6 +16,10 @@ class UserRetrofitDataSourceImplementation @Inject constructor(
 ) : UserRemoteDataSource {
 
     override suspend fun getUsers(): List<UserDto> = service.getUsers()
+
+    override suspend fun getUsersByIds(userIds: List<String>): List<UserDto> {
+        throw UnsupportedOperationException("Batch user lookup is not available through the REST data source.")
+    }
 
     override suspend fun getUserById(id: String): UserDto =
         service.getUserById(id)
@@ -67,6 +72,13 @@ class UserRetrofitDataSourceImplementation @Inject constructor(
         relationshipType: UserRelationshipListType
     ): List<String> {
         throw UnsupportedOperationException("User connections are not available through the REST data source.")
+    }
+
+    override suspend fun getNotificationActorEvents(
+        userId: String,
+        relationshipType: UserRelationshipListType
+    ): List<NotificationActorEventDto> {
+        throw UnsupportedOperationException("Follow notifications are not available through the REST data source.")
     }
 
     override suspend fun getReviewsByUserId(

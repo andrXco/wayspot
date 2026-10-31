@@ -1,9 +1,10 @@
 package com.example.wayspot.data.model.notification
 
 data class Notification(
-    val id: Int,
+    val id: String,
     val username: String,
-    val message: String,
+    val type: NotificationType,
     val detail: String,
-    val time: String
+    val timestampMillis: Long,
+    val avatarUrl: String? = null
 )

@@ -5,12 +5,15 @@ import com.example.wayspot.data.dto.RegisterUserDto
 import com.example.wayspot.data.dto.UserDtoGeneric
 import com.example.wayspot.data.dto.ReviewDtoGeneric
 import com.example.wayspot.data.model.user.UserRelationshipListType
+import com.example.wayspot.data.dto.NotificationActorEventDto
 
 interface UserRemoteDataSource {
 
     suspend fun getUsers(): List<UserDtoGeneric>
 
-    suspend fun getUserById(id: String): UserDtoGeneric
+    suspend fun getUsersByIds(userIds: List<String>): List<UserDtoGeneric>
+
+    suspend fun getUserById(id: String): UserDtoGeneric?
 
     suspend fun registerUser(
         registerUserDto: RegisterUserDto,
@@ -45,6 +48,11 @@ interface UserRemoteDataSource {
         userId: String,
         relationshipType: UserRelationshipListType
     ): List<String>
+
+    suspend fun getNotificationActorEvents(
+        userId: String,
+        relationshipType: UserRelationshipListType
+    ): List<NotificationActorEventDto>
 
     suspend fun getReviewsByUserId(
         userId: String

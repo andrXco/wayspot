@@ -78,6 +78,11 @@
     <string name="notifications_empty_title">Sin notificaciones</string>
     <string name="notifications_empty_description">Te avisaremos cuando tengas nuevas interacciones, seguidores o reseñas.</string>
     <string name="notifications_empty_icon_content_description">Icono de notificaciones vacío</string>
+    <string name="notifications_follow_message">comenzó a seguirte.</string>
+    <string name="notifications_like_message">le gustó tu reseña.</string>
+    <string name="notifications_actor_avatar_description">Foto de perfil de %1$s</string>
+    <string name="notifications_load_error">No se pudieron cargar las notificaciones.</string>
+    <string name="notifications_retry">Reintentar</string>
     <string name="search_placeholder">Busca un lugar o ciudad...</string>
     <string name="search_content_description">Buscar</string>
     <string name="star_content_description">Estrella</string>

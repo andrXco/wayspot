@@ -4,6 +4,7 @@ import com.example.wayspot.data.model.review.ReviewComment
 import com.example.wayspot.data.datasource.implementation.firestore.ReviewFirestoreDataSourceImplementation
 import com.example.wayspot.data.model.review.ReviewDraft
 import com.example.wayspot.data.model.review.ReviewInfo
+import com.example.wayspot.data.model.notification.NotificationActorEvent
 import com.example.wayspot.data.dto.CreateCommentDto
 import com.example.wayspot.data.dto.ReviewUserDto
 import com.example.wayspot.data.dto.SaveReviewDto
@@ -21,15 +22,43 @@ class ReviewRepository @Inject constructor(
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository
 ) {
+    suspend fun getReviewLikeNotificationEvents(
+        reviewIds: List<String>
+    ): Result<Map<String, List<NotificationActorEvent>>> = try {
+        val events = reviewIds.distinct().associateWith { reviewId ->
+            reviewFirestoreDataSource.getReviewLikeEvents(reviewId).map { event ->
+                NotificationActorEvent(event.actorId, event.timestampMillis)
+            }
+        }
+        Result.success(events)
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+
     suspend fun getReviews(): Result<List<ReviewInfo>> {
         return try {
             val reviews = reviewFirestoreDataSource.getReviews()
 
-            val reviewsInfo = reviews.map {
-                it.toReviewInfo()
+            val reviewsInfo = reviews.map { it.toReviewInfo() }
+            val authors = userRepository.getUsersByIds(reviewsInfo.map { it.userId })
+                .getOrNull()
+                .orEmpty()
+                .associateBy { it.id }
+            val reviewsWithCurrentAvatars = reviewsInfo.map { review ->
+                val author = authors[review.userId]
+                review.copy(
+                    authorName = review.authorName?.takeIf(String::isNotBlank)
+                        ?: author?.name,
+                    authorUsername = review.authorUsername?.takeIf(String::isNotBlank)
+                        ?: author?.username,
+                    authorAvatarUrl = author?.avatarUrl?.takeIf(String::isNotBlank)
+                        ?: review.authorAvatarUrl
+                )
             }
 
-            Result.success(reviewsInfo)
+            Result.success(reviewsWithCurrentAvatars)
 
         } catch (e: CancellationException) {
             throw e
@@ -327,11 +356,20 @@ class ReviewRepository @Inject constructor(
                 placeId
             )
 
-            val reviewsInfo = reviews.map {
-                it.toReviewInfo()
-            }
-
-            Result.success(reviewsInfo)
+            val reviewsInfo = reviews.map { it.toReviewInfo() }
+            val authors = userRepository.getUsersByIds(reviewsInfo.map { it.userId })
+                .getOrNull()
+                .orEmpty()
+                .associateBy { it.id }
+            Result.success(reviewsInfo.map { review ->
+                val author = authors[review.userId]
+                review.copy(
+                    authorName = review.authorName?.takeIf(String::isNotBlank) ?: author?.name,
+                    authorUsername = review.authorUsername?.takeIf(String::isNotBlank) ?: author?.username,
+                    authorAvatarUrl = author?.avatarUrl?.takeIf(String::isNotBlank)
+                        ?: review.authorAvatarUrl
+                )
+            })
 
         } catch (e: CancellationException) {
             throw e
