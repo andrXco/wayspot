@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.testTag
 import com.example.wayspot.R
 import com.example.wayspot.data.model.place.PlaceInfo
 import com.example.wayspot.ui.components.WayspotImage
@@ -104,6 +105,7 @@ fun PlaceDetailHero(
                 )
         ) {
             Text(
+                modifier = Modifier.testTag("placeDetailLocation"),
                 text = stringResource(
                     R.string.place_category_and_country,
                     place.category,
@@ -116,6 +118,7 @@ fun PlaceDetailHero(
 
             Text(
                 text = place.title,
+                modifier = Modifier.testTag("placeDetailTitle"),
                 color = Blanco,
                 fontSize = 30.sp,
                 fontWeight = FontWeight.ExtraBold

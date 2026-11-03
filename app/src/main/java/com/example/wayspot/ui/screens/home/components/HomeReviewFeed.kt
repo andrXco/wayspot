@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.testTag
 import com.example.wayspot.R
 
 @Composable
@@ -60,7 +61,9 @@ fun HomeReviewsHeader(
                     style = MaterialTheme.typography.labelSmall
                 )
             },
-            modifier = Modifier.height(36.dp)
+            modifier = Modifier
+                .height(36.dp)
+                .testTag("homeFollowingFilter_${isFollowingOnly}")
         )
     }
 }

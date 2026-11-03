@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.testTag
 import com.example.wayspot.R
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.auth.components.AuthHeader
@@ -129,12 +130,14 @@ fun SignUpContent(
             },
             text = {
                 Text(
-                    mensajeError
+                    text = mensajeError,
+                    modifier = Modifier.testTag("registerErrorMessage")
                 )
             },
             confirmButton = {
                 TextButton(
-                    onClick = onDismissError
+                    onClick = onDismissError,
+                    modifier = Modifier.testTag("registerDismissErrorButton")
                 ) {
                     Text(
                         stringResource(R.string.auth_error_dismiss)
@@ -147,6 +150,7 @@ fun SignUpContent(
     Column(
         modifier = modifier
             .fillMaxSize()
+            .testTag("registerScreen")
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
             .imePadding()

@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.testTag
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.theme.WayspotTheme
 import com.example.wayspot.R
@@ -74,7 +75,8 @@ fun LoginActionButton(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(54.dp),
+            .height(54.dp)
+            .testTag("loginSubmitButton"),
         shape = MaterialTheme.shapes.medium
     ) {
         Text(

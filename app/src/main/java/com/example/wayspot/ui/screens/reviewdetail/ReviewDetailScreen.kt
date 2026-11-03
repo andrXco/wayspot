@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.ui.platform.testTag
 import com.example.wayspot.R
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.local.PreviewDataPopular
@@ -38,6 +39,7 @@ import com.example.wayspot.ui.screens.reviewdetail.components.ReviewCommentsHead
 import com.example.wayspot.ui.screens.reviewdetail.components.ReviewDetailHeader
 import com.example.wayspot.ui.screens.reviewdetail.components.ReviewDetailTopBar
 import com.example.wayspot.ui.theme.WayspotTheme
+
 
 @Composable
 fun ReviewDetailScreen(
@@ -153,15 +155,18 @@ fun ReviewDetailContent(
 
                 item(key = "review-likes") {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("reviewLikesState_${review.likesCount}"),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         IconButton(
                             onClick = onLikeClick,
-                            enabled = currentUserId != null
+                            enabled = currentUserId != null,
+                            modifier = Modifier.testTag("reviewLikeButton")
                         ) {
-                            Icon(
+                        Icon(
                                 imageVector = if (review.liked) {
                                     Icons.Filled.Favorite
                                 } else {
@@ -182,12 +187,12 @@ fun ReviewDetailContent(
                                 }
                             )
                         }
-
                         Text(
                             text = stringResource(
                                 R.string.home_review_action_count,
                                 review.likesCount
                             ),
+                            modifier = Modifier.testTag("reviewLikesCount"),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

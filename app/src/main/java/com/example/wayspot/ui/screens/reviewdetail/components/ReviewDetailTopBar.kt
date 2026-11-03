@@ -13,6 +13,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.testTag
 import com.example.wayspot.R
 
 @Composable
@@ -25,7 +26,10 @@ fun ReviewDetailTopBar(
         color = MaterialTheme.colorScheme.background
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            TextButton(onClick = onBackClick) {
+            TextButton(
+                onClick = onBackClick,
+                modifier = Modifier.testTag("reviewBackButton")
+            ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = null,

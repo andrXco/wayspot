@@ -14,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.testTag
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.model.home.HomeCategoryId
 import com.example.wayspot.data.model.home.HomeRules
@@ -138,6 +139,7 @@ fun HomeContent(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
+            .testTag("homeScreen")
             .background(MaterialTheme.colorScheme.background),
         contentPadding = PaddingValues(bottom = 24.dp),
         verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(14.dp)

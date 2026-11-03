@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.testTag
 import com.example.wayspot.R
 import com.example.wayspot.data.model.review.ReviewInfo
 import com.example.wayspot.ui.components.ProfileAvatar
@@ -55,7 +56,8 @@ internal fun PlaceReviewCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp, vertical = 6.dp)
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick)
+            .testTag("e2eReview_${review.id}"),
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.onSurface,
