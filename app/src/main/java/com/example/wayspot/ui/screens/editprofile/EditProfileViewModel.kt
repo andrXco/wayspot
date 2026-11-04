@@ -189,6 +189,16 @@ class EditProfileViewModel @Inject constructor(
         }
     }
 
+    fun updateNewReviewsFromFollowingEnabled(value: Boolean) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                notificationPreferences = currentState.notificationPreferences.copy(
+                    newReviewsFromFollowing = value
+                )
+            )
+        }
+    }
+
     fun showDeleteConfirmation() {
         _uiState.update { currentState ->
             currentState.copy(

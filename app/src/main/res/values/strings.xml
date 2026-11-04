@@ -156,6 +156,7 @@
     <string name="edit_profile_new_followers">Nuevos seguidores</string>
     <string name="edit_profile_review_comments">Comentarios en reseñas</string>
     <string name="edit_profile_likes_received">Likes recibidos</string>
+    <string name="edit_profile_new_reviews_from_following">Nuevas reseñas de personas que sigues</string>
     <string name="edit_profile_danger_title">Zona de peligro</string>
     <string name="edit_profile_danger_description">Esta versión local no está conectada a un servidor. Puedes borrar los cambios del perfil y cerrar la sesión, pero no eliminar una cuenta real.</string>
     <string name="edit_profile_delete_confirmation">Se restaurará el perfil de demostración y se descartarán tus borradores y cambios locales. Esta acción no se puede deshacer.</string>
@@ -170,6 +171,7 @@
     <string name="edit_profile_new_followers_switch_content_description">Activar o desactivar notificaciones de nuevos seguidores</string>
     <string name="edit_profile_review_comments_switch_content_description">Activar o desactivar notificaciones de comentarios en reseñas</string>
     <string name="edit_profile_likes_received_switch_content_description">Activar o desactivar notificaciones de likes recibidos</string>
+    <string name="edit_profile_new_reviews_from_following_switch_content_description">Activar o desactivar notificaciones de nuevas reseñas de personas que sigues</string>
     <string name="edit_profile_warning_content_description">Advertencia de borrado de datos locales</string>
     <string name="edit_profile_delete_account_content_description">Borrar mis datos locales y cerrar sesión</string>
     <string name="edit_profile_save_changes_content_description">Guardar cambios del perfil</string>

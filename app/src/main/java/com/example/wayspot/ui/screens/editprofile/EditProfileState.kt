@@ -21,7 +21,8 @@ data class EditProfileState(
         ProfileNotificationPreferences(
             newFollowers = false,
             reviewComments = false,
-            likesReceived = false
+            likesReceived = false,
+            newReviewsFromFollowing = false
         ),
     val isSaveEnabled: Boolean = false,
     val isSaving: Boolean = false,

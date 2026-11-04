@@ -18,7 +18,8 @@ data class UserProfile(
 data class ProfileNotificationPreferences(
     val newFollowers: Boolean = false,
     val reviewComments: Boolean = false,
-    val likesReceived: Boolean = false
+    val likesReceived: Boolean = false,
+    val newReviewsFromFollowing: Boolean = false
 )
 
 /** Métricas resumidas que acompañan al perfil. */

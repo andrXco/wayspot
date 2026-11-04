@@ -109,6 +109,9 @@ fun EditProfileScreen(
         onReceivedLikesChange = {
             editProfileViewModel.updateReceivedLikesEnabled(it)
         },
+        onNewReviewsFromFollowingChange = {
+            editProfileViewModel.updateNewReviewsFromFollowingEnabled(it)
+        },
         isSaveEnabled = state.isSaveEnabled,
         onBackClick = {
             if (!state.isUploadingAvatar) {
@@ -174,6 +177,7 @@ fun EditProfileContent(
     onNewFollowersChange: (Boolean) -> Unit,
     onReviewCommentsChange: (Boolean) -> Unit,
     onReceivedLikesChange: (Boolean) -> Unit,
+    onNewReviewsFromFollowingChange: (Boolean) -> Unit,
     isSaveEnabled: Boolean,
     onBackClick: () -> Unit,
     onChangePhotoClick: () -> Unit,
@@ -239,6 +243,9 @@ fun EditProfileContent(
                         onReviewCommentsChange = onReviewCommentsChange,
                         receivedLikesEnabled = notificationPreferences.likesReceived,
                         onReceivedLikesChange = onReceivedLikesChange,
+                        newReviewsFromFollowingEnabled =
+                            notificationPreferences.newReviewsFromFollowing,
+                        onNewReviewsFromFollowingChange = onNewReviewsFromFollowingChange,
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 }
@@ -292,6 +299,7 @@ private fun EditProfileScreenPreview() {
             onNewFollowersChange = {},
             onReviewCommentsChange = {},
             onReceivedLikesChange = {},
+            onNewReviewsFromFollowingChange = {},
             isSaveEnabled = true,
             onBackClick = {},
             onChangePhotoClick = {},

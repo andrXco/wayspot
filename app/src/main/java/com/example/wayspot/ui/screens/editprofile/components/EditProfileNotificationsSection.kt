@@ -32,6 +32,8 @@ fun EditProfileNotificationsSection(
     onReviewCommentsChange: (Boolean) -> Unit,
     receivedLikesEnabled: Boolean,
     onReceivedLikesChange: (Boolean) -> Unit,
+    newReviewsFromFollowingEnabled: Boolean,
+    onNewReviewsFromFollowingChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -84,6 +86,17 @@ fun EditProfileNotificationsSection(
                 onCheckedChange = onReceivedLikesChange,
                 switchContentDescription = stringResource(
                     R.string.edit_profile_likes_received_switch_content_description
+                )
+            )
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.20f)
+            )
+            NotificationPreferenceRow(
+                label = stringResource(R.string.edit_profile_new_reviews_from_following),
+                isChecked = newReviewsFromFollowingEnabled,
+                onCheckedChange = onNewReviewsFromFollowingChange,
+                switchContentDescription = stringResource(
+                    R.string.edit_profile_new_reviews_from_following_switch_content_description
                 )
             )
         }

@@ -89,7 +89,9 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
             "notificationPreferences" to mapOf(
                 "newFollowers" to userDto.notificationPreferences.newFollowers,
                 "reviewComments" to userDto.notificationPreferences.reviewComments,
-                "likesReceived" to userDto.notificationPreferences.likesReceived
+                "likesReceived" to userDto.notificationPreferences.likesReceived,
+                "newReviewsFromFollowing" to
+                    userDto.notificationPreferences.newReviewsFromFollowing
             )
         )
         if (userDto.fcmToken.isNotBlank()) {
