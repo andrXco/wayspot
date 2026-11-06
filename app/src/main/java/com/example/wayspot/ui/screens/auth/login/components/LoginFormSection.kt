@@ -34,7 +34,7 @@ internal fun LoginFormSection(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        AuthTextField(
+            AuthTextField(
             value = email,
             onValueChange = onEmailChange,
             label = stringResource(R.string.label_email),

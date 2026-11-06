@@ -2,6 +2,8 @@
 package com.example.wayspot.e2e
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -9,9 +11,12 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.performTextClearance
+import androidx.compose.ui.test.performImeAction
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.onNodeWithContentDescription
-import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import com.example.wayspot.MainActivity
 import com.example.wayspot.data.dto.PlaceFirestoreDto
@@ -27,15 +32,13 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import com.google.common.truth.Truth.assertThat
+import java.util.UUID
 
 
 
 @HiltAndroidTest
 class RegisterAndLikesE2E {
 
-    companion object {
-        private var emulatorsConfigured = false
-    }
     @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
 
@@ -44,18 +47,13 @@ class RegisterAndLikesE2E {
         createAndroidComposeRule<MainActivity>()
 
     private var testDataCreated = false
+    private val testEmail = "register_likes_${UUID.randomUUID()}@prueba.com"
+    private var placeCount = 0
 
 
     @Before
     fun setUp() = runTest {
         hiltRule.inject()
-
-        if (!emulatorsConfigured) {
-            Firebase.auth.useEmulator("10.0.2.2", 9099)
-            Firebase.firestore.useEmulator("10.0.2.2", 8080)
-
-            emulatorsConfigured = true
-        }
 
         Firebase.auth.signOut()
 
@@ -116,6 +114,8 @@ class RegisterAndLikesE2E {
         batch.set(reviewRef, review)
 
         batch.commit().await()
+        assertThat(placeRef.get().await().exists()).isTrue()
+        placeCount = db.collection("places").get().await().documents.size
 
         testDataCreated = true
     }
@@ -152,18 +152,26 @@ class RegisterAndLikesE2E {
             .performTextInput("usuario_e2e")
 
         composeRule.onNodeWithTag("Correo Electrónico")
-            .performTextInput("registro_e2e@prueba.com")
+            .performTextInput(testEmail)
 
         composeRule.onNodeWithTag("Contraseña")
             .performTextInput("1234")
 
         composeRule.onNodeWithTag("Confirmar contraseña")
             .performTextInput("1234")
+        composeRule.onNodeWithTag("Confirmar contraseña")
+            .performImeAction()
 
         // Aceptar términos y enviar el formulario
         composeRule.onNodeWithTag("registerTermsCheckbox")
+            .performScrollTo()
             .performClick()
+        composeRule.onNodeWithTag("registerTermsCheckbox")
+            .assertIsOn()
 
+        composeRule.onNodeWithTag("registerSubmitButton")
+            .performScrollTo()
+            .assertIsEnabled()
         composeRule.onNodeWithTag("registerSubmitButton")
             .performClick()
 
@@ -195,9 +203,14 @@ class RegisterAndLikesE2E {
 
         composeRule.onNodeWithTag("Confirmar contraseña")
             .performTextInput("123456")
+        composeRule.onNodeWithTag("Confirmar contraseña")
+            .performImeAction()
 
 
         // Registrar al usuario con la contraseña corregida
+        composeRule.onNodeWithTag("registerSubmitButton")
+            .performScrollTo()
+            .assertIsEnabled()
         composeRule.onNodeWithTag("registerSubmitButton")
             .performClick()
 
@@ -213,13 +226,23 @@ class RegisterAndLikesE2E {
 
 
         // Esperar a que aparezca la publicación de prueba
-        composeRule.waitUntil(timeoutMillis = 10000) {
-            composeRule.onAllNodesWithTag("e2ePlace_e2e_place_1")
-                .fetchSemanticsNodes().isNotEmpty()
+        composeRule.onNodeWithTag("homeScreen")
+            .performScrollToIndex(2)
+
+        val placeTag = "e2ePlace_e2e_place_1"
+        for (index in 0 until placeCount) {
+            if (composeRule.onAllNodesWithTag(placeTag)
+                    .fetchSemanticsNodes().isNotEmpty()
+            ) {
+                break
+            }
+            composeRule.onNodeWithContentDescription("Siguiente plan")
+                .performClick()
         }
 
         // Abrir la publicación desde Home
-        composeRule.onNodeWithTag("e2ePlace_e2e_place_1")
+        composeRule.onNodeWithTag(placeTag)
+            .assertIsDisplayed()
             .performClick()
 
         // Esperar a que cargue el detalle
@@ -294,8 +317,21 @@ class RegisterAndLikesE2E {
                 .fetchSemanticsNodes().isNotEmpty()
         }
 
+        composeRule.onNodeWithTag("homeScreen")
+            .performScrollToIndex(2)
+        for (index in 0 until placeCount) {
+            if (composeRule.onAllNodesWithTag(placeTag)
+                    .fetchSemanticsNodes().isNotEmpty()
+            ) {
+                break
+            }
+            composeRule.onNodeWithContentDescription("Siguiente plan")
+                .performClick()
+        }
+
         // Volver a seleccionar la publicación
         composeRule.onNodeWithTag("e2ePlace_e2e_place_1")
+            .assertIsDisplayed()
             .performClick()
 
         composeRule.waitUntil(timeoutMillis = 10000) {
@@ -367,7 +403,7 @@ class RegisterAndLikesE2E {
         // Eliminar el usuario registrado durante el E2E
         val user = Firebase.auth.currentUser
 
-        if (user != null && user.email == "registro_e2e@prueba.com") {
+        if (user != null && user.email == testEmail) {
             Firebase.firestore.collection("users")
                 .document(user.uid)
                 .delete().await()

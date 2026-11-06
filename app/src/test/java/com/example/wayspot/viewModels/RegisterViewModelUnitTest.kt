@@ -46,6 +46,22 @@ class RegisterViewModelUnitTest {
         coVerify(exactly = 0) { authRepository.signUp(any(), any()) }
     }
 
+    // Rechaza una contraseña corta antes de llamar a Firebase Auth.
+    @Test
+    fun signUp_whenPasswordIsTooShort_showsPasswordErrorWithoutCallingAuth() = runTest(testDispatcher) {
+        fillRequiredFields()
+        viewModel.updateContrasena("1234")
+
+        viewModel.signUp()
+        advanceUntilIdle()
+
+        assertThat(viewModel.mostrarMensajeError.value).isTrue()
+        assertThat(viewModel.mensajeError.value)
+            .isEqualTo("La contraseña debe tener al menos 6 caracteres")
+        assertThat(viewModel.navigateToHome.value).isFalse()
+        coVerify(exactly = 0) { authRepository.signUp(any(), any()) }
+    }
+
     // Simula un fallo al crear la cuenta y comprueba que el error se muestra sin guardar el perfil.
     @Test
     fun signUp_whenAuthFails_showsAuthError() = runTest(testDispatcher) {

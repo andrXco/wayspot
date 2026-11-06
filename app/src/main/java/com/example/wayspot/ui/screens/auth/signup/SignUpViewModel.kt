@@ -120,6 +120,12 @@ class SignUpViewModel @Inject constructor(
                 return@launch
             }
 
+            if (_uiState.value.contrasena.length < 6) {
+                _mensajeError.value = "La contraseña debe tener al menos 6 caracteres"
+                _mostrarMensajeError.value = true
+                return@launch
+            }
+
             val result = authRepository.signUp(
                 email = _uiState.value.correo,
                 password = _uiState.value.contrasena

@@ -27,6 +27,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.UUID
 
 @HiltAndroidTest
 class LoginFollowE2E {
@@ -38,7 +39,7 @@ class LoginFollowE2E {
     val composeRule =
         createAndroidComposeRule<MainActivity>()
 
-    private val testEmail = "login_follow_e2e@prueba.com"
+    private val testEmail = "login_follow_${UUID.randomUUID()}@prueba.com"
     private val testPassword = "123456"
     private var testUserId: String? = null
 
@@ -50,9 +51,6 @@ class LoginFollowE2E {
     @Before
     fun setUp() = runTest {
         hiltRule.inject()
-
-        Firebase.auth.useEmulator("10.0.2.2", 9099)
-        Firebase.firestore.useEmulator("10.0.2.2", 8080)
 
         Firebase.auth.signOut()
 
@@ -159,6 +157,9 @@ class LoginFollowE2E {
 
     @After
     fun tearDown() = runTest {
+
+        // Cerrar Home y sus listeners antes de eliminar los datos de prueba.
+        composeRule.activityRule.scenario.close()
 
         val uid = testUserId
         val db = Firebase.firestore
