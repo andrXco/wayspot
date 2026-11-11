@@ -1,13 +1,14 @@
 
 package com.example.wayspot.e2e
 
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import androidx.test.core.app.ActivityScenario
 import com.example.wayspot.MainActivity
 import com.example.wayspot.data.datasource.AuthRemoteDataSource
 import com.example.wayspot.data.repository.AuthRepository
@@ -36,8 +37,9 @@ class LoginFollowE2E {
     val hiltRule = HiltAndroidRule(this)
 
     @get:Rule(order = 1)
-    val composeRule =
-        createAndroidComposeRule<MainActivity>()
+    val composeRule = createEmptyComposeRule()
+
+    private lateinit var activity: ActivityScenario<MainActivity>
 
     private val testEmail = "login_follow_${UUID.randomUUID()}@prueba.com"
     private val testPassword = "123456"
@@ -152,6 +154,9 @@ class LoginFollowE2E {
 
         // Cerrar sesión para probar el login desde la interfaz
         Firebase.auth.signOut()
+
+        // Iniciar la Activity después de preparar Hilt y los datos del emulador.
+        activity = ActivityScenario.launch(MainActivity::class.java)
     }
 
 
@@ -159,7 +164,7 @@ class LoginFollowE2E {
     fun tearDown() = runTest {
 
         // Cerrar Home y sus listeners antes de eliminar los datos de prueba.
-        composeRule.activityRule.scenario.close()
+        if (::activity.isInitialized) activity.close()
 
         val uid = testUserId
         val db = Firebase.firestore

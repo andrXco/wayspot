@@ -6,7 +6,7 @@ import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.assertTextContains
@@ -15,6 +15,7 @@ import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.test.core.app.ActivityScenario
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -43,8 +44,9 @@ class RegisterAndLikesE2E {
     val hiltRule = HiltAndroidRule(this)
 
     @get:Rule(order = 1)
-    val composeRule =
-        createAndroidComposeRule<MainActivity>()
+    val composeRule = createEmptyComposeRule()
+
+    private lateinit var activity: ActivityScenario<MainActivity>
 
     private var testDataCreated = false
     private val testEmail = "register_likes_${UUID.randomUUID()}@prueba.com"
@@ -118,6 +120,9 @@ class RegisterAndLikesE2E {
         placeCount = db.collection("places").get().await().documents.size
 
         testDataCreated = true
+
+        // Iniciar la Activity después de preparar Hilt y los datos del emulador.
+        activity = ActivityScenario.launch(MainActivity::class.java)
     }
 
     @Test
@@ -372,6 +377,9 @@ class RegisterAndLikesE2E {
 
     @After
     fun tearDown() = runTest {
+
+        // Cerrar la Activity antes de eliminar los datos que consumen sus listeners.
+        if (::activity.isInitialized) activity.close()
 
         if (testDataCreated) {
             val db = Firebase.firestore
