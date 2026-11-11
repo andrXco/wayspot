@@ -38,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.testTag
 import com.example.wayspot.R
 import com.example.wayspot.data.model.home.HomeRules
 import com.example.wayspot.data.model.review.ReviewFeedItem
@@ -89,7 +90,9 @@ fun HomeReviewCard(
                 avatarUrl = item.author.avatarUrl,
                 onClick = onAuthorClick,
                 isClickable = isAuthorClickable,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .testTag("homeReviewAuthor_${item.author.id}")
             )
 
             HomeReviewPlacePill(

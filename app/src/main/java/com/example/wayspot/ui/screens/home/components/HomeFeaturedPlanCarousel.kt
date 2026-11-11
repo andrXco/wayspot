@@ -45,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.testTag
 import com.example.wayspot.R
 import com.example.wayspot.data.model.place.PlaceInfo
 import com.example.wayspot.data.local.PreviewDataPopular
@@ -98,8 +99,9 @@ fun HomeFeaturedPlanCarousel(
                     .fillMaxWidth()
                     .height(208.dp)
                     .clickable { onPlaceClick(place.id) }
+                    .testTag("e2ePlace_${place.id}")
             ) {
-                WayspotImage(
+            WayspotImage(
                     imageModel = place.imageUrl ?: R.drawable.post_card_machu_pichu,
                     contentDescription = stringResource(
                         R.string.home_featured_image_content_description,

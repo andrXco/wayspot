@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.testTag
 import com.example.wayspot.R
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.auth.components.AuthSwitchPrompt
@@ -144,7 +145,11 @@ fun TermsAcceptance(
     }
 
     Row(modifier = modifier, verticalAlignment = Alignment.Top) {
-        Checkbox(checked = checked, onCheckedChange = onCheckedChange)
+        Checkbox(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            modifier = Modifier.testTag("registerTermsCheckbox")
+        )
         Text(
             text = termsText,
             modifier = Modifier.padding(top = 12.dp),
@@ -166,7 +171,8 @@ fun SignUpActionButton(
         enabled = enabled,
         modifier = modifier
             .fillMaxWidth()
-            .height(54.dp),
+            .height(54.dp)
+            .testTag("registerSubmitButton"),
         shape = MaterialTheme.shapes.medium
     ) {
         Text(

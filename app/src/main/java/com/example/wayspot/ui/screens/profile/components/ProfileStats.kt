@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.testTag
 import com.example.wayspot.R
 import com.example.wayspot.data.model.user.UserStats
 import com.example.wayspot.data.local.PreviewData
@@ -62,7 +63,9 @@ fun ProfileStats(
             ProfileStat(
                 value = stats.followers,
                 label = stringResource(R.string.profile_label_followers),
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag("profileFollowersCount_${stats.followers}"),
                 onClick = onFollowersClick,
                 actionDescription = stringResource(
                     R.string.profile_stats_action_description,

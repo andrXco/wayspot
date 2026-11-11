@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.testTag
 import com.example.wayspot.R
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.theme.WayspotTheme
@@ -46,6 +47,7 @@ fun SplashActionsSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
+                .testTag("startLoginButton")
                 .shadow(
                     elevation = 14.dp,
                     shape = buttonShape,
@@ -76,6 +78,7 @@ fun SplashActionsSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
+                .testTag("startRegisterButton")
                 .shadow(
                     elevation = 9.dp,
                     shape = buttonShape,

@@ -25,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.testTag
 import com.example.wayspot.R
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.model.user.UserProfile
@@ -103,6 +104,7 @@ fun ProfileHeader(
             ) {
                 Text(
                     text = user.name,
+                    modifier = Modifier.testTag("profileName"),
                     style = MaterialTheme.typography.titleLarge,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.ExtraBold,
@@ -114,7 +116,9 @@ fun ProfileHeader(
                         R.string.profile_username_format,
                         user.username
                     ),
-                    modifier = Modifier.padding(top = 4.dp),
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .testTag("profileUsername"),
                     style = MaterialTheme.typography.bodySmall,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,

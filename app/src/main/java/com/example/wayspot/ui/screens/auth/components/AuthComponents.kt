@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
+import androidx.compose.ui.platform.testTag
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -111,7 +112,8 @@ internal fun AuthTextField(
             trailingIcon = trailingIcon,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(if (supportingText == null) 56.dp else 76.dp),
+                .height(if (supportingText == null) 56.dp else 76.dp)
+                .testTag(label),
             singleLine = true,
             visualTransformation = visualTransformation,
             keyboardOptions = keyboardOptions,

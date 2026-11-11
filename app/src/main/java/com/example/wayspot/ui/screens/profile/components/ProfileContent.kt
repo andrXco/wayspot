@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.TextButton
+import androidx.compose.ui.platform.testTag
 import com.example.wayspot.data.model.review.ReviewInfo
 import com.example.wayspot.data.model.review.ReviewFeedItem
 import com.example.wayspot.data.model.user.UserProfile
@@ -66,6 +67,7 @@ fun ProfileContent(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
+            .testTag("profileFollowAllowed_${!isOwnProfile && canFollow}")
             .background(MaterialTheme.colorScheme.background),
         contentPadding = PaddingValues(bottom = 24.dp)
     ) {
@@ -91,7 +93,9 @@ fun ProfileContent(
                 onBackClick?.let { back ->
                     TextButton(
                         onClick = back,
-                        modifier = Modifier.padding(start = 8.dp)
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .testTag("profileBackButton")
                     ) {
                         Text(
                             text = stringResource(R.string.volver),
@@ -123,7 +127,8 @@ fun ProfileContent(
                         enabled = !isFollowActionInProgress,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
+                            .padding(horizontal = 16.dp)
+                            .testTag("profileFollowButton"),
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.onPrimary,
