@@ -13,7 +13,8 @@ data class Place(
     val detail: PlaceDetail,
     val titleText: String? = null,
     val categoryText: String? = null,
-    val locationText: String? = null
+    val locationText: String? = null,
+    val coordinates: PlaceCoordinates? = null
 )
 
 /** Información ampliada de un lugar y sus reseñas recientes. */

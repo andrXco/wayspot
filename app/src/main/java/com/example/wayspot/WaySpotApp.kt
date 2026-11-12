@@ -177,7 +177,11 @@ fun WaySpotApp(
                 }
             },
             floatingActionButton = {
-                if (currentRoute != null && currentRoute in bottomBarRoutes) {
+                if (
+                    currentRoute != null &&
+                    currentRoute in bottomBarRoutes &&
+                    currentRoute != Screen.Map.route
+                ) {
                     WayspotAddReviewButton(
                         onClick = {
                             navController.navigate(
@@ -209,6 +213,7 @@ fun WaySpotApp(
 private val bottomBarRoutes = setOf(
     Screen.Home.route,
     Screen.Explore.route,
+    Screen.Map.route,
     Screen.Notifications.route,
     Screen.Profile.route
 )

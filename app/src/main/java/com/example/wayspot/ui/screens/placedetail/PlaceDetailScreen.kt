@@ -1,9 +1,5 @@
 package com.example.wayspot.ui.screens.placedetail
 
-import android.content.ActivityNotFoundException
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,7 +37,8 @@ fun PlaceDetailScreen(
     onSaveClick: () -> Unit = {},
     onShareClick: () -> Unit = {},
     onWriteReviewClick: () -> Unit = {},
-    onReviewClick: (String) -> Unit = {}
+    onReviewClick: (String) -> Unit = {},
+    onMapClick: (String) -> Unit = {}
 ) {
     val state by placeDetailViewModel.uiState.collectAsState()
 
@@ -63,13 +60,7 @@ fun PlaceDetailScreen(
             onShareClick = onShareClick,
             onWriteReviewClick = onWriteReviewClick,
             onReviewClick = onReviewClick,
-            onMapClick = {
-                openPlaceInMaps(
-                    context = context,
-                    placeName = place.title,
-                    location = place.location
-                )
-            },
+            onMapClick = { onMapClick(place.id) },
             modifier = modifier
         )
     }
@@ -149,27 +140,5 @@ private fun PlaceDetailScreenPreview() {
             onMapClick = {},
             onReviewClick = {}
         )
-    }
-}
-
-private fun openPlaceInMaps(
-    context: Context,
-    placeName: String,
-    location: String
-) {
-    val query = Uri.encode("$placeName, $location")
-    val mapsIntent = Intent(
-        Intent.ACTION_VIEW,
-        Uri.parse("geo:0,0?q=$query")
-    )
-
-    try {
-        context.startActivity(mapsIntent)
-    } catch (_: ActivityNotFoundException) {
-        val browserIntent = Intent(
-            Intent.ACTION_VIEW,
-            Uri.parse("https://www.google.com/maps/search/?api=1&query=$query")
-        )
-        context.startActivity(browserIntent)
     }
 }

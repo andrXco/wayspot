@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.google.maps.secrets)
 }
 
 android {
@@ -49,6 +50,11 @@ android {
     }
 }
 
+secrets {
+    propertiesFileName = "secrets.properties"
+    defaultPropertiesFileName = "local.defaults.properties"
+}
+
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
@@ -67,6 +73,7 @@ dependencies {
 
     implementation(libs.coil.compose)
     implementation(libs.places)
+    implementation(libs.maps.compose)
 
     implementation(libs.dagger.hilt)
     implementation(libs.hilt.lifecycle.viewmodel.compose)

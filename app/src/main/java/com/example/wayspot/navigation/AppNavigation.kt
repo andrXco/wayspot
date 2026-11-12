@@ -32,6 +32,8 @@ import com.example.wayspot.ui.screens.splash.SplashScreen
 import com.example.wayspot.ui.screens.auth.forgotpassword.ForgotPasswordViewModel
 import com.example.wayspot.ui.screens.editprofile.EditProfileViewModel
 import com.example.wayspot.ui.screens.home.HomeViewModel
+import com.example.wayspot.ui.screens.map.PlacesMapScreen
+import com.example.wayspot.ui.screens.map.PlacesMapViewModel
 import com.example.wayspot.ui.screens.explore.ExploreViewModel
 import com.example.wayspot.ui.screens.savedplaces.SavedPlacesViewModel
 import com.example.wayspot.ui.screens.newreview.NewReviewViewModel
@@ -246,6 +248,30 @@ fun AppNavigation(
         }
 
         composable(
+            route = Screen.Map.route,
+            arguments = listOf(
+                navArgument("placeId") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            )
+        ) { backStackEntry ->
+            val placeId = backStackEntry.arguments?.getString("placeId")
+            val placesMapViewModel: PlacesMapViewModel = hiltViewModel()
+
+            PlacesMapScreen(
+                viewModel = placesMapViewModel,
+                focusedPlaceId = placeId,
+                onPlaceClick = { selectedPlaceId ->
+                    navController.navigate(
+                        Screen.PlaceDetail.createRoute(selectedPlaceId)
+                    )
+                }
+            )
+        }
+
+        composable(
             route = Screen.PlaceDetail.route,
             arguments = listOf(
                 navArgument("placeId") {
@@ -278,6 +304,11 @@ fun AppNavigation(
                     },
                     onReviewClick = { reviewId ->
                         navController.navigate(Screen.ReviewDetail.createRoute(reviewId))
+                    },
+                    onMapClick = { selectedPlaceId ->
+                        navController.navigate(
+                            Screen.Map.createRoute(selectedPlaceId)
+                        )
                     }
                 )
             }

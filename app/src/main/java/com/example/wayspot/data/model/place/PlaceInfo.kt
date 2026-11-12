@@ -12,7 +12,8 @@ data class PlaceInfo(
     val duration: String? = null,
     val price: String? = null,
     val altitude: String? = null,
-    val reviewCount: Int = 0
+    val reviewCount: Int = 0,
+    val coordinates: PlaceCoordinates? = null
 )
 
 /** Adapta un lugar localizado del catálogo a la representación usada por el detalle remoto. */
@@ -30,5 +31,6 @@ internal fun Place.toPlaceInfo(
     duration = detail.durationText,
     price = detail.priceText,
     altitude = detail.altitudeText,
-    reviewCount = detail.reviewCount
+    reviewCount = detail.reviewCount,
+    coordinates = coordinates
 )

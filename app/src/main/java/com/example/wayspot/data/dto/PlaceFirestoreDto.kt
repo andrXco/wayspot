@@ -4,6 +4,8 @@ package com.example.wayspot.data.dto
 import com.example.wayspot.data.model.place.Place
 import com.example.wayspot.data.model.place.PlaceDetail
 import com.example.wayspot.data.model.place.PlaceInfo
+import com.example.wayspot.data.model.place.PlaceCoordinates
+import com.google.firebase.firestore.GeoPoint
 
 data class PlaceFirestoreDto(
     val id: String = "",
@@ -13,7 +15,8 @@ data class PlaceFirestoreDto(
     val rating: Double = 0.0,
     val imageUrl: String? = null,
     val description: String? = null,
-    val reviewCount: Long = 0L
+    val reviewCount: Long = 0L,
+    val coordinates: GeoPoint? = null
 ) : PlaceDtoGeneric() {
 
     override fun toPlaceInfo(): PlaceInfo {
@@ -26,7 +29,13 @@ data class PlaceFirestoreDto(
             imageUrl = imageUrl,
             description = description ?: "",
             slug = id,
-            reviewCount = reviewCount.toInt()
+            reviewCount = reviewCount.toInt(),
+            coordinates = coordinates?.let { point ->
+                PlaceCoordinates(
+                    latitude = point.latitude,
+                    longitude = point.longitude
+                )
+            }
         )
     }
 
@@ -49,7 +58,13 @@ data class PlaceFirestoreDto(
             ),
             titleText = title,
             categoryText = category,
-            locationText = location
+            locationText = location,
+            coordinates = coordinates?.let { point ->
+                PlaceCoordinates(
+                    latitude = point.latitude,
+                    longitude = point.longitude
+                )
+            }
         )
     }
 }

@@ -88,6 +88,7 @@
     <string name="star_content_description">Estrella</string>
     <string name="nav_home">Inicio</string>
     <string name="nav_explore">Explorar</string>
+    <string name="nav_map">Mapa</string>
     <string name="nav_add_review">Añadir reseña</string>
     <string name="nav_profile">Perfil</string>
     <string name="profile_content_description">Perfil de usuario</string>
@@ -187,6 +188,15 @@
     <string name="place_map_view_action">Ver mapa</string>
     <string name="place_map_center_content_description">Abrir el mapa de %1$s</string>
     <string name="place_map_preview_content_description">Vista de mapa de %1$s, %2$s</string>
+    <string name="places_map_title">Explora el mapa</string>
+    <string name="places_map_count">%1$d lugares en el mapa</string>
+    <string name="places_map_empty">Aún no hay lugares con coordenadas.</string>
+    <string name="places_map_focused_place_unavailable">Este lugar aún no tiene coordenadas para mostrarse en el mapa.</string>
+    <string name="places_map_load_error">No se pudieron cargar los lugares.</string>
+    <string name="places_map_retry">Intentar de nuevo</string>
+    <string name="places_map_show_all_content_description">Mostrar todos los lugares</string>
+    <string name="places_map_marker_content_description">Abrir %1$s en el mapa</string>
+    <string name="places_map_open_place">Ver lugar</string>
     <string name="recent_reviews_title">Reseñas recientes</string>
     <string name="see_all">Ver todas</string>
     <string name="time_label">2-3 horas</string>
