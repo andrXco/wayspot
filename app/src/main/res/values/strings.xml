@@ -182,6 +182,11 @@
     <string name="reviews_count">%1$s reseñas</string>
     <string name="description_title">Descripción</string>
     <string name="button_write_review">Escribir reseña</string>
+    <string name="place_map_section_label">Ubicación</string>
+    <string name="place_map_explore_title">Explora los alrededores</string>
+    <string name="place_map_view_action">Ver mapa</string>
+    <string name="place_map_center_content_description">Abrir el mapa de %1$s</string>
+    <string name="place_map_preview_content_description">Vista de mapa de %1$s, %2$s</string>
     <string name="recent_reviews_title">Reseñas recientes</string>
     <string name="see_all">Ver todas</string>
     <string name="time_label">2-3 horas</string>

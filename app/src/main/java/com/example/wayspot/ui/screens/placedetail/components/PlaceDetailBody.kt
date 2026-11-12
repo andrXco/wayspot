@@ -37,6 +37,7 @@ fun PlaceDetailBody(
     place: PlaceInfo,
     onShareClick: () -> Unit,
     onWriteReviewClick: () -> Unit,
+    onMapClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -83,6 +84,15 @@ fun PlaceDetailBody(
                     fontSize = 13.sp
                 )
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            PlaceDetailMapPreview(
+                placeName = place.title,
+                location = place.location,
+                onMapClick = onMapClick,
+                modifier = Modifier.fillMaxWidth()
+            )
 
             Spacer(
                 modifier = Modifier.height(24.dp)
@@ -175,7 +185,8 @@ private fun PlaceDetailBodyPreview() {
                 description = "Lugar turístico ubicado en Bogotá"
             ),
             onShareClick = {},
-            onWriteReviewClick = {}
+            onWriteReviewClick = {},
+            onMapClick = {}
         )
     }
 }
