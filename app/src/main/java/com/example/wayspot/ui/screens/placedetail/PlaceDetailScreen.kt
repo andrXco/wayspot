@@ -37,7 +37,8 @@ fun PlaceDetailScreen(
     onSaveClick: () -> Unit = {},
     onShareClick: () -> Unit = {},
     onWriteReviewClick: () -> Unit = {},
-    onReviewClick: (String) -> Unit = {}
+    onReviewClick: (String) -> Unit = {},
+    onMapClick: (String) -> Unit = {}
 ) {
     val state by placeDetailViewModel.uiState.collectAsState()
 
@@ -59,6 +60,7 @@ fun PlaceDetailScreen(
             onShareClick = onShareClick,
             onWriteReviewClick = onWriteReviewClick,
             onReviewClick = onReviewClick,
+            onMapClick = { onMapClick(place.id) },
             modifier = modifier
         )
     }
@@ -74,6 +76,7 @@ fun PlaceDetailContent(
     onShareClick: () -> Unit,
     onWriteReviewClick: () -> Unit,
     onReviewClick: (String) -> Unit,
+    onMapClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -97,6 +100,7 @@ fun PlaceDetailContent(
                 place = place.copy(reviewCount = reviews.size),
                 onShareClick = onShareClick,
                 onWriteReviewClick = onWriteReviewClick,
+                onMapClick = onMapClick,
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -125,12 +129,15 @@ fun PlaceDetailContent(
 private fun PlaceDetailScreenPreview() {
     WayspotTheme {
         PlaceDetailContent(
-            place = PreviewDataPopular.previewPlaceInfo,
+            place = PreviewDataPopular.cerroMonserrate.toPlaceInfo(
+                LocalContext.current::getString
+            ),
             reviews = listOf(PreviewData.reviewDetailReview),
             onBackClick = {},
             onSaveClick = {},
             onShareClick = {},
             onWriteReviewClick = {},
+            onMapClick = {},
             onReviewClick = {}
         )
     }

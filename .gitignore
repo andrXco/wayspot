@@ -212,6 +212,7 @@ coverage/
 reports/
 .cache/
 local.properties
+secrets.properties
 implementation_plan.artifact.md
 golden_rules.artifact.md
 

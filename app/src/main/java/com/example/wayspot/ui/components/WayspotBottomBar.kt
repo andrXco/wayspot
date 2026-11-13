@@ -5,6 +5,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
@@ -43,6 +44,11 @@ fun WayspotBottomBar(
             R.string.nav_explore
         ),
         BottomNavItem(
+            Screen.Map.route,
+            Icons.Default.Map,
+            R.string.nav_map
+        ),
+        BottomNavItem(
             Screen.Notifications.route,
             Icons.Default.Notifications,
             R.string.notifications_content_description
@@ -64,29 +70,21 @@ fun WayspotBottomBar(
         containerColor = MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.onSurface
     ) {
-        WayspotNavigationBarItem(
-            item = items[0],
-            selected = currentRoute == items[0].route,
-            onClick = { onNavItemClick(items[0].route) }
-        )
-
-        WayspotNavigationBarItem(
-            item = items[1],
-            selected = currentRoute == items[1].route,
-            onClick = { onNavItemClick(items[1].route) }
-        )
-
-        WayspotNavigationBarItem(
-            item = items[2],
-            selected = currentRoute == items[2].route,
-            onClick = { onNavItemClick(items[2].route) }
-        )
-
-        WayspotNavigationBarItem(
-            item = items[3],
-            selected = currentRoute == items[3].route,
-            onClick = { onNavItemClick(items[3].route) }
-        )
+        items.forEach { item ->
+            WayspotNavigationBarItem(
+                item = item,
+                selected = currentRoute == item.route,
+                onClick = {
+                    onNavItemClick(
+                        if (item.route == Screen.Map.route) {
+                            Screen.Map.createRoute()
+                        } else {
+                            item.route
+                        }
+                    )
+                }
+            )
+        }
     }
 }
 
