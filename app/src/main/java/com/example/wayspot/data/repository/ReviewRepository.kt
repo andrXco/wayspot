@@ -2,8 +2,10 @@ package com.example.wayspot.data.repository
 
 import com.example.wayspot.data.model.review.ReviewComment
 import com.example.wayspot.data.datasource.implementation.firestore.ReviewFirestoreDataSourceImplementation
+import com.example.wayspot.data.datasource.RecentReviewRemoteDataSource
 import com.example.wayspot.data.model.review.ReviewDraft
 import com.example.wayspot.data.model.review.ReviewInfo
+import com.example.wayspot.data.model.review.RecentReviewWindow
 import com.example.wayspot.data.model.notification.NotificationActorEvent
 import com.example.wayspot.data.dto.CreateCommentDto
 import com.example.wayspot.data.dto.ReviewUserDto
@@ -20,7 +22,8 @@ import kotlinx.coroutines.flow.map
 class ReviewRepository @Inject constructor(
     private val reviewFirestoreDataSource: ReviewFirestoreDataSourceImplementation,
     private val authRepository: AuthRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val recentReviewRemoteDataSource: RecentReviewRemoteDataSource
 ) {
     suspend fun getReviewLikeNotificationEvents(
         reviewIds: List<String>
@@ -72,10 +75,16 @@ class ReviewRepository @Inject constructor(
             reviews.map { review -> review.toReviewInfo() }
         }
 
-    fun getRecentReviews(): Flow<List<ReviewInfo>> =
-        reviewFirestoreDataSource.listenRecentReviews().map { reviews ->
-            reviews.map { review -> review.toReviewInfo() }
-        }
+    fun getRecentReviews(nowMillis: () -> Long = System::currentTimeMillis): Flow<List<ReviewInfo>> =
+        recentReviewRemoteDataSource
+            .observeReviewsSince(RecentReviewWindow.cutoffMillis(nowMillis()))
+            .map { reviews ->
+                val currentTime = nowMillis()
+                reviews.map { review -> review.toReviewInfo() }
+                    .filter { review ->
+                        RecentReviewWindow.contains(review.createdAtMillis, currentTime)
+                    }
+            }
 
     suspend fun getReviewById(id: String): Result<ReviewInfo> {
         return try {

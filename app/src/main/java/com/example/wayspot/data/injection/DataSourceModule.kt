@@ -1,8 +1,10 @@
 package com.example.wayspot.data.injection
 
 import com.example.wayspot.data.datasource.PlaceRemoteDataSource
+import com.example.wayspot.data.datasource.RecentReviewRemoteDataSource
 import com.example.wayspot.data.datasource.UserRemoteDataSource
 import com.example.wayspot.data.datasource.implementation.firestore.PlaceFirestoreDataSourceImplementation
+import com.example.wayspot.data.datasource.implementation.firestore.ReviewFirestoreDataSourceImplementation
 import com.example.wayspot.data.datasource.implementation.firestore.UserFirestoreDataSourceImplementation
 import dagger.Binds
 import dagger.Module
@@ -17,6 +19,11 @@ abstract class DataSourceModule {
     abstract fun bindPlaceRemoteDataSource(
         implementation: PlaceFirestoreDataSourceImplementation
     ): PlaceRemoteDataSource
+
+    @Binds
+    abstract fun bindRecentReviewRemoteDataSource(
+        implementation: ReviewFirestoreDataSourceImplementation
+    ): RecentReviewRemoteDataSource
 
     @Binds
     abstract fun bindUserRemoteDataSource(

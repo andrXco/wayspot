@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.wayspot.data.repository.PlaceRepository
 import com.example.wayspot.data.model.place.PlaceInfo
 import com.example.wayspot.data.model.review.ReviewInfo
+import com.example.wayspot.data.model.review.RecentReviewWindow
 import com.example.wayspot.data.repository.ReviewRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -28,7 +29,6 @@ class PlacesMapViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(PlacesMapState())
     val uiState: StateFlow<PlacesMapState> = _uiState
     private var mapLoadJob: Job? = null
-    private val reviewWindowMillis = 24L * 60L * 60L * 1000L
     private var expirationJob: Job? = null
     private var loadedReviews: List<ReviewInfo> = emptyList()
     private var availablePlaces: List<PlaceInfo> = emptyList()
@@ -168,19 +168,15 @@ class PlacesMapViewModel @Inject constructor(
 
     private fun refreshVisibleReviews() {
         val now = System.currentTimeMillis()
-        val limit = now - reviewWindowMillis
-
         val validPlaceIds = availablePlaces.map { place ->
             place.id
         }.toSet()
 
+        // El corte de Firestore es fijo; este filtro mantiene visibles solo las
+        // publicaciones de las últimas 24 horas mientras el mapa permanece abierto.
         val recentReviews = loadedReviews.filter { review ->
-            val createdAt = review.createdAtMillis
-
-            createdAt != null &&
-                    createdAt > limit &&
-                    createdAt <= now &&
-                    review.placeId in validPlaceIds
+            RecentReviewWindow.contains(review.createdAtMillis, now) &&
+                review.placeId in validPlaceIds
         }
 
         val reviewedPlaceIds = recentReviews.map { review ->
@@ -223,12 +219,12 @@ class PlacesMapViewModel @Inject constructor(
             while (true) {
                 val nextExpiration = _uiState.value.recentReviews
                     .mapNotNull { review ->
-                        review.createdAtMillis?.plus(reviewWindowMillis)
+                        review.createdAtMillis?.let(RecentReviewWindow::expiresAtMillis)
                     }
                     .minOrNull() ?: break
 
                 val waitingTime = (
-                        nextExpiration - System.currentTimeMillis() + 1L
+                        nextExpiration - System.currentTimeMillis()
                         ).coerceAtLeast(1L)
 
                 delay(waitingTime)

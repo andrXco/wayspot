@@ -6,6 +6,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.example.wayspot.data.dto.CommentFirestoreDto
 import com.example.wayspot.data.dto.CreateCommentFirestoreDto
 import com.example.wayspot.data.datasource.ReviewRemoteDataSource
+import com.example.wayspot.data.datasource.RecentReviewRemoteDataSource
 import com.example.wayspot.data.dto.CreateCommentDto
 import com.example.wayspot.data.dto.NotificationActorEventDto
 import com.google.firebase.firestore.FieldValue
@@ -19,7 +20,7 @@ import java.util.Date
 
 class ReviewFirestoreDataSourceImplementation @Inject constructor(
     private val db: FirebaseFirestore
-) : ReviewRemoteDataSource {
+) : ReviewRemoteDataSource, RecentReviewRemoteDataSource {
 
     override suspend fun createReview(
         review: SaveReviewDto
@@ -315,15 +316,13 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
         }
     }
 
-    fun listenRecentReviews(): Flow<List<ReviewFirestoreDto>> = callbackFlow {
-
-        val twentyFourHoursAgo = System.currentTimeMillis() -
-                (24L * 60 * 60 * 1000)
-
+    override fun observeReviewsSince(cutoffMillis: Long): Flow<List<ReviewFirestoreDto>> = callbackFlow {
+        // Firestore reduce los documentos transferidos. El ViewModel aplica la ventana móvil
+        // mientras el listener sigue activo, ya que este corte de consulta es fijo.
         val listenerRegistration = db.collection("reviews")
             .whereGreaterThanOrEqualTo(
                 "createdAt",
-                Timestamp(Date(twentyFourHoursAgo))
+                Timestamp(Date(cutoffMillis))
             )
             .addSnapshotListener { snapshots, error ->
 
