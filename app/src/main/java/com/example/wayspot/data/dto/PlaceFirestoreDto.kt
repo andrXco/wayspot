@@ -16,7 +16,8 @@ data class PlaceFirestoreDto(
     val imageUrl: String? = null,
     val description: String? = null,
     val reviewCount: Long = 0L,
-    val coordinates: GeoPoint? = null
+    val coordinates: GeoPoint? = null //Aqui Conexion
+
 ) : PlaceDtoGeneric() {
 
     override fun toPlaceInfo(): PlaceInfo {
