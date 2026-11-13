@@ -2,11 +2,17 @@ package com.example.wayspot.ui.components.map
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CenterFocusStrong
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -16,14 +22,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -34,8 +41,10 @@ import com.example.wayspot.data.model.place.PlacesMapDefaults
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.rememberCameraPositionState
@@ -53,6 +62,8 @@ fun PlacesMapSurface(
     showRecenterButton: Boolean = true
 ) {
     val colorScheme = MaterialTheme.colorScheme
+    val context = LocalContext.current
+    val isDarkTheme = isSystemInDarkTheme()
     val cameraPositionState = rememberCameraPositionState()
     val coroutineScope = rememberCoroutineScope()
     val isInspectionMode = LocalInspectionMode.current
@@ -80,6 +91,13 @@ fun PlacesMapSurface(
                 cameraPositionState = cameraPositionState,
                 contentDescription = stringResource(R.string.places_map_title),
                 onMapLoaded = { isMapLoaded = true },
+                properties = MapProperties(
+                    mapStyleOptions = if (isDarkTheme) {
+                        MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style_dark)
+                    } else {
+                        null
+                    }
+                ),
                 uiSettings = MapUiSettings(
                     scrollGesturesEnabled = isInteractive,
                     zoomGesturesEnabled = isInteractive,
@@ -143,6 +161,45 @@ fun PlacesMapSurface(
                             R.string.places_map_show_all_content_description
                         )
                     )
+                }
+            }
+        }
+
+        if (isInteractive) {
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(12.dp)
+                    .shadow(elevation = 4.dp, shape = RoundedCornerShape(24.dp)),
+                shape = RoundedCornerShape(24.dp),
+                color = colorScheme.surface,
+                contentColor = colorScheme.primary
+            ) {
+                Column {
+                    IconButton(
+                        onClick = {
+                            coroutineScope.launch {
+                                cameraPositionState.animate(CameraUpdateFactory.zoomIn())
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = stringResource(R.string.places_map_zoom_in_content_description)
+                        )
+                    }
+                    IconButton(
+                        onClick = {
+                            coroutineScope.launch {
+                                cameraPositionState.animate(CameraUpdateFactory.zoomOut())
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Remove,
+                            contentDescription = stringResource(R.string.places_map_zoom_out_content_description)
+                        )
+                    }
                 }
             }
         }
