@@ -186,6 +186,7 @@
     <string name="place_map_section_label">Ubicación</string>
     <string name="place_map_explore_title">Explora los alrededores</string>
     <string name="place_map_view_action">Ver mapa</string>
+    <string name="place_map_coordinates_unavailable">Agrega las coordenadas del lugar para mostrar el mapa.</string>
     <string name="place_map_center_content_description">Abrir el mapa de %1$s</string>
     <string name="place_map_preview_content_description">Vista de mapa de %1$s, %2$s</string>
     <string name="places_map_title">Explora el mapa</string>

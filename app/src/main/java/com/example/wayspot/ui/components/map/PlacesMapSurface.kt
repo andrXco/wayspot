@@ -1,4 +1,4 @@
-package com.example.wayspot.ui.screens.map.components
+package com.example.wayspot.ui.components.map
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -48,7 +48,9 @@ fun PlacesMapSurface(
     places: List<PlaceInfo>,
     selectedPlaceId: String?,
     onPlaceSelected: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isInteractive: Boolean = true,
+    showRecenterButton: Boolean = true
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val cameraPositionState = rememberCameraPositionState()
@@ -79,6 +81,10 @@ fun PlacesMapSurface(
                 contentDescription = stringResource(R.string.places_map_title),
                 onMapLoaded = { isMapLoaded = true },
                 uiSettings = MapUiSettings(
+                    scrollGesturesEnabled = isInteractive,
+                    zoomGesturesEnabled = isInteractive,
+                    tiltGesturesEnabled = isInteractive,
+                    rotationGesturesEnabled = isInteractive,
                     compassEnabled = false,
                     mapToolbarEnabled = false,
                     myLocationButtonEnabled = false,
@@ -112,30 +118,32 @@ fun PlacesMapSurface(
             }
         }
 
-        Surface(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .shadow(elevation = 4.dp, shape = CircleShape),
-            shape = CircleShape,
-            color = colorScheme.surface,
-            contentColor = colorScheme.primary
-        ) {
-            IconButton(
-                onClick = {
-                    coroutineScope.launch {
-                        cameraPositionState.focusPlaces(
-                            places = validPlaces,
-                            selectedPlace = null
-                        )
-                    }
-                }
+        if (showRecenterButton) {
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .shadow(elevation = 4.dp, shape = CircleShape),
+                shape = CircleShape,
+                color = colorScheme.surface,
+                contentColor = colorScheme.primary
             ) {
-                Icon(
-                    imageVector = Icons.Default.CenterFocusStrong,
-                    contentDescription = stringResource(
-                        R.string.places_map_show_all_content_description
+                IconButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            cameraPositionState.focusPlaces(
+                                places = validPlaces,
+                                selectedPlace = selectedPlace
+                            )
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.CenterFocusStrong,
+                        contentDescription = stringResource(
+                            R.string.places_map_show_all_content_description
+                        )
                     )
-                )
+                }
             }
         }
     }

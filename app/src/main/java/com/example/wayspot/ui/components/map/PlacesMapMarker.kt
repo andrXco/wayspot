@@ -1,4 +1,4 @@
-package com.example.wayspot.ui.screens.map.components
+package com.example.wayspot.ui.components.map
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box

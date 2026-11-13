@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
+import com.example.wayspot.ui.components.map.PlacesMapSurface
 import com.example.wayspot.data.model.place.PlaceInfo
 
 /** Coordina las secciones visuales del mapa sin poseer estado de negocio ni navegación. */

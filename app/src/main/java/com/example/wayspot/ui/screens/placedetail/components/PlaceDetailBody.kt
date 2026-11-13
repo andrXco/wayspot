@@ -88,8 +88,7 @@ fun PlaceDetailBody(
             Spacer(modifier = Modifier.height(24.dp))
 
             PlaceDetailMapPreview(
-                placeName = place.title,
-                location = place.location,
+                place = place,
                 onMapClick = onMapClick,
                 modifier = Modifier.fillMaxWidth()
             )
