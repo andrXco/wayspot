@@ -1,13 +1,18 @@
 package com.example.wayspot.ui.screens.map
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.data.model.place.PlaceInfo
+import com.example.wayspot.data.model.place.PlacesMapDefaults
 import com.example.wayspot.data.model.place.toPlaceInfo
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.map.components.PlacesMapLayout
@@ -26,6 +31,17 @@ fun PlacesMapScreen(
 )
  {
     val state by viewModel.uiState.collectAsState()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner, viewModel) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.refreshOnResume()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     LaunchedEffect(focusedPlaceId) {
         viewModel.selectPlace(focusedPlaceId)
@@ -45,7 +61,13 @@ fun PlacesMapScreen(
          onReviewClick = onReviewClick,
          selectedPlaceReviews = state.selectedPlaceReviews,
          onPreviousReview = viewModel::previousReview,
-         onNextReview = viewModel::nextReview
+         onNextReview = viewModel::nextReview,
+         isNearbySearchActive = state.isNearbySearchActive,
+         isSearchingNearby = state.isSearchingNearby,
+         nearbyRadiusKm = PlacesMapDefaults.nearbySearchRadiusMeters / 1000,
+         selectedPlaceDistanceMeters = state.selectedPlaceDistanceMeters,
+         onSearchNearby = viewModel::searchNearby,
+         onClearNearbySearch = viewModel::clearNearbySearch
 
      )
  }

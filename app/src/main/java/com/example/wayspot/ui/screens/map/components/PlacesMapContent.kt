@@ -11,6 +11,8 @@ import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
 import com.example.wayspot.ui.components.map.PlacesMapSurface
 import com.example.wayspot.data.model.place.PlaceInfo
+import com.example.wayspot.data.model.place.PlaceCoordinates
+import com.example.wayspot.data.model.place.PlacesMapDefaults
 import com.example.wayspot.data.model.review.ReviewInfo
 
 /** Coordina las secciones visuales del mapa sin poseer estado de negocio ni navegación. */
@@ -29,7 +31,13 @@ fun PlacesMapLayout(
     onReviewClick: (String) -> Unit = {},
     selectedPlaceReviews: List<ReviewInfo> = emptyList(),
     onPreviousReview: () -> Unit = {},
-    onNextReview: () -> Unit = {}
+    onNextReview: () -> Unit = {},
+    isNearbySearchActive: Boolean = false,
+    isSearchingNearby: Boolean = false,
+    nearbyRadiusKm: Int = PlacesMapDefaults.nearbySearchRadiusMeters / 1000,
+    selectedPlaceDistanceMeters: Double? = null,
+    onSearchNearby: (PlaceCoordinates) -> Unit = {},
+    onClearNearbySearch: () -> Unit = {}
 
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -37,27 +45,34 @@ fun PlacesMapLayout(
             places = places,
             selectedPlaceId = selectedPlaceId,
             onPlaceSelected = onPlaceSelected,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            isNearbySearchActive = isNearbySearchActive,
+            onSearchNearby = onSearchNearby,
+            onClearNearbySearch = onClearNearbySearch
         )
 
         PlacesMapHeader(
             placeCount = places.size,
+            isNearbySearchActive = isNearbySearchActive,
+            nearbyRadiusKm = nearbyRadiusKm,
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(16.dp)
         )
 
         when {
-            isLoading -> CircularProgressIndicator(
+            isLoading || isSearchingNearby -> CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center)
             )
 
             hasError || places.isEmpty() || (selectedPlaceId != null && selectedPlace == null) -> PlacesMapStatusCard(
                 hasError = hasError,
                 messageRes = when {
+                    hasError && isNearbySearchActive -> R.string.places_map_nearby_error
                     hasError -> R.string.places_map_load_error
                     selectedPlaceId != null && selectedPlace == null ->
                         R.string.places_map_focused_place_unavailable
+                    isNearbySearchActive -> R.string.places_map_nearby_empty
                     else -> R.string.places_map_empty
                 },
                 onRetry = onRetry,
@@ -82,7 +97,8 @@ fun PlacesMapLayout(
                 } + 1,
                 reviewCount = selectedPlaceReviews.size,
                 onPreviousReview = onPreviousReview,
-                onNextReview = onNextReview
+                onNextReview = onNextReview,
+                distanceMeters = selectedPlaceDistanceMeters
             )
 
             selectedPlace != null -> MapPlaceCard(
@@ -92,7 +108,8 @@ fun PlacesMapLayout(
                 },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(16.dp)
+                    .padding(16.dp),
+                distanceMeters = selectedPlaceDistanceMeters
             )
 
         }

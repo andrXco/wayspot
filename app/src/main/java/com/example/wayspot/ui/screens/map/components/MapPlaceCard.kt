@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Place
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -29,7 +28,8 @@ import com.example.wayspot.data.model.place.PlaceInfo
 fun MapPlaceCard(
     place: PlaceInfo,
     onPlaceClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    distanceMeters: Double? = null
 ) {
     Surface(
         modifier = modifier,
@@ -60,18 +60,6 @@ fun MapPlaceCard(
                         .weight(1f)
                         .padding(start = 6.dp)
                 )
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.tertiary,
-                    modifier = Modifier.size(16.dp)
-                )
-                Text(
-                    text = stringResource(R.string.rating_value, place.rating),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier.padding(start = 3.dp)
-                )
             }
 
             Text(
@@ -79,6 +67,12 @@ fun MapPlaceCard(
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
+            )
+
+            PlacesMapPlaceSummary(
+                rating = place.rating,
+                reviewCount = place.reviewCount,
+                distanceMeters = distanceMeters
             )
 
             Button(

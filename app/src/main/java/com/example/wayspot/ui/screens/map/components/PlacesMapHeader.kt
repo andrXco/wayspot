@@ -17,6 +17,8 @@ import com.example.wayspot.R
 @Composable
 fun PlacesMapHeader(
     placeCount: Int,
+    isNearbySearchActive: Boolean,
+    nearbyRadiusKm: Int,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -28,13 +30,24 @@ fun PlacesMapHeader(
     ) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
             Text(
-                text = stringResource(R.string.places_map_title),
+                text = stringResource(
+                    if (isNearbySearchActive) R.string.places_map_nearby_title
+                    else R.string.places_map_title
+                ),
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = stringResource(R.string.places_map_count, placeCount),
+                text = if (isNearbySearchActive) {
+                    stringResource(
+                        R.string.places_map_nearby_count,
+                        placeCount,
+                        nearbyRadiusKm
+                    )
+                } else {
+                    stringResource(R.string.places_map_count, placeCount)
+                },
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodySmall
             )

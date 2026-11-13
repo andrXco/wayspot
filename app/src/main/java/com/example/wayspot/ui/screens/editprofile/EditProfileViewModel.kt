@@ -38,6 +38,7 @@ class EditProfileViewModel @Inject constructor(
                 currentState.copy(
                     originalProfile = profile,
                     initials = profile.initials,
+                    name = profile.name,
                     username = profile.username,
                     email = profile.email,
                     bio = profile.bio,
@@ -54,6 +55,18 @@ class EditProfileViewModel @Inject constructor(
             withValidation(
                 currentState.copy(
                     username = EditProfileRules.filterUsername(input)
+                )
+            )
+        }
+    }
+
+    fun updateName(input: String) {
+        _uiState.update { currentState ->
+            val name = input.take(EditProfileRules.MAX_NAME_LENGTH)
+            withValidation(
+                currentState.copy(
+                    name = name,
+                    initials = EditProfileRules.initialsForName(name)
                 )
             )
         }
@@ -276,6 +289,7 @@ class EditProfileViewModel @Inject constructor(
 
         return EditProfileRules.normalizeProfile(
             profile = originalProfile,
+            name = currentState.name,
             username = currentState.username,
             email = currentState.email,
             bio = currentState.bio,
@@ -291,7 +305,8 @@ class EditProfileViewModel @Inject constructor(
                 EditProfileRules.canSave(
                     username = state.username,
                     email = state.email,
-                    location = state.location
+                    location = state.location,
+                    name = state.name
                 )
         )
 }

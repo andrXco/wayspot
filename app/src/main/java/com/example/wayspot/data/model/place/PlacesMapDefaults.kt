@@ -6,4 +6,5 @@ object PlacesMapDefaults {
 
     const val initialZoom = 5.5f
     const val selectedPlaceZoom = 14.5f
+    const val nearbySearchRadiusMeters = 50000
 }

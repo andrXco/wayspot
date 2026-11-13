@@ -30,6 +30,8 @@ import com.example.wayspot.data.model.user.EditProfileRules
 /** Agrupa los campos editables del perfil y preserva los límites de texto recibidos. */
 @Composable
 fun EditProfileFormSection(
+    name: String,
+    onNameChange: (String) -> Unit,
     username: String,
     onUsernameChange: (String) -> Unit,
     email: String,
@@ -44,6 +46,31 @@ fun EditProfileFormSection(
     val safeBioMaxLength = bioMaxLength.coerceAtLeast(0)
 
     Column(modifier = modifier.fillMaxWidth()) {
+        EditProfileFieldLabel(
+            text = stringResource(R.string.edit_profile_name_label)
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        EditProfileTextField(
+            value = name,
+            onValueChange = onNameChange,
+            leadingIcon = Icons.Outlined.Person,
+            leadingIconContentDescription = stringResource(
+                R.string.edit_profile_name_icon_content_description
+            ),
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.Words,
+                imeAction = ImeAction.Next
+            )
+        )
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(
+            text = stringResource(R.string.edit_profile_name_support),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.labelSmall
+        )
+
+        Spacer(modifier = Modifier.height(18.dp))
+
         EditProfileFieldLabel(
             text = stringResource(R.string.edit_profile_username_label)
         )

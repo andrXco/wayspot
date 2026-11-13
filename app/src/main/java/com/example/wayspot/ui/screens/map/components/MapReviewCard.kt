@@ -36,7 +36,8 @@ fun MapReviewCard(
     reviewPosition: Int = 1,
     reviewCount: Int = 1,
     onPreviousReview: () -> Unit = {},
-    onNextReview: () -> Unit = {}
+    onNextReview: () -> Unit = {},
+    distanceMeters: Double? = null
 ) {
     Surface(
         modifier = modifier,
@@ -54,6 +55,12 @@ fun MapReviewCard(
                 text = place.title,
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            PlacesMapPlaceSummary(
+                rating = place.rating,
+                reviewCount = place.reviewCount,
+                distanceMeters = distanceMeters
             )
 
 

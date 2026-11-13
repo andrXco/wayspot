@@ -8,6 +8,7 @@ import com.example.wayspot.data.model.user.UserProfile
 data class EditProfileState(
     val originalProfile: UserProfile? = null,
     val initials: String = "",
+    val name: String = "",
     val username: String = "",
     val email: String = "",
     val bio: String = "",

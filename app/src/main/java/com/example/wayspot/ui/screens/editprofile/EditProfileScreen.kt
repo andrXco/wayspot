@@ -83,6 +83,8 @@ fun EditProfileScreen(
         selectedAvatarUri = state.selectedAvatarUri,
         isUploadingAvatar = state.isUploadingAvatar,
         avatarUploadErrorMessage = state.avatarUploadErrorMessage,
+        name = state.name,
+        onNameChange = editProfileViewModel::updateName,
         username = state.username,
         onUsernameChange = {
             editProfileViewModel.updateUsername(it)
@@ -162,6 +164,8 @@ fun EditProfileContent(
     selectedAvatarUri: android.net.Uri?,
     isUploadingAvatar: Boolean,
     avatarUploadErrorMessage: String?,
+    name: String,
+    onNameChange: (String) -> Unit,
     username: String,
     onUsernameChange: (String) -> Unit,
     email: String,
@@ -219,6 +223,8 @@ fun EditProfileContent(
 
                 item(key = "form") {
                     EditProfileFormSection(
+                        name = name,
+                        onNameChange = onNameChange,
                         username = username,
                         onUsernameChange = onUsernameChange,
                         email = email,
@@ -280,6 +286,8 @@ private fun EditProfileScreenPreview() {
             selectedAvatarUri = null,
             isUploadingAvatar = false,
             avatarUploadErrorMessage = null,
+            name = profile.name,
+            onNameChange = {},
             username = profile.username,
             onUsernameChange = {},
             email = profile.email,

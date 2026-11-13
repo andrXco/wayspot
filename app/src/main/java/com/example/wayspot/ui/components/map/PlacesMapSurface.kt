@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CenterFocusStrong
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,6 +40,7 @@ import com.example.wayspot.data.model.place.PlaceCoordinates
 import com.example.wayspot.data.model.place.PlaceInfo
 import com.example.wayspot.data.model.place.PlacesMapDefaults
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
@@ -59,12 +61,20 @@ fun PlacesMapSurface(
     onPlaceSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
     isInteractive: Boolean = true,
-    showRecenterButton: Boolean = true
+    showRecenterButton: Boolean = true,
+    isNearbySearchActive: Boolean = false,
+    onSearchNearby: (PlaceCoordinates) -> Unit = {},
+    onClearNearbySearch: () -> Unit = {}
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val context = LocalContext.current
     val isDarkTheme = isSystemInDarkTheme()
-    val cameraPositionState = rememberCameraPositionState()
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(
+            PlacesMapDefaults.initialCenter.toLatLng(),
+            PlacesMapDefaults.initialZoom
+        )
+    }
     val coroutineScope = rememberCoroutineScope()
     val isInspectionMode = LocalInspectionMode.current
     val selectedPlace = places.firstOrNull { place -> place.id == selectedPlaceId }
@@ -137,30 +147,71 @@ fun PlacesMapSurface(
         }
 
         if (showRecenterButton) {
-            Surface(
+            Column(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .shadow(elevation = 4.dp, shape = CircleShape),
-                shape = CircleShape,
-                color = colorScheme.surface,
-                contentColor = colorScheme.primary
+                    .padding(12.dp),
+                verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)
             ) {
-                IconButton(
-                    onClick = {
-                        coroutineScope.launch {
-                            cameraPositionState.focusPlaces(
-                                places = validPlaces,
-                                selectedPlace = selectedPlace
+                Surface(
+                    modifier = Modifier.shadow(elevation = 4.dp, shape = CircleShape),
+                    shape = CircleShape,
+                    color = colorScheme.surface,
+                    contentColor = colorScheme.primary
+                ) {
+                    IconButton(
+                        onClick = {
+                            if (isNearbySearchActive) {
+                                onClearNearbySearch()
+                            } else {
+                                coroutineScope.launch {
+                                    cameraPositionState.focusPlaces(
+                                        places = validPlaces,
+                                        selectedPlace = selectedPlace
+                                    )
+                                }
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CenterFocusStrong,
+                            contentDescription = stringResource(
+                                if (isNearbySearchActive) {
+                                    R.string.places_map_clear_nearby_content_description
+                                } else {
+                                    R.string.places_map_show_all_content_description
+                                }
+                            )
+                        )
+                    }
+                }
+
+                if (isInteractive) {
+                    Surface(
+                        modifier = Modifier.shadow(elevation = 4.dp, shape = CircleShape),
+                        shape = CircleShape,
+                        color = colorScheme.surface,
+                        contentColor = colorScheme.primary
+                    ) {
+                        IconButton(
+                            onClick = {
+                                val center = cameraPositionState.position.target
+                                onSearchNearby(
+                                    PlaceCoordinates(
+                                        latitude = center.latitude,
+                                        longitude = center.longitude
+                                    )
+                                )
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = stringResource(
+                                    R.string.places_map_search_nearby_content_description
+                                )
                             )
                         }
                     }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.CenterFocusStrong,
-                        contentDescription = stringResource(
-                            R.string.places_map_show_all_content_description
-                        )
-                    )
                 }
             }
         }
