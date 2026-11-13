@@ -267,6 +267,11 @@ fun AppNavigation(
                     navController.navigate(
                         Screen.PlaceDetail.createRoute(selectedPlaceId)
                     )
+                },
+                onReviewClick = { reviewId ->
+                    navController.navigate(
+                        Screen.ReviewDetail.createRoute(reviewId)
+                    )
                 }
             )
         }

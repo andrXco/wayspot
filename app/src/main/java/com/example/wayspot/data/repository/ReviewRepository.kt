@@ -72,6 +72,11 @@ class ReviewRepository @Inject constructor(
             reviews.map { review -> review.toReviewInfo() }
         }
 
+    fun getRecentReviews(): Flow<List<ReviewInfo>> =
+        reviewFirestoreDataSource.listenRecentReviews().map { reviews ->
+            reviews.map { review -> review.toReviewInfo() }
+        }
+
     suspend fun getReviewById(id: String): Result<ReviewInfo> {
         return try {
             val currentUserId = authRepository.currentUser?.uid

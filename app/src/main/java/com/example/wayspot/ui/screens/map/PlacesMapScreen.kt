@@ -14,31 +14,41 @@ import com.example.wayspot.ui.screens.map.components.PlacesMapLayout
 import com.example.wayspot.ui.theme.WayspotTheme
 
 /** Adapta argumentos y eventos del mapa al ViewModel del destino. */
+
 @Composable
 fun PlacesMapScreen(
     viewModel: PlacesMapViewModel,
     focusedPlaceId: String?,
     onPlaceClick: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
+    onReviewClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+
+)
+ {
     val state by viewModel.uiState.collectAsState()
 
     LaunchedEffect(focusedPlaceId) {
         viewModel.selectPlace(focusedPlaceId)
     }
 
-    PlacesMapLayout(
-        places = state.places,
-        selectedPlace = state.selectedPlace,
-        selectedPlaceId = state.selectedPlaceId,
-        isLoading = state.isLoading,
-        hasError = state.hasError,
-        onPlaceSelected = viewModel::selectPlace,
-        onPlaceClick = onPlaceClick,
-        onRetry = viewModel::retry,
-        modifier = modifier
-    )
-}
+     PlacesMapLayout(
+         places = state.places,
+         selectedPlace = state.selectedPlace,
+         selectedPlaceId = state.selectedPlaceId,
+         isLoading = state.isLoading,
+         hasError = state.hasError,
+         onPlaceSelected = viewModel::selectPlace,
+         onPlaceClick = onPlaceClick,
+         onRetry = viewModel::retry,
+         modifier = modifier,
+         selectedReview = state.selectedReview,
+         onReviewClick = onReviewClick,
+         selectedPlaceReviews = state.selectedPlaceReviews,
+         onPreviousReview = viewModel::previousReview,
+         onNextReview = viewModel::nextReview
+
+     )
+ }
 
 /** Orquesta las secciones a partir de estado inmutable y callbacks. */
 @Composable

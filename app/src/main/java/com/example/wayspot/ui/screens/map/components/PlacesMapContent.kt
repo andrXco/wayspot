@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
 import com.example.wayspot.ui.components.map.PlacesMapSurface
 import com.example.wayspot.data.model.place.PlaceInfo
+import com.example.wayspot.data.model.review.ReviewInfo
 
 /** Coordina las secciones visuales del mapa sin poseer estado de negocio ni navegación. */
 @Composable
@@ -23,7 +24,13 @@ fun PlacesMapLayout(
     onPlaceSelected: (String) -> Unit,
     onPlaceClick: (String) -> Unit,
     onRetry: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    selectedReview: ReviewInfo? = null,
+    onReviewClick: (String) -> Unit = {},
+    selectedPlaceReviews: List<ReviewInfo> = emptyList(),
+    onPreviousReview: () -> Unit = {},
+    onNextReview: () -> Unit = {}
+
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         PlacesMapSurface(
@@ -59,13 +66,35 @@ fun PlacesMapLayout(
                     .padding(16.dp)
             )
 
+            selectedPlace != null &&
+                    selectedReview != null &&
+                    selectedReview.placeId == selectedPlace.id -> MapReviewCard(
+                place = selectedPlace,
+                review = selectedReview,
+                onReviewClick = {
+                    onReviewClick(selectedReview.id)
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp),
+                reviewPosition = selectedPlaceReviews.indexOfFirst {
+                    it.id == selectedReview.id
+                } + 1,
+                reviewCount = selectedPlaceReviews.size,
+                onPreviousReview = onPreviousReview,
+                onNextReview = onNextReview
+            )
+
             selectedPlace != null -> MapPlaceCard(
                 place = selectedPlace,
-                onPlaceClick = { onPlaceClick(selectedPlace.id) },
+                onPlaceClick = {
+                    onPlaceClick(selectedPlace.id)
+                },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(16.dp)
             )
+
         }
     }
 }
