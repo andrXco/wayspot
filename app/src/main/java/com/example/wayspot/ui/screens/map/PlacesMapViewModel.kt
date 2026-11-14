@@ -106,7 +106,10 @@ class PlacesMapViewModel @Inject constructor(
     }
 
     fun refreshOnResume() {
-        if (!_uiState.value.isLoading && !_uiState.value.isSearchingNearby) {
+        if (!_uiState.value.isLoading &&
+            !_uiState.value.isSearchingNearby &&
+            _uiState.value.locationRequestStatus != MapLocationRequestStatus.Requesting
+        ) {
             retry()
         }
     }
@@ -195,6 +198,51 @@ class PlacesMapViewModel @Inject constructor(
             )
         }
         refreshVisibleReviews()
+    }
+
+    fun startCurrentLocationRequest() {
+        _uiState.update { currentState ->
+            currentState.copy(locationRequestStatus = MapLocationRequestStatus.Requesting)
+        }
+    }
+
+    fun onCurrentLocationPermissionDenied() {
+        _uiState.update { currentState ->
+            currentState.copy(locationRequestStatus = MapLocationRequestStatus.PermissionDenied)
+        }
+    }
+
+    fun onCurrentLocationUnavailable() {
+        _uiState.update { currentState ->
+            currentState.copy(locationRequestStatus = MapLocationRequestStatus.Unavailable)
+        }
+    }
+
+    fun onCurrentLocationFound(coordinates: PlaceCoordinates) {
+        if (!coordinates.isValid) {
+            onCurrentLocationUnavailable()
+            return
+        }
+
+        _uiState.update { currentState ->
+            currentState.copy(
+                currentLocation = coordinates,
+                locationFocusRequestId = currentState.locationFocusRequestId + 1,
+                locationRequestStatus = MapLocationRequestStatus.Idle
+            )
+        }
+    }
+
+    fun clearLocationRequestStatus() {
+        _uiState.update { currentState ->
+            if (currentState.locationRequestStatus == MapLocationRequestStatus.PermissionDenied ||
+                currentState.locationRequestStatus == MapLocationRequestStatus.Unavailable
+            ) {
+                currentState.copy(locationRequestStatus = MapLocationRequestStatus.Idle)
+            } else {
+                currentState
+            }
+        }
     }
 
     private fun loadPlaces() {

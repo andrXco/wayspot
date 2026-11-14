@@ -5,6 +5,13 @@ import com.example.wayspot.data.model.place.NearbyPlace
 import com.example.wayspot.data.model.place.PlaceCoordinates
 import com.example.wayspot.data.model.review.ReviewInfo
 
+enum class MapLocationRequestStatus {
+    Idle,
+    Requesting,
+    PermissionDenied,
+    Unavailable
+}
+
 /** Estado renderizable de la pantalla del mapa. */
 
 data class PlacesMapState(
@@ -16,7 +23,10 @@ data class PlacesMapState(
     val selectedReviewId: String? = null,
     val nearbyPlaces: List<NearbyPlace>? = null,
     val nearbySearchCenter: PlaceCoordinates? = null,
-    val isSearchingNearby: Boolean = false
+    val isSearchingNearby: Boolean = false,
+    val currentLocation: PlaceCoordinates? = null,
+    val locationFocusRequestId: Long = 0L,
+    val locationRequestStatus: MapLocationRequestStatus = MapLocationRequestStatus.Idle
 ) {
     val isNearbySearchActive: Boolean
         get() = nearbySearchCenter != null

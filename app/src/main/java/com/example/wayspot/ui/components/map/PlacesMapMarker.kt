@@ -1,11 +1,5 @@
 package com.example.wayspot.ui.components.map
 
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,42 +13,52 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 
-/** Marcador de WaySpot con silueta direccional y pulso para el lugar seleccionado. */
+internal object PlacesMapMarkerDimensions {
+    val canvasWidth = 36.dp
+    val canvasHeight = 42.dp
+    val defaultWidth = 20.dp
+    val defaultHeight = 28.dp
+    val selectedWidth = 24.dp
+    val selectedHeight = 32.dp
+    val strokeWidth = 1.5.dp
+}
+
+/** Marcador de WaySpot con silueta direccional y selección por tamaño. */
 @Composable
 fun PlacesMapMarker(
     isSelected: Boolean,
     modifier: Modifier = Modifier
 ) {
     val colorScheme = MaterialTheme.colorScheme
-    val markerWidth = if (isSelected) 42.dp else 34.dp
-    val markerHeight = if (isSelected) 54.dp else 44.dp
+    val markerWidth = if (isSelected) {
+        PlacesMapMarkerDimensions.selectedWidth
+    } else {
+        PlacesMapMarkerDimensions.defaultWidth
+    }
+    val markerHeight = if (isSelected) {
+        PlacesMapMarkerDimensions.selectedHeight
+    } else {
+        PlacesMapMarkerDimensions.defaultHeight
+    }
 
     Box(
-        modifier = modifier.size(width = 56.dp, height = 60.dp),
+        modifier = modifier.size(
+            width = PlacesMapMarkerDimensions.canvasWidth,
+            height = PlacesMapMarkerDimensions.canvasHeight
+        ),
         contentAlignment = Alignment.Center
     ) {
-        if (isSelected) {
-            SelectedMarkerPulse(
-                color = colorScheme.tertiary,
-                markerWidth = markerWidth,
-                markerHeight = markerHeight,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-
         Surface(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -64,10 +68,10 @@ fun PlacesMapMarker(
             color = colorScheme.primary,
             contentColor = colorScheme.onPrimary,
             border = androidx.compose.foundation.BorderStroke(
-                width = 2.dp,
+                width = PlacesMapMarkerDimensions.strokeWidth,
                 color = colorScheme.surface
             ),
-            shadowElevation = if (isSelected) 8.dp else 5.dp
+            shadowElevation = if (isSelected) 4.dp else 2.dp
         ) {
             Canvas(modifier = Modifier.fillMaxSize()) {
                 val headCenter = size.width / 2f
@@ -80,52 +84,6 @@ fun PlacesMapMarker(
                     blendMode = androidx.compose.ui.graphics.BlendMode.Clear
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun SelectedMarkerPulse(
-    color: androidx.compose.ui.graphics.Color,
-    markerWidth: androidx.compose.ui.unit.Dp,
-    markerHeight: androidx.compose.ui.unit.Dp,
-    modifier: Modifier = Modifier
-) {
-    val pulse = rememberInfiniteTransition(label = "mapMarkerPulse")
-    val firstPulse by pulse.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1_500, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "mapMarkerFirstPulse"
-    )
-    val secondPulse by pulse.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(
-                durationMillis = 1_500,
-                delayMillis = 750,
-                easing = FastOutSlowInEasing
-            ),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "mapMarkerSecondPulse"
-    )
-
-    Canvas(modifier = modifier) {
-        val centerX = size.width / 2f
-        val headCenterY = (size.height - markerHeight.toPx()) + (markerWidth.toPx() / 2f)
-        val baseRadius = markerWidth.toPx() * 0.42f
-        listOf(firstPulse, secondPulse).forEach { progress ->
-            drawCircle(
-                color = color.copy(alpha = (1f - progress) * 0.62f),
-                radius = baseRadius + markerWidth.toPx() * 0.35f * progress,
-                center = androidx.compose.ui.geometry.Offset(centerX, headCenterY),
-                style = Stroke(width = 1.6.dp.toPx())
-            )
         }
     }
 }

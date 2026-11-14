@@ -4,9 +4,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
 import com.example.wayspot.ui.components.map.PlacesMapSurface
@@ -14,6 +19,7 @@ import com.example.wayspot.data.model.place.PlaceInfo
 import com.example.wayspot.data.model.place.PlaceCoordinates
 import com.example.wayspot.data.model.place.PlacesMapDefaults
 import com.example.wayspot.data.model.review.ReviewInfo
+import com.example.wayspot.ui.screens.map.MapLocationRequestStatus
 
 /** Coordina las secciones visuales del mapa sin poseer estado de negocio ni navegación. */
 @Composable
@@ -37,9 +43,32 @@ fun PlacesMapLayout(
     nearbyRadiusKm: Int = PlacesMapDefaults.nearbySearchRadiusMeters / 1000,
     selectedPlaceDistanceMeters: Double? = null,
     onSearchNearby: (PlaceCoordinates) -> Unit = {},
-    onClearNearbySearch: () -> Unit = {}
+    onClearNearbySearch: () -> Unit = {},
+    currentLocation: PlaceCoordinates? = null,
+    locationFocusRequestId: Long = 0L,
+    locationRequestStatus: MapLocationRequestStatus = MapLocationRequestStatus.Idle,
+    onRequestCurrentLocation: () -> Unit = {},
+    onLocationFeedbackShown: () -> Unit = {}
 
 ) {
+    val context = LocalContext.current
+    val locationSnackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(locationRequestStatus) {
+        val message = when (locationRequestStatus) {
+            MapLocationRequestStatus.PermissionDenied ->
+                context.getString(R.string.places_map_location_permission_denied)
+            MapLocationRequestStatus.Unavailable ->
+                context.getString(R.string.places_map_location_unavailable)
+            MapLocationRequestStatus.Idle,
+            MapLocationRequestStatus.Requesting -> null
+        }
+        if (message != null) {
+            locationSnackbarHostState.showSnackbar(message)
+            onLocationFeedbackShown()
+        }
+    }
+
     Box(modifier = modifier.fillMaxSize()) {
         PlacesMapSurface(
             places = places,
@@ -48,7 +77,12 @@ fun PlacesMapLayout(
             modifier = Modifier.fillMaxSize(),
             isNearbySearchActive = isNearbySearchActive,
             onSearchNearby = onSearchNearby,
-            onClearNearbySearch = onClearNearbySearch
+            onClearNearbySearch = onClearNearbySearch,
+            currentLocation = currentLocation,
+            locationFocusRequestId = locationFocusRequestId,
+            isRequestingCurrentLocation =
+                locationRequestStatus == MapLocationRequestStatus.Requesting,
+            onRequestCurrentLocation = onRequestCurrentLocation
         )
 
         PlacesMapHeader(
@@ -113,5 +147,12 @@ fun PlacesMapLayout(
             )
 
         }
+
+        SnackbarHost(
+            hostState = locationSnackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 144.dp)
+        )
     }
 }

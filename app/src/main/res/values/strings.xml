@@ -205,6 +205,9 @@
     <string name="places_map_show_all_content_description">Mostrar todos los lugares</string>
     <string name="places_map_search_nearby_content_description">Buscar lugares a 50 kilómetros del centro del mapa</string>
     <string name="places_map_clear_nearby_content_description">Quitar el filtro de lugares cercanos</string>
+    <string name="places_map_current_location_content_description">Centrar el mapa en mi ubicación actual</string>
+    <string name="places_map_location_permission_denied">Permite el acceso a la ubicación para centrar el mapa en tu posición.</string>
+    <string name="places_map_location_unavailable">No se pudo obtener tu ubicación actual. Inténtalo de nuevo.</string>
     <string name="places_map_rating_summary">%1$.1f · %2$d reseñas</string>
     <string name="places_map_distance_meters">A %1$d m</string>
     <string name="places_map_distance_kilometers">A %1$.1f km</string>

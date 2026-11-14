@@ -1,5 +1,12 @@
 package com.example.wayspot.ui.screens.map
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
+import android.os.CancellationSignal
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -7,10 +14,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import androidx.core.location.LocationManagerCompat
+import androidx.core.util.Consumer
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.wayspot.data.local.PreviewDataPopular
+import com.example.wayspot.data.model.place.PlaceCoordinates
 import com.example.wayspot.data.model.place.PlaceInfo
 import com.example.wayspot.data.model.place.PlacesMapDefaults
 import com.example.wayspot.data.model.place.toPlaceInfo
@@ -31,7 +44,21 @@ fun PlacesMapScreen(
 )
  {
     val state by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissionResults ->
+        if (permissionResults.values.any { isGranted -> isGranted }) {
+            requestCurrentLocation(
+                context = context,
+                onLocationFound = viewModel::onCurrentLocationFound,
+                onUnavailable = viewModel::onCurrentLocationUnavailable
+            )
+        } else {
+            viewModel.onCurrentLocationPermissionDenied()
+        }
+    }
 
     DisposableEffect(lifecycleOwner, viewModel) {
         val observer = LifecycleEventObserver { _, event ->
@@ -47,7 +74,7 @@ fun PlacesMapScreen(
         viewModel.selectPlace(focusedPlaceId)
     }
 
-     PlacesMapLayout(
+    PlacesMapLayout(
          places = state.places,
          selectedPlace = state.selectedPlace,
          selectedPlaceId = state.selectedPlaceId,
@@ -67,7 +94,28 @@ fun PlacesMapScreen(
          nearbyRadiusKm = PlacesMapDefaults.nearbySearchRadiusMeters / 1000,
          selectedPlaceDistanceMeters = state.selectedPlaceDistanceMeters,
          onSearchNearby = viewModel::searchNearby,
-         onClearNearbySearch = viewModel::clearNearbySearch
+         onClearNearbySearch = viewModel::clearNearbySearch,
+         currentLocation = state.currentLocation,
+         locationFocusRequestId = state.locationFocusRequestId,
+         locationRequestStatus = state.locationRequestStatus,
+         onRequestCurrentLocation = {
+             viewModel.startCurrentLocationRequest()
+             if (hasLocationPermission(context)) {
+                 requestCurrentLocation(
+                     context = context,
+                     onLocationFound = viewModel::onCurrentLocationFound,
+                     onUnavailable = viewModel::onCurrentLocationUnavailable
+                 )
+             } else {
+                 locationPermissionLauncher.launch(
+                     arrayOf(
+                         Manifest.permission.ACCESS_COARSE_LOCATION,
+                         Manifest.permission.ACCESS_FINE_LOCATION
+                     )
+                 )
+             }
+         },
+         onLocationFeedbackShown = viewModel::clearLocationRequestStatus
 
      )
  }
@@ -96,6 +144,70 @@ fun PlacesMapContent(
         onRetry = onRetry,
         modifier = modifier
     )
+}
+
+private fun hasLocationPermission(context: Context): Boolean =
+    ContextCompat.checkSelfPermission(
+        context,
+        Manifest.permission.ACCESS_COARSE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED ||
+        ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+@SuppressLint("MissingPermission")
+private fun requestCurrentLocation(
+    context: Context,
+    onLocationFound: (PlaceCoordinates) -> Unit,
+    onUnavailable: () -> Unit
+) {
+    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    if (!LocationManagerCompat.isLocationEnabled(locationManager)) {
+        onUnavailable()
+        return
+    }
+
+    val enabledProviders = locationManager.getProviders(true)
+    val hasFineLocationPermission = ContextCompat.checkSelfPermission(
+        context,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED
+    val provider = when {
+        hasFineLocationPermission && LocationManager.GPS_PROVIDER in enabledProviders ->
+            LocationManager.GPS_PROVIDER
+        LocationManager.NETWORK_PROVIDER in enabledProviders -> LocationManager.NETWORK_PROVIDER
+        else -> null
+    }
+
+    if (provider == null) {
+        onUnavailable()
+        return
+    }
+
+    try {
+        val locationConsumer = Consumer<Location?> { location ->
+            if (location == null) {
+                onUnavailable()
+            } else {
+                onLocationFound(
+                    PlaceCoordinates(
+                        latitude = location.latitude,
+                        longitude = location.longitude
+                    )
+                )
+            }
+        }
+        LocationManagerCompat.getCurrentLocation(
+            locationManager,
+            provider,
+            null as CancellationSignal?,
+            ContextCompat.getMainExecutor(context),
+            locationConsumer
+        )
+    } catch (_: SecurityException) {
+        onUnavailable()
+    }
 }
 
 @WayspotMultiPreview

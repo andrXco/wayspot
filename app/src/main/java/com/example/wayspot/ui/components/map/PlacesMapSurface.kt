@@ -3,6 +3,7 @@ package com.example.wayspot.ui.components.map
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,18 +13,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CenterFocusStrong
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,27 +32,17 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
 import com.example.wayspot.data.model.place.PlaceCoordinates
 import com.example.wayspot.data.model.place.PlaceInfo
 import com.example.wayspot.data.model.place.PlacesMapDefaults
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.maps.android.compose.CameraPositionState
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.MapProperties
-import com.google.maps.android.compose.MapUiSettings
-import com.google.maps.android.compose.MarkerComposable
-import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberUpdatedMarkerState
-import kotlinx.coroutines.launch
+import org.maplibre.android.camera.CameraUpdateFactory
+import org.maplibre.android.maps.MapLibreMap
 
 /** Dibuja el mapa real y conserva una superficie estable para el render de Compose Preview. */
 @Composable
@@ -64,86 +55,43 @@ fun PlacesMapSurface(
     showRecenterButton: Boolean = true,
     isNearbySearchActive: Boolean = false,
     onSearchNearby: (PlaceCoordinates) -> Unit = {},
-    onClearNearbySearch: () -> Unit = {}
+    onClearNearbySearch: () -> Unit = {},
+    currentLocation: PlaceCoordinates? = null,
+    locationFocusRequestId: Long = 0L,
+    isRequestingCurrentLocation: Boolean = false,
+    onRequestCurrentLocation: () -> Unit = {}
 ) {
     val colorScheme = MaterialTheme.colorScheme
-    val context = LocalContext.current
     val isDarkTheme = isSystemInDarkTheme()
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(
-            PlacesMapDefaults.initialCenter.toLatLng(),
-            PlacesMapDefaults.initialZoom
-        )
-    }
-    val coroutineScope = rememberCoroutineScope()
     val isInspectionMode = LocalInspectionMode.current
+    val mapDescription = stringResource(R.string.places_map_title)
     val selectedPlace = places.firstOrNull { place -> place.id == selectedPlaceId }
     val validPlaces = places.filter { place -> place.coordinates?.isValid == true }
-    var isMapLoaded by remember { mutableStateOf(false) }
+    var mapLibreMap by remember { mutableStateOf<MapLibreMap?>(null) }
 
-    if (!isInspectionMode) {
-        LaunchedEffect(validPlaces, selectedPlace?.id, isMapLoaded) {
-            if (isMapLoaded) {
-                cameraPositionState.focusPlaces(
-                    places = validPlaces,
-                    selectedPlace = selectedPlace
-                )
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .semantics {
+                contentDescription = mapDescription
             }
-        }
-    }
-
-    Box(modifier = modifier.fillMaxSize()) {
-        if (LocalInspectionMode.current) {
+    ) {
+        if (isInspectionMode) {
             PlacesMapPreviewSurface(modifier = Modifier.fillMaxSize())
         } else {
-            GoogleMap(
-                modifier = Modifier.fillMaxSize(),
-                cameraPositionState = cameraPositionState,
-                contentDescription = stringResource(R.string.places_map_title),
-                onMapLoaded = { isMapLoaded = true },
-                properties = MapProperties(
-                    mapStyleOptions = if (isDarkTheme) {
-                        MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style_dark)
-                    } else {
-                        null
-                    }
-                ),
-                uiSettings = MapUiSettings(
-                    scrollGesturesEnabled = isInteractive,
-                    zoomGesturesEnabled = isInteractive,
-                    tiltGesturesEnabled = isInteractive,
-                    rotationGesturesEnabled = isInteractive,
-                    compassEnabled = false,
-                    mapToolbarEnabled = false,
-                    myLocationButtonEnabled = false,
-                    zoomControlsEnabled = false
-                )
-            ) {
-                validPlaces.forEach { place ->
-                    val coordinates = place.coordinates ?: return@forEach
-                    val isSelected = place.id == selectedPlaceId
-
-                    MarkerComposable(
-                        keys = arrayOf<Any>(place.id, isSelected),
-                        state = rememberUpdatedMarkerState(
-                            position = coordinates.toLatLng()
-                        ),
-                        contentDescription = stringResource(
-                            R.string.places_map_marker_content_description,
-                            place.title
-                        ),
-                        title = place.title,
-                        snippet = place.location,
-                        zIndex = if (isSelected) 1f else 0f,
-                        onClick = {
-                            onPlaceSelected(place.id)
-                            true
-                        }
-                    ) {
-                        PlacesMapMarker(isSelected = isSelected)
-                    }
-                }
-            }
+            MapLibreMapRenderer(
+                places = validPlaces,
+                selectedPlaceId = selectedPlaceId,
+                currentLocation = currentLocation,
+                locationFocusRequestId = locationFocusRequestId,
+                styleUrl = if (isDarkTheme) DARK_STYLE_URL else LIBERTY_STYLE_URL,
+                isInteractive = isInteractive,
+                markerColor = colorScheme.primary,
+                mapSurfaceColor = colorScheme.surface,
+                onPlaceSelected = onPlaceSelected,
+                onMapReady = { map -> mapLibreMap = map },
+                modifier = Modifier.fillMaxSize()
+            )
         }
 
         if (showRecenterButton) {
@@ -151,7 +99,7 @@ fun PlacesMapSurface(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(12.dp),
-                verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Surface(
                     modifier = Modifier.shadow(elevation = 4.dp, shape = CircleShape),
@@ -164,11 +112,8 @@ fun PlacesMapSurface(
                             if (isNearbySearchActive) {
                                 onClearNearbySearch()
                             } else {
-                                coroutineScope.launch {
-                                    cameraPositionState.focusPlaces(
-                                        places = validPlaces,
-                                        selectedPlace = selectedPlace
-                                    )
+                                mapLibreMap?.let { map ->
+                                    focusMapOnPlaces(map, validPlaces, selectedPlace)
                                 }
                             }
                         }
@@ -194,8 +139,34 @@ fun PlacesMapSurface(
                         contentColor = colorScheme.primary
                     ) {
                         IconButton(
+                            enabled = !isRequestingCurrentLocation,
+                            onClick = onRequestCurrentLocation
+                        ) {
+                            if (isRequestingCurrentLocation) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.padding(8.dp),
+                                    strokeWidth = 2.dp
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Default.MyLocation,
+                                    contentDescription = stringResource(
+                                        R.string.places_map_current_location_content_description
+                                    )
+                                )
+                            }
+                        }
+                    }
+
+                    Surface(
+                        modifier = Modifier.shadow(elevation = 4.dp, shape = CircleShape),
+                        shape = CircleShape,
+                        color = colorScheme.surface,
+                        contentColor = colorScheme.primary
+                    ) {
+                        IconButton(
                             onClick = {
-                                val center = cameraPositionState.position.target
+                                val center = mapLibreMap?.cameraPosition?.target ?: return@IconButton
                                 onSearchNearby(
                                     PlaceCoordinates(
                                         latitude = center.latitude,
@@ -229,26 +200,26 @@ fun PlacesMapSurface(
                 Column {
                     IconButton(
                         onClick = {
-                            coroutineScope.launch {
-                                cameraPositionState.animate(CameraUpdateFactory.zoomIn())
-                            }
+                            mapLibreMap?.animateCamera(CameraUpdateFactory.zoomIn())
                         }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
-                            contentDescription = stringResource(R.string.places_map_zoom_in_content_description)
+                            contentDescription = stringResource(
+                                R.string.places_map_zoom_in_content_description
+                            )
                         )
                     }
                     IconButton(
                         onClick = {
-                            coroutineScope.launch {
-                                cameraPositionState.animate(CameraUpdateFactory.zoomOut())
-                            }
+                            mapLibreMap?.animateCamera(CameraUpdateFactory.zoomOut())
                         }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Remove,
-                            contentDescription = stringResource(R.string.places_map_zoom_out_content_description)
+                            contentDescription = stringResource(
+                                R.string.places_map_zoom_out_content_description
+                            )
                         )
                     }
                 }
@@ -256,55 +227,6 @@ fun PlacesMapSurface(
         }
     }
 }
-
-private suspend fun CameraPositionState.focusPlaces(
-    places: List<PlaceInfo>,
-    selectedPlace: PlaceInfo?
-) {
-    val selectedCoordinates = selectedPlace?.coordinates?.takeIf { coordinates ->
-        coordinates.isValid
-    }
-
-    if (selectedCoordinates != null) {
-        animate(
-            CameraUpdateFactory.newLatLngZoom(
-                selectedCoordinates.toLatLng(),
-                PlacesMapDefaults.selectedPlaceZoom
-            )
-        )
-        return
-    }
-
-    val coordinates = places.mapNotNull { place ->
-        place.coordinates?.takeIf(PlaceCoordinates::isValid)
-    }.distinct()
-
-    when (coordinates.size) {
-        0 -> animate(
-            CameraUpdateFactory.newLatLngZoom(
-                PlacesMapDefaults.initialCenter.toLatLng(),
-                PlacesMapDefaults.initialZoom
-            )
-        )
-
-        1 -> animate(
-            CameraUpdateFactory.newLatLngZoom(
-                coordinates.first().toLatLng(),
-                PlacesMapDefaults.selectedPlaceZoom
-            )
-        )
-
-        else -> {
-            val boundsBuilder = LatLngBounds.Builder()
-            coordinates.forEach { coordinates ->
-                boundsBuilder.include(coordinates.toLatLng())
-            }
-            animate(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), 120))
-        }
-    }
-}
-
-private fun PlaceCoordinates.toLatLng(): LatLng = LatLng(latitude, longitude)
 
 @Composable
 private fun PlacesMapPreviewSurface(
