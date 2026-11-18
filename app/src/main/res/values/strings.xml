@@ -200,7 +200,10 @@
     <string name="places_map_nearby_empty">No hay lugares con coordenadas dentro de este radio.</string>
     <string name="places_map_focused_place_unavailable">Este lugar aún no tiene coordenadas para mostrarse en el mapa.</string>
     <string name="places_map_load_error">No se pudieron cargar los lugares.</string>
+    <string name="places_map_reviews_error">No se pudieron cargar las reseñas recientes del mapa.</string>
+    <string name="places_map_render_error">No se pudo cargar el mapa.</string>
     <string name="places_map_nearby_error">No se pudieron buscar lugares cercanos.</string>
+    <string name="places_map_nearby_invalid_center">Mueve el mapa a otra zona para buscar lugares cercanos.</string>
     <string name="places_map_retry">Intentar de nuevo</string>
     <string name="places_map_show_all_content_description">Mostrar todos los lugares</string>
     <string name="places_map_search_nearby_content_description">Buscar lugares a 50 kilómetros del centro del mapa</string>

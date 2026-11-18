@@ -14,12 +14,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
+import com.example.wayspot.ui.components.map.MapRenderState
+import com.example.wayspot.ui.components.map.MapRenderStatus
 import com.example.wayspot.ui.components.map.PlacesMapSurface
 import com.example.wayspot.data.model.place.PlaceInfo
 import com.example.wayspot.data.model.place.PlaceCoordinates
 import com.example.wayspot.data.model.place.PlacesMapDefaults
 import com.example.wayspot.data.model.review.ReviewInfo
 import com.example.wayspot.ui.screens.map.MapLocationRequestStatus
+import com.example.wayspot.ui.screens.map.MapCatalogError
+import com.example.wayspot.ui.screens.map.MapNearbyError
 
 /** Coordina las secciones visuales del mapa sin poseer estado de negocio ni navegación. */
 @Composable
@@ -28,11 +32,15 @@ fun PlacesMapLayout(
     selectedPlace: PlaceInfo?,
     selectedPlaceId: String?,
     isLoading: Boolean,
-    hasError: Boolean,
     onPlaceSelected: (String) -> Unit,
     onPlaceClick: (String) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
+    catalogError: MapCatalogError? = null,
+    nearbyError: MapNearbyError? = null,
+    mapRenderState: MapRenderState = MapRenderState(status = MapRenderStatus.Ready),
+    onMapRenderStatusChanged: (MapRenderStatus) -> Unit = {},
+    onRetryMapRender: () -> Unit = {},
     selectedReview: ReviewInfo? = null,
     onReviewClick: (String) -> Unit = {},
     selectedPlaceReviews: List<ReviewInfo> = emptyList(),
@@ -53,6 +61,19 @@ fun PlacesMapLayout(
 ) {
     val context = LocalContext.current
     val locationSnackbarHostState = remember { SnackbarHostState() }
+    val dataErrorMessage = if (isNearbySearchActive) {
+        when (nearbyError) {
+            MapNearbyError.Unavailable -> R.string.places_map_nearby_error
+            MapNearbyError.InvalidCenter -> R.string.places_map_nearby_invalid_center
+            null -> null
+        }
+    } else {
+        when (catalogError) {
+            MapCatalogError.PlacesUnavailable -> R.string.places_map_load_error
+            MapCatalogError.ReviewsUnavailable -> R.string.places_map_reviews_error
+            null -> null
+        }
+    }
 
     LaunchedEffect(locationRequestStatus) {
         val message = when (locationRequestStatus) {
@@ -74,6 +95,9 @@ fun PlacesMapLayout(
             places = places,
             selectedPlaceId = selectedPlaceId,
             onPlaceSelected = onPlaceSelected,
+            mapRenderState = mapRenderState,
+            onMapRenderStatusChanged = onMapRenderStatusChanged,
+            onRetryMapRender = onRetryMapRender,
             modifier = Modifier.fillMaxSize(),
             isNearbySearchActive = isNearbySearchActive,
             onSearchNearby = onSearchNearby,
@@ -95,15 +119,17 @@ fun PlacesMapLayout(
         )
 
         when {
-            isLoading || isSearchingNearby -> CircularProgressIndicator(
+            mapRenderState.status != MapRenderStatus.Ready -> Unit
+
+            isSearchingNearby || (!isNearbySearchActive && isLoading) -> CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center)
             )
 
-            hasError || places.isEmpty() || (selectedPlaceId != null && selectedPlace == null) -> PlacesMapStatusCard(
-                hasError = hasError,
-                messageRes = when {
-                    hasError && isNearbySearchActive -> R.string.places_map_nearby_error
-                    hasError -> R.string.places_map_load_error
+            dataErrorMessage != null || places.isEmpty() ||
+                (selectedPlaceId != null && selectedPlace == null) -> PlacesMapStatusCard(
+                canRetry = dataErrorMessage != null &&
+                    (!isNearbySearchActive || nearbyError != MapNearbyError.InvalidCenter),
+                messageRes = dataErrorMessage ?: when {
                     selectedPlaceId != null && selectedPlace == null ->
                         R.string.places_map_focused_place_unavailable
                     isNearbySearchActive -> R.string.places_map_nearby_empty

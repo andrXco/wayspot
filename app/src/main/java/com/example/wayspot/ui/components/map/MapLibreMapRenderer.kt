@@ -17,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
@@ -26,10 +27,15 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.wayspot.data.model.place.PlaceCoordinates
 import com.example.wayspot.data.model.place.PlaceInfo
 import com.example.wayspot.data.model.place.PlacesMapDefaults
 import com.google.gson.JsonObject
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeoutOrNull
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLng
@@ -38,6 +44,7 @@ import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapLibreMapOptions
 import org.maplibre.android.maps.MapView
+import org.maplibre.android.maps.Style
 import org.maplibre.android.style.expressions.Expression
 import org.maplibre.android.style.layers.CircleLayer
 import org.maplibre.android.style.layers.Property
@@ -66,6 +73,7 @@ private const val DEFAULT_MARKER_IMAGE_ID = "wayspot-marker"
 private const val SELECTED_MARKER_IMAGE_ID = "wayspot-marker-selected"
 private const val PLACE_ID_PROPERTY = "place_id"
 private const val MARKER_IMAGE_PROPERTY = "marker_image"
+private const val MAP_LOAD_TIMEOUT_MILLIS = 15_000L
 
 /** Aloja MapLibre Native en Compose y sincroniza datos, cámara y ciclo de vida. */
 @Composable
@@ -80,19 +88,21 @@ internal fun MapLibreMapRenderer(
     mapSurfaceColor: androidx.compose.ui.graphics.Color,
     onPlaceSelected: (String) -> Unit,
     onMapReady: (MapLibreMap) -> Unit,
+    onMapRenderStatusChanged: (MapRenderStatus) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val latestOnPlaceSelected by rememberUpdatedState(onPlaceSelected)
     val latestOnMapReady by rememberUpdatedState(onMapReady)
+    val latestOnMapRenderStatusChanged by rememberUpdatedState(onMapRenderStatusChanged)
     val mapView = remember(context) {
         MapLibre.getInstance(context.applicationContext)
         val options = MapLibreMapOptions.createFromAttributes(context, null)
         MapView(context, options).also { view -> view.onCreate(null) }
     }
-    var mapLibreMap by remember(mapView) { mutableStateOf<MapLibreMap?>(null) }
-    var loadedStyleUrl by remember(mapView) { mutableStateOf<String?>(null) }
+    var nativeMap by remember(mapView) { mutableStateOf<MapLibreMap?>(null) }
+    var loadedMap by remember(mapView) { mutableStateOf<MapLibreMap?>(null) }
     var lastHandledLocationRequestId by remember(mapView) { mutableLongStateOf(0L) }
 
     DisposableEffect(mapView, lifecycleOwner) {
@@ -121,91 +131,56 @@ internal fun MapLibreMapRenderer(
                         false
                     }
                 }
-                mapLibreMap = map
-                latestOnMapReady(map)
+                nativeMap = map
             }
             mapView
         },
         update = { view ->
-            mapLibreMap?.let { map ->
+            nativeMap?.let { map ->
                 configureMapUi(map, isInteractive, view)
             }
         }
     )
 
-    LaunchedEffect(
-        mapLibreMap,
-        styleUrl,
-        markerColor,
-        mapSurfaceColor
-    ) {
-        val map = mapLibreMap ?: return@LaunchedEffect
-        loadedStyleUrl = null
-        map.setStyle(styleUrl) { style ->
-            style.addImage(
-                DEFAULT_MARKER_IMAGE_ID,
-                createPlaceMarkerBitmap(
+    LaunchedEffect(mapView, lifecycleOwner) {
+        var finished = false
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            if (finished) return@repeatOnLifecycle
+            latestOnMapRenderStatusChanged(MapRenderStatus.Loading)
+            val result = withTimeoutOrNull(MAP_LOAD_TIMEOUT_MILLIS) {
+                val map = snapshotFlow { nativeMap }.filterNotNull().first()
+                val style = mapView.awaitMapStyle(map, styleUrl) ?: return@withTimeoutOrNull null
+                style.addWaySpotLayers(
                     context = context,
-                    selected = false,
-                    primaryColor = markerColor.toArgb(),
+                    markerColor = markerColor.toArgb(),
                     surfaceColor = mapSurfaceColor.toArgb()
                 )
-            )
-            style.addImage(
-                SELECTED_MARKER_IMAGE_ID,
-                createPlaceMarkerBitmap(
-                    context = context,
-                    selected = true,
-                    primaryColor = markerColor.toArgb(),
-                    surfaceColor = mapSurfaceColor.toArgb()
-                )
-            )
-            style.addSource(GeoJsonSource(PLACE_SOURCE_ID, emptyFeatureCollection()))
-            style.addLayer(
-                SymbolLayer(PLACE_LAYER_ID, PLACE_SOURCE_ID).withProperties(
-                    iconImage(Expression.get(MARKER_IMAGE_PROPERTY)),
-                    iconAnchor(Property.ICON_ANCHOR_BOTTOM),
-                    iconAllowOverlap(true),
-                    iconIgnorePlacement(true)
-                )
-            )
-            style.addSource(GeoJsonSource(LOCATION_SOURCE_ID, emptyFeatureCollection()))
-            style.addLayer(
-                CircleLayer(LOCATION_LAYER_ID, LOCATION_SOURCE_ID).withProperties(
-                    circleRadius(7f),
-                    circleColor(markerColor.toArgb()),
-                    circleStrokeColor(mapSurfaceColor.toArgb()),
-                    circleStrokeWidth(2f)
-                )
-            )
-            loadedStyleUrl = styleUrl
-            configureMapUi(map, isInteractive, mapView)
+                map
+            }
+            finished = true
+            if (result == null) {
+                latestOnMapRenderStatusChanged(MapRenderStatus.Failed)
+            } else {
+                loadedMap = result
+                configureMapUi(result, isInteractive, mapView)
+                latestOnMapReady(result)
+                latestOnMapRenderStatusChanged(MapRenderStatus.Ready)
+            }
         }
     }
 
-    LaunchedEffect(mapLibreMap, loadedStyleUrl, places, selectedPlaceId, currentLocation) {
-        val map = mapLibreMap ?: return@LaunchedEffect
-        if (loadedStyleUrl != styleUrl) return@LaunchedEffect
-
-        val style = map.style ?: return@LaunchedEffect
-        (style.getSource(PLACE_SOURCE_ID) as? GeoJsonSource)?.setGeoJson(
+    LaunchedEffect(loadedMap, places, selectedPlaceId, currentLocation) {
+        val style = loadedMap?.style ?: return@LaunchedEffect
+        style.getSourceAs<GeoJsonSource>(PLACE_SOURCE_ID)?.setGeoJson(
             placesFeatureCollection(places, selectedPlaceId)
         )
-        (style.getSource(LOCATION_SOURCE_ID) as? GeoJsonSource)?.setGeoJson(
+        style.getSourceAs<GeoJsonSource>(LOCATION_SOURCE_ID)?.setGeoJson(
             locationFeatureCollection(currentLocation)
         )
     }
 
-    LaunchedEffect(
-        mapLibreMap,
-        loadedStyleUrl,
-        places,
-        selectedPlaceId,
-        currentLocation,
-        locationFocusRequestId
-    ) {
-        val map = mapLibreMap ?: return@LaunchedEffect
-        if (loadedStyleUrl != styleUrl) return@LaunchedEffect
+    LaunchedEffect(loadedMap, places, selectedPlaceId, currentLocation, locationFocusRequestId) {
+        val map = loadedMap ?: return@LaunchedEffect
 
         if (locationFocusRequestId != lastHandledLocationRequestId && currentLocation != null) {
             map.animateCamera(
@@ -223,6 +198,62 @@ internal fun MapLibreMapRenderer(
             )
         }
     }
+}
+
+private suspend fun MapView.awaitMapStyle(map: MapLibreMap, styleUrl: String): Style? {
+    val result = CompletableDeferred<Style?>()
+    val loadedListener = MapView.OnDidFinishLoadingMapListener {
+        map.style?.let(result::complete)
+    }
+    val failedListener = MapView.OnDidFailLoadingMapListener { result.complete(null) }
+    addOnDidFinishLoadingMapListener(loadedListener)
+    addOnDidFailLoadingMapListener(failedListener)
+    return try {
+        map.setStyle(styleUrl)
+        result.await()
+    } finally {
+        removeOnDidFinishLoadingMapListener(loadedListener)
+        removeOnDidFailLoadingMapListener(failedListener)
+    }
+}
+
+private fun Style.addWaySpotLayers(context: Context, markerColor: Int, surfaceColor: Int) {
+    addImage(
+                DEFAULT_MARKER_IMAGE_ID,
+                createPlaceMarkerBitmap(
+                    context = context,
+                    selected = false,
+                    primaryColor = markerColor,
+                    surfaceColor = surfaceColor
+                )
+    )
+    addImage(
+                SELECTED_MARKER_IMAGE_ID,
+                createPlaceMarkerBitmap(
+                    context = context,
+                    selected = true,
+                    primaryColor = markerColor,
+                    surfaceColor = surfaceColor
+                )
+    )
+    addSource(GeoJsonSource(PLACE_SOURCE_ID, emptyFeatureCollection()))
+    addLayer(
+                SymbolLayer(PLACE_LAYER_ID, PLACE_SOURCE_ID).withProperties(
+                    iconImage(Expression.get(MARKER_IMAGE_PROPERTY)),
+                    iconAnchor(Property.ICON_ANCHOR_BOTTOM),
+                    iconAllowOverlap(true),
+                    iconIgnorePlacement(true)
+                )
+    )
+    addSource(GeoJsonSource(LOCATION_SOURCE_ID, emptyFeatureCollection()))
+    addLayer(
+                CircleLayer(LOCATION_LAYER_ID, LOCATION_SOURCE_ID).withProperties(
+                    circleRadius(7f),
+                    circleColor(markerColor),
+                    circleStrokeColor(surfaceColor),
+                    circleStrokeWidth(2f)
+                )
+    )
 }
 
 private class MapViewLifecycleObserver(

@@ -20,6 +20,8 @@ import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.data.model.place.PlaceInfo
 import com.example.wayspot.data.model.review.ReviewInfo
 import com.example.wayspot.data.model.place.toPlaceInfo
+import com.example.wayspot.ui.components.map.MapRenderState
+import com.example.wayspot.ui.components.map.MapRenderStatus
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.placedetail.components.PlaceDetailBody
 import com.example.wayspot.ui.screens.placedetail.components.PlaceDetailHero
@@ -61,7 +63,10 @@ fun PlaceDetailScreen(
             onWriteReviewClick = onWriteReviewClick,
             onReviewClick = onReviewClick,
             onMapClick = { onMapClick(place.id) },
-            modifier = modifier
+            modifier = modifier,
+            mapRenderState = state.mapRenderState,
+            onMapRenderStatusChanged = placeDetailViewModel::onMapRenderStatusChanged,
+            onRetryMapRender = placeDetailViewModel::retryMapRender
         )
     }
 }
@@ -77,7 +82,10 @@ fun PlaceDetailContent(
     onWriteReviewClick: () -> Unit,
     onReviewClick: (String) -> Unit,
     onMapClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    mapRenderState: MapRenderState = MapRenderState(),
+    onMapRenderStatusChanged: (MapRenderStatus) -> Unit = {},
+    onRetryMapRender: () -> Unit = {}
 ) {
     LazyColumn(
         modifier = modifier
@@ -101,7 +109,10 @@ fun PlaceDetailContent(
                 onShareClick = onShareClick,
                 onWriteReviewClick = onWriteReviewClick,
                 onMapClick = onMapClick,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                mapRenderState = mapRenderState,
+                onMapRenderStatusChanged = onMapRenderStatusChanged,
+                onRetryMapRender = onRetryMapRender
             )
         }
         if (reviews.isNotEmpty()) {

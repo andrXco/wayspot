@@ -34,6 +34,8 @@ import com.example.wayspot.R
 import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.data.model.place.PlaceInfo
 import com.example.wayspot.data.model.place.toPlaceInfo
+import com.example.wayspot.ui.components.map.MapRenderState
+import com.example.wayspot.ui.components.map.MapRenderStatus
 import com.example.wayspot.ui.components.map.PlacesMapSurface
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.theme.WayspotTheme
@@ -43,7 +45,10 @@ import com.example.wayspot.ui.theme.WayspotTheme
 fun PlaceDetailMapPreview(
     place: PlaceInfo,
     onMapClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    mapRenderState: MapRenderState = MapRenderState(),
+    onMapRenderStatusChanged: (MapRenderStatus) -> Unit = {},
+    onRetryMapRender: () -> Unit = {}
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val mapDescription = stringResource(
@@ -101,6 +106,9 @@ fun PlaceDetailMapPreview(
                     places = listOf(place),
                     selectedPlaceId = place.id,
                     onPlaceSelected = {},
+                    mapRenderState = mapRenderState,
+                    onMapRenderStatusChanged = onMapRenderStatusChanged,
+                    onRetryMapRender = onRetryMapRender,
                     isInteractive = false,
                     modifier = Modifier.fillMaxSize()
                 )

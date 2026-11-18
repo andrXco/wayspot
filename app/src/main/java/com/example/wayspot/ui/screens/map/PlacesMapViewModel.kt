@@ -11,6 +11,7 @@ import com.example.wayspot.data.model.review.ReviewInfo
 import com.example.wayspot.data.repository.NearbyPlacesRepository
 import com.example.wayspot.data.repository.PlaceRepository
 import com.example.wayspot.data.repository.ReviewRepository
+import com.example.wayspot.ui.components.map.MapRenderStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.Job
@@ -19,6 +20,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -100,8 +103,20 @@ class PlacesMapViewModel @Inject constructor(
         val center = _uiState.value.nearbySearchCenter
         if (center == null) {
             loadPlaces()
-        } else {
+        } else if (center.isValid) {
             searchNearby(center)
+        }
+    }
+
+    fun onMapRenderStatusChanged(status: MapRenderStatus) {
+        _uiState.update { state ->
+            state.copy(mapRenderState = state.mapRenderState.copy(status = status))
+        }
+    }
+
+    fun retryMapRender() {
+        _uiState.update { state ->
+            state.copy(mapRenderState = state.mapRenderState.retry())
         }
     }
 
@@ -115,31 +130,13 @@ class PlacesMapViewModel @Inject constructor(
     }
 
     fun searchNearby(center: PlaceCoordinates) {
+        nearbySearchJob?.cancel()
         if (!center.isValid) {
-            _uiState.update { currentState ->
-                currentState.copy(
-                    nearbySearchCenter = center,
-                    hasError = true,
-                    isSearchingNearby = false
-                )
-            }
+            startNearbySearch(center, error = MapNearbyError.InvalidCenter)
             return
         }
 
-        nearbySearchJob?.cancel()
-        _uiState.update { currentState ->
-            currentState.copy(
-                places = emptyList(),
-                recentReviews = emptyList(),
-                nearbyPlaces = emptyList(),
-                nearbySearchCenter = center,
-                selectedPlaceId = null,
-                selectedReviewId = null,
-                isLoading = false,
-                isSearchingNearby = true,
-                hasError = false
-            )
-        }
+        startNearbySearch(center)
 
         nearbySearchJob = viewModelScope.launch {
             val result = nearbyPlacesRepository.findNearbyPlaces(
@@ -154,7 +151,7 @@ class PlacesMapViewModel @Inject constructor(
                     currentState.copy(
                         nearbyPlaces = null,
                         isSearchingNearby = false,
-                        hasError = true
+                        nearbyError = MapNearbyError.Unavailable
                     )
                 }
                 return@launch
@@ -180,10 +177,24 @@ class PlacesMapViewModel @Inject constructor(
                     recentReviews = recentReviews,
                     selectedPlaceId = selectedPlaceId,
                     selectedReviewId = selectedReviewId,
-                    isSearchingNearby = false,
-                    hasError = false
+                    isSearchingNearby = false
                 )
             }
+        }
+    }
+
+    private fun startNearbySearch(center: PlaceCoordinates, error: MapNearbyError? = null) {
+        _uiState.update { state ->
+            state.copy(
+                places = emptyList(),
+                recentReviews = emptyList(),
+                nearbyPlaces = null,
+                nearbySearchCenter = center,
+                selectedPlaceId = null,
+                selectedReviewId = null,
+                isSearchingNearby = error == null,
+                nearbyError = error
+            )
         }
     }
 
@@ -194,7 +205,7 @@ class PlacesMapViewModel @Inject constructor(
                 nearbyPlaces = null,
                 nearbySearchCenter = null,
                 isSearchingNearby = false,
-                hasError = false
+                nearbyError = null
             )
         }
         refreshVisibleReviews()
@@ -263,7 +274,8 @@ class PlacesMapViewModel @Inject constructor(
                 nearbySearchCenter = null,
                 isSearchingNearby = false,
                 isLoading = true,
-                hasError = false
+                catalogError = null,
+                nearbyError = null
             )
         }
 
@@ -273,7 +285,10 @@ class PlacesMapViewModel @Inject constructor(
 
             if (places == null) {
                 _uiState.update { currentState ->
-                    currentState.copy(isLoading = false, hasError = true)
+                    currentState.copy(
+                        isLoading = false,
+                        catalogError = MapCatalogError.PlacesUnavailable
+                    )
                 }
                 return@launch
             }
@@ -282,25 +297,32 @@ class PlacesMapViewModel @Inject constructor(
                 place.coordinates?.isValid == true
             }
 
-            reviewRepository.getRecentReviews()
+            flow { emitAll(reviewRepository.getRecentReviews()) }
                 .catch {
                     _uiState.update { currentState ->
-                        currentState.copy(isLoading = false, hasError = true)
+                        currentState.copy(
+                            isLoading = false,
+                            catalogError = MapCatalogError.ReviewsUnavailable
+                        )
                     }
                 }
                 .collect { reviews ->
                     loadedReviews = reviews
-                    refreshVisibleReviews()
+                    refreshVisibleReviews(catalogUpdated = true)
                     scheduleReviewExpiration()
                 }
         }
     }
 
-    private fun refreshVisibleReviews() {
+    private fun refreshVisibleReviews(catalogUpdated: Boolean = false) {
         val validPlaceIds = availablePlaces.mapTo(mutableSetOf()) { place -> place.id }
         val recentReviews = recentReviewsFor(validPlaceIds)
 
-        _uiState.update { currentState ->
+        _uiState.update { state ->
+            val currentState = if (catalogUpdated) state.copy(isLoading = false) else state
+            if (currentState.isNearbySearchActive && currentState.nearbyPlaces == null) {
+                return@update currentState
+            }
             val nearbyPlaceIds = currentState.nearbyPlaces?.mapTo(mutableSetOf()) { nearbyPlace ->
                 nearbyPlace.place.id
             }
@@ -331,9 +353,7 @@ class PlacesMapViewModel @Inject constructor(
                 places = visiblePlaces,
                 recentReviews = visibleRecentReviews,
                 selectedPlaceId = selectedPlaceId,
-                selectedReviewId = selectedReviewId,
-                isLoading = false,
-                hasError = currentState.isNearbySearchActive && currentState.hasError
+                selectedReviewId = selectedReviewId
             )
         }
     }

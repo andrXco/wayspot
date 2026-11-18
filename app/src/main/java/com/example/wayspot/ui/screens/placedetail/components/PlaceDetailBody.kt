@@ -29,6 +29,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Alignment
 import com.example.wayspot.R
 import com.example.wayspot.data.model.place.PlaceInfo
+import com.example.wayspot.ui.components.map.MapRenderState
+import com.example.wayspot.ui.components.map.MapRenderStatus
 import com.example.wayspot.ui.theme.WayspotTheme
 
 /** Cuerpo del detalle con metadatos, descripción y reseñas. */
@@ -38,7 +40,10 @@ fun PlaceDetailBody(
     onShareClick: () -> Unit,
     onWriteReviewClick: () -> Unit,
     onMapClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    mapRenderState: MapRenderState = MapRenderState(),
+    onMapRenderStatusChanged: (MapRenderStatus) -> Unit = {},
+    onRetryMapRender: () -> Unit = {}
 ) {
     Surface(
         modifier = modifier,
@@ -90,7 +95,10 @@ fun PlaceDetailBody(
             PlaceDetailMapPreview(
                 place = place,
                 onMapClick = onMapClick,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                mapRenderState = mapRenderState,
+                onMapRenderStatusChanged = onMapRenderStatusChanged,
+                onRetryMapRender = onRetryMapRender
             )
 
             Spacer(

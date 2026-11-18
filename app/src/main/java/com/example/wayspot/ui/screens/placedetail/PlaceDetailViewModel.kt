@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.wayspot.data.repository.PlaceRepository
 import com.example.wayspot.data.repository.ReviewRepository
+import com.example.wayspot.ui.components.map.MapRenderState
+import com.example.wayspot.ui.components.map.MapRenderStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +31,8 @@ class PlaceDetailViewModel @Inject constructor(
             currentState.copy(
                 place = null,
                 fallbackPlace = null,
-                reviews = emptyList()
+                reviews = emptyList(),
+                mapRenderState = MapRenderState()
             )
         }
 
@@ -63,6 +66,18 @@ class PlaceDetailViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    fun onMapRenderStatusChanged(status: MapRenderStatus) {
+        _uiState.update { state ->
+            state.copy(mapRenderState = state.mapRenderState.copy(status = status))
+        }
+    }
+
+    fun retryMapRender() {
+        _uiState.update { state ->
+            state.copy(mapRenderState = state.mapRenderState.retry())
         }
     }
 }

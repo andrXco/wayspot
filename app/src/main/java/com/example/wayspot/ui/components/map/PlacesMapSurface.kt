@@ -21,8 +21,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -36,6 +39,7 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
 import com.example.wayspot.data.model.place.PlaceCoordinates
@@ -50,6 +54,9 @@ fun PlacesMapSurface(
     places: List<PlaceInfo>,
     selectedPlaceId: String?,
     onPlaceSelected: (String) -> Unit,
+    mapRenderState: MapRenderState,
+    onMapRenderStatusChanged: (MapRenderStatus) -> Unit,
+    onRetryMapRender: () -> Unit,
     modifier: Modifier = Modifier,
     isInteractive: Boolean = true,
     showRecenterButton: Boolean = true,
@@ -62,12 +69,16 @@ fun PlacesMapSurface(
     onRequestCurrentLocation: () -> Unit = {}
 ) {
     val colorScheme = MaterialTheme.colorScheme
-    val isDarkTheme = isSystemInDarkTheme()
+    val styleUrl = if (isSystemInDarkTheme()) DARK_STYLE_URL else LIBERTY_STYLE_URL
     val isInspectionMode = LocalInspectionMode.current
     val mapDescription = stringResource(R.string.places_map_title)
     val selectedPlace = places.firstOrNull { place -> place.id == selectedPlaceId }
     val validPlaces = places.filter { place -> place.coordinates?.isValid == true }
-    var mapLibreMap by remember { mutableStateOf<MapLibreMap?>(null) }
+    var mapLibreMap by remember(styleUrl, mapRenderState.attempt) {
+        mutableStateOf<MapLibreMap?>(null)
+    }
+    val showControls = isInspectionMode ||
+        (mapRenderState.status == MapRenderStatus.Ready && mapLibreMap != null)
 
     Box(
         modifier = modifier
@@ -79,22 +90,39 @@ fun PlacesMapSurface(
         if (isInspectionMode) {
             PlacesMapPreviewSurface(modifier = Modifier.fillMaxSize())
         } else {
-            MapLibreMapRenderer(
-                places = validPlaces,
-                selectedPlaceId = selectedPlaceId,
-                currentLocation = currentLocation,
-                locationFocusRequestId = locationFocusRequestId,
-                styleUrl = if (isDarkTheme) DARK_STYLE_URL else LIBERTY_STYLE_URL,
-                isInteractive = isInteractive,
-                markerColor = colorScheme.primary,
-                mapSurfaceColor = colorScheme.surface,
-                onPlaceSelected = onPlaceSelected,
-                onMapReady = { map -> mapLibreMap = map },
-                modifier = Modifier.fillMaxSize()
-            )
+            key(styleUrl, mapRenderState.attempt) {
+                MapLibreMapRenderer(
+                    places = validPlaces,
+                    selectedPlaceId = selectedPlaceId,
+                    currentLocation = currentLocation,
+                    locationFocusRequestId = locationFocusRequestId,
+                    styleUrl = styleUrl,
+                    isInteractive = isInteractive,
+                    markerColor = colorScheme.primary,
+                    mapSurfaceColor = colorScheme.surface,
+                    onPlaceSelected = onPlaceSelected,
+                    onMapReady = { map -> mapLibreMap = map },
+                    onMapRenderStatusChanged = onMapRenderStatusChanged,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            when (mapRenderState.status) {
+                MapRenderStatus.Loading -> CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                    strokeWidth = 3.dp
+                )
+                MapRenderStatus.Failed -> PlacesMapRenderError(
+                    onRetry = onRetryMapRender,
+                    modifier = Modifier
+                        .align(if (isInteractive) Alignment.Center else Alignment.TopCenter)
+                        .padding(8.dp)
+                )
+                MapRenderStatus.Ready -> Unit
+            }
         }
 
-        if (showRecenterButton) {
+        if (showControls && showRecenterButton) {
             Column(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -187,7 +215,7 @@ fun PlacesMapSurface(
             }
         }
 
-        if (isInteractive) {
+        if (showControls && isInteractive) {
             Surface(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -223,6 +251,33 @@ fun PlacesMapSurface(
                         )
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PlacesMapRenderError(
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surface,
+        shadowElevation = 4.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp).padding(top = 12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = stringResource(R.string.places_map_render_error),
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center
+            )
+            TextButton(onClick = onRetry) {
+                Text(text = stringResource(R.string.places_map_retry))
             }
         }
     }

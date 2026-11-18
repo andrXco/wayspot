@@ -19,7 +19,7 @@ import com.example.wayspot.R
 /** Mensaje stateless para carga fallida o catálogo sin coordenadas. */
 @Composable
 fun PlacesMapStatusCard(
-    hasError: Boolean,
+    canRetry: Boolean,
     messageRes: Int,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
@@ -42,7 +42,7 @@ fun PlacesMapStatusCard(
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center
             )
-            if (hasError) {
+            if (canRetry) {
                 Button(
                     onClick = onRetry,
                     shape = RoundedCornerShape(12.dp)

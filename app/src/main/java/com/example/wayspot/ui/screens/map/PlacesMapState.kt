@@ -4,6 +4,17 @@ import com.example.wayspot.data.model.place.PlaceInfo
 import com.example.wayspot.data.model.place.NearbyPlace
 import com.example.wayspot.data.model.place.PlaceCoordinates
 import com.example.wayspot.data.model.review.ReviewInfo
+import com.example.wayspot.ui.components.map.MapRenderState
+
+enum class MapCatalogError {
+    PlacesUnavailable,
+    ReviewsUnavailable
+}
+
+enum class MapNearbyError {
+    InvalidCenter,
+    Unavailable
+}
 
 enum class MapLocationRequestStatus {
     Idle,
@@ -19,11 +30,13 @@ data class PlacesMapState(
     val recentReviews: List<ReviewInfo> = emptyList(),
     val selectedPlaceId: String? = null,
     val isLoading: Boolean = true,
-    val hasError: Boolean = false,
+    val catalogError: MapCatalogError? = null,
     val selectedReviewId: String? = null,
     val nearbyPlaces: List<NearbyPlace>? = null,
     val nearbySearchCenter: PlaceCoordinates? = null,
     val isSearchingNearby: Boolean = false,
+    val nearbyError: MapNearbyError? = null,
+    val mapRenderState: MapRenderState = MapRenderState(),
     val currentLocation: PlaceCoordinates? = null,
     val locationFocusRequestId: Long = 0L,
     val locationRequestStatus: MapLocationRequestStatus = MapLocationRequestStatus.Idle
