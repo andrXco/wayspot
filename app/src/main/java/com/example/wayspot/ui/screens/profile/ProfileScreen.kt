@@ -44,6 +44,7 @@ fun ProfileScreen(
         ProfileContent(
             user = profile,
             reviews = state.reviews,
+            achievements = state.achievements,
             isLoading = state.isLoading,
             errorMessage = state.errorMessage,
             onEditProfileClick = onEditProfileClick,

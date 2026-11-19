@@ -1,5 +1,6 @@
 package com.example.wayspot.ui.screens.profile
 
+import com.example.wayspot.data.model.achievement.AchievementProgress
 import com.example.wayspot.data.model.review.ReviewInfo
 import com.example.wayspot.data.model.review.ReviewFeedItem
 import com.example.wayspot.data.model.user.UserProfile
@@ -10,6 +11,7 @@ data class ProfileState(
     val userProfile: UserProfile? = null,
     val reviews: List<ReviewInfo> = emptyList(),
     val reviewFeedItems: List<ReviewFeedItem> = emptyList(),
+    val achievements: List<AchievementProgress> = emptyList(),
     val reviewLikeCounts: Map<String, Int> = emptyMap(),
     val likedReviewIds: Set<String> = emptySet(),
     val expandedReviewIds: Set<String> = emptySet(),

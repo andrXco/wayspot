@@ -2,6 +2,7 @@ package com.example.wayspot.ui.screens.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.wayspot.data.model.achievement.AchievementRules
 import com.example.wayspot.data.model.review.ReviewFeedItem
 import com.example.wayspot.data.repository.PlaceRepository
 import com.example.wayspot.data.model.user.UserProfile
@@ -42,6 +43,7 @@ class ProfileViewModel @Inject constructor(
                 it.copy(
                     reviews = emptyList(),
                     reviewFeedItems = emptyList(),
+                    achievements = emptyList(),
                     reviewLikeCounts = emptyMap(),
                     likedReviewIds = emptySet(),
                     areReviewLikesLoaded = false,
@@ -56,6 +58,7 @@ class ProfileViewModel @Inject constructor(
             it.copy(
                 isLoading = true,
                 areReviewLikesLoaded = false,
+                achievements = emptyList(),
                 errorMessage = null
             )
         }
@@ -64,6 +67,20 @@ class ProfileViewModel @Inject constructor(
 
             val result = userRepository.getReviewsByUserId(userId)
             val placesResult = placeRepository.getPlaces()
+
+            if (result.isFailure) {
+                _uiState.update { state ->
+                    state.copy(
+                        reviews = emptyList(),
+                        reviewFeedItems = emptyList(),
+                        achievements = emptyList(),
+                        isLoading = false,
+                        errorMessage = result.exceptionOrNull()?.message
+                            ?: "No se pudieron cargar las reseñas"
+                    )
+                }
+                return@launch
+            }
 
             val reviews = result.getOrNull().orEmpty()
             val places = placesResult.getOrNull().orEmpty()
@@ -109,6 +126,7 @@ class ProfileViewModel @Inject constructor(
                 currentState.copy(
                     reviews = reviewsWithLikes,
                     reviewFeedItems = reviewFeedItems,
+                    achievements = AchievementRules.calculate(reviewsWithLikes),
                     likedReviewIds = likedReviewIds,
                     reviewLikeCounts = reviewsWithLikes.associate { review ->
                         review.id to review.likesCount
