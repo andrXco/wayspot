@@ -139,6 +139,7 @@ fun PlaceDetailContent(
         } else if (state.reviews.isNotEmpty()) {
             item(key = "reviews-header") {
                 RecentReviewsHeader(
+                    reviewCount = state.reviews.size,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp)
@@ -166,7 +167,7 @@ private fun PlaceDetailScreenPreview() {
                     LocalContext.current::getString
                 ),
                 placeStatus = PlaceDetailLoadStatus.Ready,
-                reviews = listOf(PreviewData.reviewDetailReview),
+                reviews = listOf(PreviewData.placeDetailReview),
                 reviewsStatus = PlaceDetailLoadStatus.Ready
             ),
             onBackClick = {},

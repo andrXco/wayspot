@@ -151,7 +151,6 @@ class UserRepositoryTest {
         id = id,
         name = name,
         username = id,
-        fcmToken = "test-token",
         country = country,
         bio = bio
     )

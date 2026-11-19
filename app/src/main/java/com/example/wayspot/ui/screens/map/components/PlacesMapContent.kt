@@ -11,7 +11,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
 import com.example.wayspot.ui.components.map.MapRenderState
@@ -58,8 +58,13 @@ fun PlacesMapLayout(
     onLocationFeedbackShown: () -> Unit = {}
 
 ) {
-    val context = LocalContext.current
     val locationSnackbarHostState = remember { SnackbarHostState() }
+    val locationPermissionDeniedMessage = stringResource(
+        R.string.places_map_location_permission_denied
+    )
+    val locationUnavailableMessage = stringResource(
+        R.string.places_map_location_unavailable
+    )
     val dataErrorMessage = if (isNearbySearchActive) {
         when (nearbyStatus) {
             MapNearbyStatus.Unavailable -> R.string.places_map_nearby_error
@@ -78,9 +83,9 @@ fun PlacesMapLayout(
     LaunchedEffect(locationRequestStatus) {
         val message = when (locationRequestStatus) {
             MapLocationRequestStatus.PermissionDenied ->
-                context.getString(R.string.places_map_location_permission_denied)
+                locationPermissionDeniedMessage
             MapLocationRequestStatus.Unavailable ->
-                context.getString(R.string.places_map_location_unavailable)
+                locationUnavailableMessage
             MapLocationRequestStatus.Idle,
             MapLocationRequestStatus.Requesting -> null
         }
