@@ -71,16 +71,15 @@ fun PlacesMapScreen(
     }
 
     LaunchedEffect(focusedPlaceId) {
-        viewModel.selectPlace(focusedPlaceId)
+        viewModel.focusPlace(focusedPlaceId)
     }
 
     PlacesMapLayout(
          places = state.places,
          selectedPlace = state.selectedPlace,
          selectedPlaceId = state.selectedPlaceId,
-         isLoading = state.isLoading,
-         catalogError = state.catalogError,
-         nearbyError = state.nearbyError,
+         catalogStatus = state.catalogStatus,
+         nearbyStatus = state.nearbyStatus,
          mapRenderState = state.mapRenderState,
          onMapRenderStatusChanged = viewModel::onMapRenderStatusChanged,
          onRetryMapRender = viewModel::retryMapRender,
@@ -94,7 +93,6 @@ fun PlacesMapScreen(
          onPreviousReview = viewModel::previousReview,
          onNextReview = viewModel::nextReview,
          isNearbySearchActive = state.isNearbySearchActive,
-         isSearchingNearby = state.isSearchingNearby,
          nearbyRadiusKm = PlacesMapDefaults.nearbySearchRadiusMeters / 1000,
          selectedPlaceDistanceMeters = state.selectedPlaceDistanceMeters,
          onSearchNearby = viewModel::searchNearby,
@@ -130,7 +128,6 @@ fun PlacesMapContent(
     places: List<PlaceInfo>,
     selectedPlace: PlaceInfo?,
     selectedPlaceId: String?,
-    isLoading: Boolean,
     onPlaceSelected: (String) -> Unit,
     onPlaceClick: (String) -> Unit,
     onRetry: () -> Unit,
@@ -140,7 +137,6 @@ fun PlacesMapContent(
         places = places,
         selectedPlace = selectedPlace,
         selectedPlaceId = selectedPlaceId,
-        isLoading = isLoading,
         onPlaceSelected = onPlaceSelected,
         onPlaceClick = onPlaceClick,
         onRetry = onRetry,
@@ -225,7 +221,6 @@ private fun PlacesMapScreenPreview() {
             places = places,
             selectedPlace = places.firstOrNull(),
             selectedPlaceId = places.firstOrNull()?.id,
-            isLoading = false,
             onPlaceSelected = {},
             onPlaceClick = {},
             onRetry = {}

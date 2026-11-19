@@ -202,17 +202,13 @@ internal fun MapLibreMapRenderer(
 
 private suspend fun MapView.awaitMapStyle(map: MapLibreMap, styleUrl: String): Style? {
     val result = CompletableDeferred<Style?>()
-    val loadedListener = MapView.OnDidFinishLoadingMapListener {
-        map.style?.let(result::complete)
-    }
     val failedListener = MapView.OnDidFailLoadingMapListener { result.complete(null) }
-    addOnDidFinishLoadingMapListener(loadedListener)
     addOnDidFailLoadingMapListener(failedListener)
     return try {
-        map.setStyle(styleUrl)
+        // Las teselas continúan cargando después de que el estilo permite dibujar los marcadores.
+        map.setStyle(styleUrl) { style -> result.complete(style) }
         result.await()
     } finally {
-        removeOnDidFinishLoadingMapListener(loadedListener)
         removeOnDidFailLoadingMapListener(failedListener)
     }
 }

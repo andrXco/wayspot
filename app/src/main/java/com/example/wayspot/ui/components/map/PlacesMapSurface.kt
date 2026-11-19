@@ -38,6 +38,8 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -108,9 +110,9 @@ fun PlacesMapSurface(
             }
 
             when (mapRenderState.status) {
-                MapRenderStatus.Loading -> CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center),
-                    strokeWidth = 3.dp
+                MapRenderStatus.Loading -> PlacesMapLoading(
+                    messageRes = R.string.places_map_loading_base,
+                    modifier = Modifier.align(Alignment.Center)
                 )
                 MapRenderStatus.Failed -> PlacesMapRenderError(
                     onRetry = onRetryMapRender,
@@ -262,7 +264,7 @@ private fun PlacesMapRenderError(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = modifier,
+        modifier = modifier.semantics { liveRegion = LiveRegionMode.Polite },
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surface,
         shadowElevation = 4.dp

@@ -1,12 +1,14 @@
 package com.example.wayspot.viewModels
 
+import com.example.wayspot.data.model.place.NearbyPlacesResponseException
 import com.example.wayspot.data.model.place.PlaceCoordinates
+import com.example.wayspot.data.model.place.PlaceInfo
 import com.example.wayspot.data.repository.NearbyPlacesRepository
 import com.example.wayspot.data.repository.PlaceRepository
 import com.example.wayspot.data.repository.ReviewRepository
 import com.example.wayspot.ui.components.map.MapRenderStatus
-import com.example.wayspot.ui.screens.map.MapCatalogError
-import com.example.wayspot.ui.screens.map.MapNearbyError
+import com.example.wayspot.ui.screens.map.MapCatalogStatus
+import com.example.wayspot.ui.screens.map.MapNearbyStatus
 import com.example.wayspot.ui.screens.map.PlacesMapViewModel
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
@@ -48,15 +50,14 @@ class PlacesMapViewModelTest {
         val viewModel = PlacesMapViewModel(placeRepository, nearbyPlacesRepository, reviewRepository)
         advanceUntilIdle()
 
-        assertThat(viewModel.uiState.value.catalogError).isEqualTo(MapCatalogError.PlacesUnavailable)
-        assertThat(viewModel.uiState.value.isLoading).isFalse()
+        assertThat(viewModel.uiState.value.catalogStatus).isEqualTo(MapCatalogStatus.PlacesUnavailable)
 
         coEvery { placeRepository.getPlaces() } returns Result.success(emptyList())
         viewModel.retry()
+        assertThat(viewModel.uiState.value.catalogStatus).isEqualTo(MapCatalogStatus.Loading)
         advanceUntilIdle()
 
-        assertThat(viewModel.uiState.value.catalogError).isNull()
-        assertThat(viewModel.uiState.value.isLoading).isFalse()
+        assertThat(viewModel.uiState.value.catalogStatus).isEqualTo(MapCatalogStatus.Ready)
         coVerify(exactly = 2) { placeRepository.getPlaces() }
     }
 
@@ -73,13 +74,12 @@ class PlacesMapViewModelTest {
 
         viewModel.searchNearby(center)
         advanceUntilIdle()
-        assertThat(viewModel.uiState.value.nearbyError).isEqualTo(MapNearbyError.Unavailable)
-        assertThat(viewModel.uiState.value.isSearchingNearby).isFalse()
+        assertThat(viewModel.uiState.value.nearbyStatus).isEqualTo(MapNearbyStatus.Unavailable)
 
         viewModel.clearNearbySearch()
 
-        assertThat(viewModel.uiState.value.nearbyError).isNull()
-        assertThat(viewModel.uiState.value.catalogError).isEqualTo(MapCatalogError.ReviewsUnavailable)
+        assertThat(viewModel.uiState.value.nearbyStatus).isEqualTo(MapNearbyStatus.Idle)
+        assertThat(viewModel.uiState.value.catalogStatus).isEqualTo(MapCatalogStatus.ReviewsUnavailable)
     }
 
     // Reintentar el mapa base no repite ni borra una consulta de lugares fallida.
@@ -97,8 +97,57 @@ class PlacesMapViewModelTest {
         val state = viewModel.uiState.value
         assertThat(state.mapRenderState.status).isEqualTo(MapRenderStatus.Loading)
         assertThat(state.mapRenderState.attempt).isEqualTo(1)
-        assertThat(state.catalogError).isEqualTo(MapCatalogError.PlacesUnavailable)
+        assertThat(state.catalogStatus).isEqualTo(MapCatalogStatus.PlacesUnavailable)
         coVerify(exactly = 1) { placeRepository.getPlaces() }
+    }
+
+    // Abre y conserva el lugar solicitado por la ruta aunque no tenga reseñas recientes.
+    @Test
+    fun focusPlace_beforeCatalogLoads_includesPlaceWithoutReviewsAfterRefresh() = runTest(testDispatcher) {
+        val place = PlaceInfo(
+            id = "requested-place",
+            title = "Lugar solicitado",
+            category = "",
+            location = "",
+            rating = 0.0,
+            imageUrl = null,
+            description = "",
+            coordinates = center
+        )
+        coEvery { placeRepository.getPlaces() } returns Result.success(listOf(place))
+        val viewModel = PlacesMapViewModel(placeRepository, nearbyPlacesRepository, reviewRepository)
+        viewModel.focusPlace(place.id)
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.places).containsExactly(place)
+        assertThat(viewModel.uiState.value.selectedPlace).isEqualTo(place)
+
+        viewModel.refreshOnResume()
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.selectedPlace).isEqualTo(place)
+    }
+
+    // Una respuesta inválida termina en error, mientras que una lista vacía termina correctamente.
+    @Test
+    fun searchNearby_distinguishesInvalidResponseFromEmptyResults() = runTest(testDispatcher) {
+        coEvery { nearbyPlacesRepository.findNearbyPlaces(any(), any(), any()) } returns
+            Result.failure(NearbyPlacesResponseException("Respuesta inválida"))
+        val viewModel = PlacesMapViewModel(placeRepository, nearbyPlacesRepository, reviewRepository)
+        advanceUntilIdle()
+
+        viewModel.searchNearby(center)
+        assertThat(viewModel.uiState.value.nearbyStatus).isEqualTo(MapNearbyStatus.Searching)
+        advanceUntilIdle()
+        assertThat(viewModel.uiState.value.nearbyStatus).isEqualTo(MapNearbyStatus.InvalidResponse)
+
+        coEvery { nearbyPlacesRepository.findNearbyPlaces(any(), any(), any()) } returns
+            Result.success(emptyList())
+        viewModel.retry()
+        advanceUntilIdle()
+
+        assertThat(viewModel.uiState.value.nearbyStatus).isEqualTo(MapNearbyStatus.Ready)
+        assertThat(viewModel.uiState.value.places).isEmpty()
     }
 
     @After

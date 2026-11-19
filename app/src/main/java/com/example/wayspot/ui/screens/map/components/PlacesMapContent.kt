@@ -3,7 +3,6 @@ package com.example.wayspot.ui.screens.map.components
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -16,14 +15,15 @@ import androidx.compose.ui.unit.dp
 import com.example.wayspot.R
 import com.example.wayspot.ui.components.map.MapRenderState
 import com.example.wayspot.ui.components.map.MapRenderStatus
+import com.example.wayspot.ui.components.map.PlacesMapLoading
 import com.example.wayspot.ui.components.map.PlacesMapSurface
 import com.example.wayspot.data.model.place.PlaceInfo
 import com.example.wayspot.data.model.place.PlaceCoordinates
 import com.example.wayspot.data.model.place.PlacesMapDefaults
 import com.example.wayspot.data.model.review.ReviewInfo
 import com.example.wayspot.ui.screens.map.MapLocationRequestStatus
-import com.example.wayspot.ui.screens.map.MapCatalogError
-import com.example.wayspot.ui.screens.map.MapNearbyError
+import com.example.wayspot.ui.screens.map.MapCatalogStatus
+import com.example.wayspot.ui.screens.map.MapNearbyStatus
 
 /** Coordina las secciones visuales del mapa sin poseer estado de negocio ni navegación. */
 @Composable
@@ -31,13 +31,12 @@ fun PlacesMapLayout(
     places: List<PlaceInfo>,
     selectedPlace: PlaceInfo?,
     selectedPlaceId: String?,
-    isLoading: Boolean,
     onPlaceSelected: (String) -> Unit,
     onPlaceClick: (String) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
-    catalogError: MapCatalogError? = null,
-    nearbyError: MapNearbyError? = null,
+    catalogStatus: MapCatalogStatus = MapCatalogStatus.Ready,
+    nearbyStatus: MapNearbyStatus = MapNearbyStatus.Idle,
     mapRenderState: MapRenderState = MapRenderState(status = MapRenderStatus.Ready),
     onMapRenderStatusChanged: (MapRenderStatus) -> Unit = {},
     onRetryMapRender: () -> Unit = {},
@@ -47,7 +46,6 @@ fun PlacesMapLayout(
     onPreviousReview: () -> Unit = {},
     onNextReview: () -> Unit = {},
     isNearbySearchActive: Boolean = false,
-    isSearchingNearby: Boolean = false,
     nearbyRadiusKm: Int = PlacesMapDefaults.nearbySearchRadiusMeters / 1000,
     selectedPlaceDistanceMeters: Double? = null,
     onSearchNearby: (PlaceCoordinates) -> Unit = {},
@@ -62,16 +60,17 @@ fun PlacesMapLayout(
     val context = LocalContext.current
     val locationSnackbarHostState = remember { SnackbarHostState() }
     val dataErrorMessage = if (isNearbySearchActive) {
-        when (nearbyError) {
-            MapNearbyError.Unavailable -> R.string.places_map_nearby_error
-            MapNearbyError.InvalidCenter -> R.string.places_map_nearby_invalid_center
-            null -> null
+        when (nearbyStatus) {
+            MapNearbyStatus.Unavailable -> R.string.places_map_nearby_error
+            MapNearbyStatus.InvalidCenter -> R.string.places_map_nearby_invalid_center
+            MapNearbyStatus.InvalidResponse -> R.string.places_map_nearby_invalid_response
+            MapNearbyStatus.Idle, MapNearbyStatus.Searching, MapNearbyStatus.Ready -> null
         }
     } else {
-        when (catalogError) {
-            MapCatalogError.PlacesUnavailable -> R.string.places_map_load_error
-            MapCatalogError.ReviewsUnavailable -> R.string.places_map_reviews_error
-            null -> null
+        when (catalogStatus) {
+            MapCatalogStatus.PlacesUnavailable -> R.string.places_map_load_error
+            MapCatalogStatus.ReviewsUnavailable -> R.string.places_map_reviews_error
+            MapCatalogStatus.Loading, MapCatalogStatus.Ready -> null
         }
     }
 
@@ -121,14 +120,20 @@ fun PlacesMapLayout(
         when {
             mapRenderState.status != MapRenderStatus.Ready -> Unit
 
-            isSearchingNearby || (!isNearbySearchActive && isLoading) -> CircularProgressIndicator(
+            nearbyStatus == MapNearbyStatus.Searching -> PlacesMapLoading(
+                messageRes = R.string.places_map_loading_nearby,
+                modifier = Modifier.align(Alignment.Center)
+            )
+
+            !isNearbySearchActive && catalogStatus == MapCatalogStatus.Loading -> PlacesMapLoading(
+                messageRes = R.string.places_map_loading_places,
                 modifier = Modifier.align(Alignment.Center)
             )
 
             dataErrorMessage != null || places.isEmpty() ||
                 (selectedPlaceId != null && selectedPlace == null) -> PlacesMapStatusCard(
                 canRetry = dataErrorMessage != null &&
-                    (!isNearbySearchActive || nearbyError != MapNearbyError.InvalidCenter),
+                    nearbyStatus != MapNearbyStatus.InvalidCenter,
                 messageRes = dataErrorMessage ?: when {
                     selectedPlaceId != null && selectedPlace == null ->
                         R.string.places_map_focused_place_unavailable
