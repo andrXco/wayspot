@@ -7,19 +7,62 @@ import com.example.wayspot.data.dto.ReviewFirestoreDto
 import com.example.wayspot.data.dto.UserDtoGeneric
 import com.example.wayspot.data.dto.UserFirestoreDto
 import com.example.wayspot.data.dto.NotificationActorEventDto
-import com.example.wayspot.data.model.user.UserProfile
+import com.example.wayspot.data.dto.UserPrivateSettingsFirestoreDto
 import com.example.wayspot.data.model.user.UserRelationshipListType
 import com.example.wayspot.data.model.user.UserRelationshipRules
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class UserFirestoreDataSourceImplementation @Inject constructor(
-    private val db: FirebaseFirestore
+    private val db: FirebaseFirestore,
+    private val auth: FirebaseAuth
 ) : UserRemoteDataSource {
+
+    private fun publicProfileData(user: RegisterUserDto): Map<String, Any?> = mapOf(
+        "username" to user.username,
+        "name" to user.name,
+        "country" to user.country,
+        "bio" to user.bio,
+        "avatarUrl" to user.avatarUrl
+    )
+
+    private fun notificationPreferencesData(user: RegisterUserDto): Map<String, Boolean> = mapOf(
+        "newFollowers" to user.notificationPreferences.newFollowers,
+        "reviewComments" to user.notificationPreferences.reviewComments,
+        "likesReceived" to user.notificationPreferences.likesReceived
+    )
+
+    private fun privateSettingsData(user: RegisterUserDto): Map<String, Any> = mapOf(
+        "fcmToken" to user.fcmToken,
+        "notificationPreferences" to notificationPreferencesData(user)
+    )
+
+    private suspend fun addCurrentUserPrivateSettings(
+        userId: String,
+        user: UserFirestoreDto
+    ): UserFirestoreDto {
+        if (auth.currentUser?.uid != userId) return user
+
+        val settings = db.collection("users")
+            .document(userId)
+            .collection("private")
+            .document("settings")
+            .get()
+            .await()
+            .toObject(UserPrivateSettingsFirestoreDto::class.java)
+
+        return user.copy(
+            notificationPreferences = settings?.notificationPreferences
+                ?: user.notificationPreferences
+        )
+    }
 
     override suspend fun getUsers(): List<UserFirestoreDto> {
 
@@ -63,39 +106,55 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
         val user = snapshot.toObject(UserFirestoreDto::class.java)
             ?: return null
 
-        return user.copy(id = snapshot.id)
+        return addCurrentUserPrivateSettings(
+            userId = id,
+            user = user.copy(id = snapshot.id)
+        )
     }
 
     override suspend fun registerUser(
         registerUserDto: RegisterUserDto,
         userId: String
     ) {
-        val docRef = db.collection("users").document(userId)
-        docRef.set(registerUserDto).await()
+        val userRef = db.collection("users").document(userId)
+        val privateSettingsRef = userRef.collection("private").document("settings")
+        db.batch()
+            .set(userRef, publicProfileData(registerUserDto))
+            .set(privateSettingsRef, privateSettingsData(registerUserDto))
+            .commit()
+            .await()
     }
 
     override suspend fun updateUser(
         userDto: RegisterUserDto,
         userId: String
     ) {
-        val docRef = db.collection("users").document(userId)
+        val userRef = db.collection("users").document(userId)
+        val privateSettingsRef = userRef.collection("private").document("settings")
+        val updates = publicProfileData(userDto).toMutableMap()
+        listOf(
+            "fcmToken",
+            "notificationPreferences",
+            "followersCount",
+            "followingCount",
+            "email",
+            "id"
+        ).forEach { legacyField ->
+            updates[legacyField] = FieldValue.delete()
+        }
 
-        val updates = mutableMapOf<String, Any?>(
-            "username" to userDto.username,
-            "name" to userDto.name,
-            "country" to userDto.country,
-            "bio" to userDto.bio,
-            "avatarUrl" to userDto.avatarUrl,
-            "notificationPreferences" to mapOf(
-                "newFollowers" to userDto.notificationPreferences.newFollowers,
-                "reviewComments" to userDto.notificationPreferences.reviewComments,
-                "likesReceived" to userDto.notificationPreferences.likesReceived
-            )
+        val privateUpdates = mutableMapOf<String, Any>(
+            "notificationPreferences" to notificationPreferencesData(userDto)
         )
         if (userDto.fcmToken.isNotBlank()) {
-            updates["fcmToken"] = userDto.fcmToken
+            privateUpdates["fcmToken"] = userDto.fcmToken
         }
-        docRef.update(updates).await()
+
+        db.batch()
+            .update(userRef, updates)
+            .set(privateSettingsRef, privateUpdates, SetOptions.merge())
+            .commit()
+            .await()
     }
 
     override suspend fun updateUserAvatar(
@@ -124,23 +183,27 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
 
 
     override suspend fun getFollowersCount(userId: String): Int {
-        val snapshot = db.collection("users")
+        val aggregate = db.collection("users")
             .document(userId)
-            .get()
+            .collection("followers")
+            .count()
+            .get(AggregateSource.SERVER)
             .await()
 
-        return snapshot.getLong("followersCount")?.toInt() ?: 0
+        return aggregate.count.toInt()
     }
 
 
 
     override suspend fun getFollowingCount(userId: String): Int {
-        val snapshot = db.collection("users")
+        val aggregate = db.collection("users")
             .document(userId)
-            .get()
+            .collection("following")
+            .count()
+            .get(AggregateSource.SERVER)
             .await()
 
-        return snapshot.getLong("followingCount")?.toInt() ?: 0
+        return aggregate.count.toInt()
     }
 
     override suspend fun getUserConnections(
@@ -235,19 +298,6 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
                 transaction.delete(followingRef)
 
                 transaction.delete(followersRef)
-
-                transaction.update(
-                    currentUserRef,
-                    "followingCount",
-                    FieldValue.increment(-1L)
-                )
-
-                transaction.update(
-                    targetUserRef,
-                    "followersCount",
-                    FieldValue.increment(-1L)
-                )
-
             } else {
 
                 transaction.set(
@@ -262,18 +312,6 @@ class UserFirestoreDataSourceImplementation @Inject constructor(
                     mapOf(
                         "timestamp" to FieldValue.serverTimestamp()
                     )
-                )
-
-                transaction.update(
-                    currentUserRef,
-                    "followingCount",
-                    FieldValue.increment(1L)
-                )
-
-                transaction.update(
-                    targetUserRef,
-                    "followersCount",
-                    FieldValue.increment(1L)
                 )
             }
         }.await()

@@ -6,24 +6,31 @@ import com.example.wayspot.data.datasource.RecentReviewRemoteDataSource
 import com.example.wayspot.data.model.review.ReviewDraft
 import com.example.wayspot.data.model.review.ReviewInfo
 import com.example.wayspot.data.model.review.RecentReviewWindow
+import com.example.wayspot.data.model.review.ReviewRules
 import com.example.wayspot.data.model.notification.NotificationActorEvent
+import com.example.wayspot.data.datasource.StorageRemoteDataSource
+import android.net.Uri
 import com.example.wayspot.data.dto.CreateCommentDto
 import com.example.wayspot.data.dto.ReviewUserDto
 import com.example.wayspot.data.dto.SaveReviewDto
 import com.example.wayspot.data.dto.CommentFirestoreUserDto
 import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
+import java.util.UUID
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
 
 class ReviewRepository @Inject constructor(
     private val reviewFirestoreDataSource: ReviewFirestoreDataSourceImplementation,
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository,
-    private val recentReviewRemoteDataSource: RecentReviewRemoteDataSource
+    private val recentReviewRemoteDataSource: RecentReviewRemoteDataSource,
+    private val storageRemoteDataSource: StorageRemoteDataSource
 ) {
     suspend fun getReviewLikeNotificationEvents(
         reviewIds: List<String>
@@ -108,6 +115,7 @@ class ReviewRepository @Inject constructor(
     suspend fun createReviewInFirestore(
         draft: ReviewDraft
     ): Result<ReviewInfo> {
+        var uploadedPhotoUrls = emptyList<String>()
         return try {
             val userId = authRepository.currentUser?.uid
                 ?: throw Exception("Usuario no autenticado")
@@ -132,15 +140,27 @@ class ReviewRepository @Inject constructor(
             )
 
 
-            val savedReview = reviewFirestoreDataSource.createReview(
-                reviewDto
+            val reviewId = UUID.randomUUID().toString()
+            uploadedPhotoUrls = uploadReviewPhotos(
+                userId = userId,
+                reviewId = reviewId,
+                photoUris = draft.photoUris
             )
+
+            val savedReview = reviewFirestoreDataSource.createReviewWithPhotos(
+                id = reviewId,
+                review = reviewDto,
+                photoUrls = uploadedPhotoUrls
+            )
+            uploadedPhotoUrls = emptyList()
 
             Result.success(savedReview.toReviewInfo())
 
         } catch (e: CancellationException) {
+            deleteUploadedPhotos(uploadedPhotoUrls)
             throw e
         } catch (e: Exception) {
+            deleteUploadedPhotos(uploadedPhotoUrls)
             Result.failure(e)
         }
     }
@@ -150,6 +170,7 @@ class ReviewRepository @Inject constructor(
         draft: ReviewDraft,
         reviewId: String
     ): Result<ReviewInfo> {
+        var uploadedPhotoUrls = emptyList<String>()
         return try {
             val userId = authRepository.currentUser?.uid
                 ?: throw Exception("Usuario no autenticado")
@@ -162,6 +183,19 @@ class ReviewRepository @Inject constructor(
                 throw Exception("No puedes editar una reseña de otro usuario")
             }
 
+            val retainedPhotoUrls = draft.photoUris
+                .filter { photoUrl -> photoUrl in originalReview.photoUrls }
+            val selectedLocalPhotoUris = draft.photoUris
+                .filterNot { photoUri -> photoUri in originalReview.photoUrls }
+            uploadedPhotoUrls = uploadReviewPhotos(
+                userId = userId,
+                reviewId = reviewId,
+                photoUris = selectedLocalPhotoUris
+            )
+            val finalPhotoUrls = (retainedPhotoUrls + uploadedPhotoUrls)
+                .distinct()
+                .take(ReviewRules.MAX_PHOTOS)
+
             val reviewDto = SaveReviewDto(
                 rating = draft.rating,
                 title = draft.title,
@@ -171,17 +205,59 @@ class ReviewRepository @Inject constructor(
                 user = originalReview.user
             )
 
-            val updatedReview = reviewFirestoreDataSource.updateReview(
-                reviewId,
-                reviewDto
+            val updatedReview = reviewFirestoreDataSource.updateReviewWithPhotos(
+                id = reviewId,
+                review = reviewDto,
+                photoUrls = finalPhotoUrls
             )
+            uploadedPhotoUrls = emptyList()
+            deleteUploadedPhotos(originalReview.photoUrls.filterNot { it in finalPhotoUrls })
 
             Result.success(updatedReview.toReviewInfo())
 
         } catch (e: CancellationException) {
+            deleteUploadedPhotos(uploadedPhotoUrls)
             throw e
         } catch (e: Exception) {
+            deleteUploadedPhotos(uploadedPhotoUrls)
             Result.failure(e)
+        }
+    }
+
+    private suspend fun uploadReviewPhotos(
+        userId: String,
+        reviewId: String,
+        photoUris: List<String>
+    ): List<String> {
+        val uploadedUrls = mutableListOf<String>()
+        try {
+            photoUris.take(ReviewRules.MAX_PHOTOS).forEach { photoUri ->
+                val uri = Uri.parse(photoUri)
+                require(uri.scheme == "content" || uri.scheme == "file") {
+                    "La reseña contiene una foto no válida"
+                }
+                val path = "reviewImages/$userId/$reviewId/${UUID.randomUUID()}.jpg"
+                uploadedUrls += storageRemoteDataSource.uploadImage(path, uri)
+            }
+            return uploadedUrls
+        } catch (e: CancellationException) {
+            deleteUploadedPhotos(uploadedUrls)
+            throw e
+        } catch (e: Exception) {
+            deleteUploadedPhotos(uploadedUrls)
+            throw e
+        }
+    }
+
+    private suspend fun deleteUploadedPhotos(photoUrls: List<String>) {
+        withContext(NonCancellable) {
+            photoUrls.forEach { photoUrl ->
+                try {
+                    storageRemoteDataSource.deleteImageByUrl(photoUrl)
+                } catch (_: Exception) {
+                    // La limpieza no debe sustituir el resultado del guardado principal.
+                }
+            }
         }
     }
 
@@ -197,6 +273,7 @@ class ReviewRepository @Inject constructor(
             }
 
             reviewFirestoreDataSource.deleteReview(id)
+            deleteUploadedPhotos(review.photoUrls)
 
             Result.success(Unit)
 

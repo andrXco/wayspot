@@ -7,6 +7,14 @@ plugins {
     alias(libs.plugins.firebase.crashlytics)
 }
 
+val useFirebaseEmulator = providers.gradleProperty("wayspot.useFirebaseEmulator")
+    .orElse("false")
+    .get()
+
+require(useFirebaseEmulator == "true" || useFirebaseEmulator == "false") {
+    "wayspot.useFirebaseEmulator must be true or false"
+}
+
 android {
     namespace = "com.example.wayspot"
     compileSdk {
@@ -25,12 +33,14 @@ android {
 
     buildTypes {
         release {
+            buildConfigField("boolean", "USE_FIREBASE_EMULATOR", "false")
             optimization {
                 enable = false
             }
         }
         debug {
             isDebuggable = true
+            buildConfigField("boolean", "USE_FIREBASE_EMULATOR", useFirebaseEmulator)
         }
     }
     compileOptions {

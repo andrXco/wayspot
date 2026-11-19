@@ -1,6 +1,7 @@
 package com.example.wayspot.repository
 
 import com.example.wayspot.data.datasource.RecentReviewRemoteDataSource
+import com.example.wayspot.data.datasource.StorageRemoteDataSource
 import com.example.wayspot.data.datasource.implementation.firestore.ReviewFirestoreDataSourceImplementation
 import com.example.wayspot.data.dto.ReviewFirestoreDto
 import com.example.wayspot.data.model.review.RecentReviewWindow
@@ -34,7 +35,8 @@ class ReviewRepositoryRecentReviewsTest {
             reviewFirestoreDataSource = mockk<ReviewFirestoreDataSourceImplementation>(),
             authRepository = mockk<AuthRepository>(),
             userRepository = mockk<UserRepository>(),
-            recentReviewRemoteDataSource = dataSource
+            recentReviewRemoteDataSource = dataSource,
+            storageRemoteDataSource = mockk<StorageRemoteDataSource>()
         )
 
         val emissions = repository.getRecentReviews { currentTime }.toList()

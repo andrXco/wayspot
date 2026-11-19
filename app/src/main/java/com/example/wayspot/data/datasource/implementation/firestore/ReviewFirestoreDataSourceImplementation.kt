@@ -53,6 +53,37 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
         )
     }
 
+    suspend fun createReviewWithPhotos(
+        id: String,
+        review: SaveReviewDto,
+        photoUrls: List<String>
+    ): ReviewFirestoreDto {
+        val reviewData = mapOf(
+            "rating" to review.rating,
+            "title" to review.title,
+            "description" to review.description,
+            "userId" to review.userId,
+            "placeId" to review.placeId,
+            "user" to review.user,
+            "likesCount" to review.likesCount,
+            "photoUrls" to photoUrls,
+            "createdAt" to FieldValue.serverTimestamp()
+        )
+
+        db.collection("reviews").document(id).set(reviewData).await()
+
+        return ReviewFirestoreDto(
+            id = id,
+            rating = review.rating,
+            title = review.title,
+            description = review.description,
+            userId = review.userId,
+            placeId = review.placeId,
+            user = review.user,
+            photoUrls = photoUrls
+        )
+    }
+
     override suspend fun getReviewsByPlaceId(
         placeId: String
     ): List<ReviewFirestoreDto> {
@@ -128,6 +159,31 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
                 "rating" to review.rating,
                 "title" to review.title,
                 "description" to review.description
+            )
+        ).await()
+
+        return updatedReview
+    }
+
+    suspend fun updateReviewWithPhotos(
+        id: String,
+        review: SaveReviewDto,
+        photoUrls: List<String>
+    ): ReviewFirestoreDto {
+        val originalReview = getReviewById(id)
+        val updatedReview = originalReview.copy(
+            rating = review.rating,
+            title = review.title,
+            description = review.description,
+            photoUrls = photoUrls
+        )
+
+        db.collection("reviews").document(id).update(
+            mapOf(
+                "rating" to review.rating,
+                "title" to review.title,
+                "description" to review.description,
+                "photoUrls" to photoUrls
             )
         ).await()
 

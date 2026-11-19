@@ -1,6 +1,9 @@
 package com.example.wayspot.ui.screens.newreview
 
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.BackHandler
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +26,7 @@ import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.data.model.place.PlaceInfo
 import com.example.wayspot.data.model.review.ReviewDraft
+import com.example.wayspot.data.model.review.ReviewRules
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.newreview.components.NewReviewHeader
 import com.example.wayspot.ui.screens.newreview.components.ReviewBottomAction
@@ -41,6 +45,11 @@ fun NewReviewScreen(
     onPublishReview: () -> Unit = {}
 ) {
     val state by newReviewViewModel.uiState.collectAsState()
+    val photoPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let { newReviewViewModel.addPhoto(it.toString()) }
+    }
 
     LaunchedEffect(placeId, reviewId) {
         newReviewViewModel.loadReview(placeId, reviewId)
@@ -77,6 +86,14 @@ fun NewReviewScreen(
         onDescriptionChange = {
             newReviewViewModel.updateDescription(it)
         },
+        onAddPhotosClick = {
+            if ((state.reviewDraft?.photoUris?.size ?: 0) < ReviewRules.MAX_PHOTOS) {
+                photoPicker.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            }
+        },
+        onRemovePhotoClick = newReviewViewModel::removePhoto,
 
         isPublishEnabled = state.isPublishEnabled && !state.isPublishing,
         isEditing = state.editingReviewId != null,
@@ -99,6 +116,8 @@ fun NewReviewContent(
     onRatingSelected: (Int) -> Unit,
     onTitleChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
+    onAddPhotosClick: () -> Unit,
+    onRemovePhotoClick: (String) -> Unit,
     isPublishEnabled: Boolean,
     isEditing: Boolean,
     isLoading: Boolean,
@@ -150,6 +169,8 @@ fun NewReviewContent(
                     onRatingSelected = onRatingSelected,
                     onTitleChange = onTitleChange,
                     onDescriptionChange = onDescriptionChange,
+                    onAddPhotosClick = onAddPhotosClick,
+                    onRemovePhotoClick = onRemovePhotoClick,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 24.dp)
@@ -180,6 +201,8 @@ private fun NewReviewScreenPreview() {
             onRatingSelected = {},
             onTitleChange = {},
             onDescriptionChange = {},
+            onAddPhotosClick = {},
+            onRemovePhotoClick = {},
             isPublishEnabled = false,
             isEditing = false,
             isLoading = false,
