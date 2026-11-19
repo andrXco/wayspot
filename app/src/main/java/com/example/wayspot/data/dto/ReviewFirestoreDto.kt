@@ -2,7 +2,12 @@
 package com.example.wayspot.data.dto
 
 import com.example.wayspot.data.model.review.ReviewInfo
+import com.google.firebase.Timestamp
 
+/**
+ * Contrato de `reviews` en Firestore. `createdAt` es un Timestamp del servidor;
+ * queda nulo para documentos anteriores a ese campo y no aparecen en el mapa reciente.
+ */
 data class ReviewFirestoreDto(
     val id: String = "",
     val rating: Int = 0,
@@ -11,6 +16,7 @@ data class ReviewFirestoreDto(
     val userId: String = "",
     val placeId: String = "",
     val reviewDate: String? = null,
+    val createdAt: Timestamp? = null,
     val authorName: String? = null,
     val user: ReviewUserDto? = null,
     val likesCount: Int = 0,
@@ -30,7 +36,9 @@ data class ReviewFirestoreDto(
             authorUsername = user?.username,
             authorAvatarUrl = user?.avatarUrl,
             likesCount = likesCount,
-            liked = liked
+            liked = liked,
+            createdAtMillis = createdAt?.toDate()?.time
+
         )
     }
 

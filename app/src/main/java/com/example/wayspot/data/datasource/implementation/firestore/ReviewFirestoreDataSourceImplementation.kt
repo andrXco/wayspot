@@ -6,24 +6,41 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.example.wayspot.data.dto.CommentFirestoreDto
 import com.example.wayspot.data.dto.CreateCommentFirestoreDto
 import com.example.wayspot.data.datasource.ReviewRemoteDataSource
+import com.example.wayspot.data.datasource.RecentReviewRemoteDataSource
 import com.example.wayspot.data.dto.CreateCommentDto
 import com.example.wayspot.data.dto.NotificationActorEventDto
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.Timestamp
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+import java.util.Date
 
 class ReviewFirestoreDataSourceImplementation @Inject constructor(
     private val db: FirebaseFirestore
-) : ReviewRemoteDataSource {
+) : ReviewRemoteDataSource, RecentReviewRemoteDataSource {
 
     override suspend fun createReview(
         review: SaveReviewDto
     ): ReviewFirestoreDto {
 
-        val docRef = db.collection("reviews").add(review).await()
+        val reviewData = mapOf(
+            "rating" to review.rating,
+            "title" to review.title,
+            "description" to review.description,
+            "userId" to review.userId,
+            "placeId" to review.placeId,
+            "user" to review.user,
+            "likesCount" to review.likesCount,
+            "createdAt" to FieldValue.serverTimestamp()
+        )
+
+        val docRef = db.collection("reviews")
+            .add(reviewData)
+            .await()
+
 
         return ReviewFirestoreDto(
             id = docRef.id,
@@ -298,4 +315,38 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
             listenerRegistration.remove()
         }
     }
+
+    override fun observeReviewsSince(cutoffMillis: Long): Flow<List<ReviewFirestoreDto>> = callbackFlow {
+        // Firestore reduce los documentos transferidos. El ViewModel aplica la ventana móvil
+        // mientras el listener sigue activo, ya que este corte de consulta es fijo.
+        val listenerRegistration = db.collection("reviews")
+            .whereGreaterThanOrEqualTo(
+                "createdAt",
+                Timestamp(Date(cutoffMillis))
+            )
+            .addSnapshotListener { snapshots, error ->
+
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+
+                if (snapshots == null) {
+                    close(IllegalStateException("No se recibieron las reseñas recientes"))
+                    return@addSnapshotListener
+                }
+
+                val reviews = snapshots.documents.mapNotNull { document ->
+                    document.toObject(ReviewFirestoreDto::class.java)
+                        ?.copy(id = document.id)
+                }
+
+                trySend(reviews)
+            }
+
+        awaitClose {
+            listenerRegistration.remove()
+        }
+    }
+
 }

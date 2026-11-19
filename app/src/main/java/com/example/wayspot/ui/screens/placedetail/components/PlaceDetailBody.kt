@@ -29,6 +29,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Alignment
 import com.example.wayspot.R
 import com.example.wayspot.data.model.place.PlaceInfo
+import com.example.wayspot.ui.components.map.MapRenderState
+import com.example.wayspot.ui.components.map.MapRenderStatus
 import com.example.wayspot.ui.theme.WayspotTheme
 
 /** Cuerpo del detalle con metadatos, descripción y reseñas. */
@@ -37,7 +39,11 @@ fun PlaceDetailBody(
     place: PlaceInfo,
     onShareClick: () -> Unit,
     onWriteReviewClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onMapClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    mapRenderState: MapRenderState = MapRenderState(),
+    onMapRenderStatusChanged: (MapRenderStatus) -> Unit = {},
+    onRetryMapRender: () -> Unit = {}
 ) {
     Surface(
         modifier = modifier,
@@ -83,6 +89,17 @@ fun PlaceDetailBody(
                     fontSize = 13.sp
                 )
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            PlaceDetailMapPreview(
+                place = place,
+                onMapClick = onMapClick,
+                modifier = Modifier.fillMaxWidth(),
+                mapRenderState = mapRenderState,
+                onMapRenderStatusChanged = onMapRenderStatusChanged,
+                onRetryMapRender = onRetryMapRender
+            )
 
             Spacer(
                 modifier = Modifier.height(24.dp)
@@ -175,7 +192,8 @@ private fun PlaceDetailBodyPreview() {
                 description = "Lugar turístico ubicado en Bogotá"
             ),
             onShareClick = {},
-            onWriteReviewClick = {}
+            onWriteReviewClick = {},
+            onMapClick = {}
         )
     }
 }

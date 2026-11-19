@@ -6,6 +6,13 @@ import com.example.wayspot.data.model.home.HomeFeaturedPlan
 import com.example.wayspot.data.model.review.ReviewFeedItem
 import com.example.wayspot.data.model.place.PlaceInfo
 
+enum class HomeLoadFailure {
+    PlacesUnavailable,
+    ReviewsUnavailable,
+    AuthorsUnavailable,
+    ReviewLikesUnavailable
+}
+
 /** Estado inmutable de la experiencia de inicio, incluidas sus interacciones locales de feed. */
 data class HomeState(
     val searchQuery: String = "",
@@ -27,5 +34,6 @@ data class HomeState(
     val sharedReviewIds: Set<String> = emptySet(),
     val savedPlaceIds: Set<String> = emptySet(),
     val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val loadFailure: HomeLoadFailure? = null
 )

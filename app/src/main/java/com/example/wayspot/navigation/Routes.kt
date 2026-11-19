@@ -1,5 +1,6 @@
 package com.example.wayspot.navigation
 
+import android.net.Uri
 import com.example.wayspot.data.model.user.UserRelationshipListType
 
 /** Fuente única de las rutas del `NavHost` y de la construcción de destinos con argumentos. */
@@ -14,6 +15,12 @@ sealed class Screen(val route: String) {
     object Home : Screen("home")
 
     object Explore : Screen("explore")
+
+    object Map : Screen("map?placeId={placeId}") {
+        fun createRoute(placeId: String? = null): String {
+            return placeId?.let { "map?placeId=${Uri.encode(it)}" } ?: "map"
+        }
+    }
 
     object Profile : Screen("profile")
 

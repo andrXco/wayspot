@@ -15,19 +15,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.unit.dp
+import com.example.wayspot.R
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.local.PreviewDataPopular
-import com.example.wayspot.data.model.place.PlaceInfo
-import com.example.wayspot.data.model.review.ReviewInfo
 import com.example.wayspot.data.model.place.toPlaceInfo
+import com.example.wayspot.ui.components.map.MapRenderStatus
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.placedetail.components.PlaceDetailBody
 import com.example.wayspot.ui.screens.placedetail.components.PlaceDetailHero
+import com.example.wayspot.ui.screens.placedetail.components.PlaceDetailLoadFeedback
 import com.example.wayspot.ui.theme.WayspotTheme
 import com.example.wayspot.ui.screens.placedetail.components.PlaceReviewCard
 import com.example.wayspot.ui.screens.placedetail.components.RecentReviewsHeader
 
-/** Sincroniza el argumento de ruta con el ViewModel y muestra el contenido solo cuando hay lugar. */
+/** Sincroniza el argumento de ruta y conecta el estado y las acciones del detalle. */
 @Composable
 fun PlaceDetailScreen(
     placeDetailViewModel: PlaceDetailViewModel,
@@ -37,7 +38,8 @@ fun PlaceDetailScreen(
     onSaveClick: () -> Unit = {},
     onShareClick: () -> Unit = {},
     onWriteReviewClick: () -> Unit = {},
-    onReviewClick: (String) -> Unit = {}
+    onReviewClick: (String) -> Unit = {},
+    onMapClick: (String) -> Unit = {}
 ) {
     val state by placeDetailViewModel.uiState.collectAsState()
 
@@ -45,37 +47,50 @@ fun PlaceDetailScreen(
         placeDetailViewModel.loadPlace(placeId)
     }
 
-    val context = LocalContext.current
-    val place = state.place ?: state.fallbackPlace?.toPlaceInfo(
-        context::getString
+    PlaceDetailContent(
+        state = state,
+        onBackClick = onBackClick,
+        onSaveClick = onSaveClick,
+        onShareClick = onShareClick,
+        onWriteReviewClick = onWriteReviewClick,
+        onReviewClick = onReviewClick,
+        onMapClick = onMapClick,
+        onRetryPlace = placeDetailViewModel::retryPlace,
+        onRetryReviews = placeDetailViewModel::retryReviews,
+        modifier = modifier,
+        onMapRenderStatusChanged = placeDetailViewModel::onMapRenderStatusChanged,
+        onRetryMapRender = placeDetailViewModel::retryMapRender
     )
-
-    if (place != null) {
-        PlaceDetailContent(
-            place = place,
-            reviews = state.reviews,
-            onBackClick = onBackClick,
-            onSaveClick = onSaveClick,
-            onShareClick = onShareClick,
-            onWriteReviewClick = onWriteReviewClick,
-            onReviewClick = onReviewClick,
-            modifier = modifier
-        )
-    }
 }
 
 /** Compone la portada y el cuerpo del detalle como secciones independientes de una lista vertical. */
 @Composable
 fun PlaceDetailContent(
-    place: PlaceInfo,
-    reviews: List<ReviewInfo>,
+    state: PlaceDetailState,
     onBackClick: () -> Unit,
     onSaveClick: () -> Unit,
     onShareClick: () -> Unit,
     onWriteReviewClick: () -> Unit,
     onReviewClick: (String) -> Unit,
-    modifier: Modifier = Modifier
+    onMapClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    onRetryPlace: () -> Unit = {},
+    onRetryReviews: () -> Unit = {},
+    onMapRenderStatusChanged: (MapRenderStatus) -> Unit = {},
+    onRetryMapRender: () -> Unit = {}
 ) {
+    val place = state.place
+    if (place == null) {
+        val failed = state.placeStatus == PlaceDetailLoadStatus.Failed
+        PlaceDetailLoadFeedback(
+            messageRes = if (failed) R.string.place_detail_unavailable else R.string.place_detail_loading,
+            onRetry = onRetryPlace.takeIf { failed },
+            onBack = onBackClick,
+            modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)
+        )
+        return
+    }
+
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
@@ -94,13 +109,34 @@ fun PlaceDetailContent(
         item {
 
             PlaceDetailBody(
-                place = place.copy(reviewCount = reviews.size),
+                place = if (state.reviewsStatus == PlaceDetailLoadStatus.Ready) {
+                    place.copy(reviewCount = state.reviews.size)
+                } else {
+                    place
+                },
                 onShareClick = onShareClick,
                 onWriteReviewClick = onWriteReviewClick,
-                modifier = Modifier.fillMaxWidth()
+                onMapClick = { onMapClick(place.id) },
+                modifier = Modifier.fillMaxWidth(),
+                mapRenderState = state.mapRenderState,
+                onMapRenderStatusChanged = onMapRenderStatusChanged,
+                onRetryMapRender = onRetryMapRender
             )
         }
-        if (reviews.isNotEmpty()) {
+        if (state.reviewsStatus != PlaceDetailLoadStatus.Ready) {
+            item(key = "reviews-status") {
+                val failed = state.reviewsStatus == PlaceDetailLoadStatus.Failed
+                PlaceDetailLoadFeedback(
+                    messageRes = if (failed) {
+                        R.string.place_detail_reviews_unavailable
+                    } else {
+                        R.string.place_detail_reviews_loading
+                    },
+                    onRetry = onRetryReviews.takeIf { failed },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        } else if (state.reviews.isNotEmpty()) {
             item(key = "reviews-header") {
                 RecentReviewsHeader(
                     modifier = Modifier
@@ -109,7 +145,7 @@ fun PlaceDetailContent(
                         .padding(top = 20.dp, bottom = 8.dp)
                 )
             }
-            items(reviews, key = { it.id }) { review ->
+            items(state.reviews, key = { it.id }) { review ->
                 PlaceReviewCard(
                     review = review,
                     onClick = { onReviewClick(review.id) },
@@ -125,12 +161,19 @@ fun PlaceDetailContent(
 private fun PlaceDetailScreenPreview() {
     WayspotTheme {
         PlaceDetailContent(
-            place = PreviewDataPopular.previewPlaceInfo,
-            reviews = listOf(PreviewData.reviewDetailReview),
+            state = PlaceDetailState(
+                place = PreviewDataPopular.cerroMonserrate.toPlaceInfo(
+                    LocalContext.current::getString
+                ),
+                placeStatus = PlaceDetailLoadStatus.Ready,
+                reviews = listOf(PreviewData.reviewDetailReview),
+                reviewsStatus = PlaceDetailLoadStatus.Ready
+            ),
             onBackClick = {},
             onSaveClick = {},
             onShareClick = {},
             onWriteReviewClick = {},
+            onMapClick = {},
             onReviewClick = {}
         )
     }

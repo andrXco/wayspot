@@ -4,6 +4,7 @@ import com.example.wayspot.R
 import com.example.wayspot.data.model.place.PlaceDetail
 import com.example.wayspot.data.model.place.PlaceReview
 import com.example.wayspot.data.model.place.Place
+import com.example.wayspot.data.model.place.PlaceCoordinates
 import com.example.wayspot.data.model.place.PlaceInfo
 
 /** Catálogo local de lugares y detalles usado por las pantallas de exploración y sus previsualizaciones. */
@@ -26,6 +27,7 @@ object PreviewDataPopular {
         ubicacionRes = R.string.place_cerro_monserrate_location,
         rating = 4.8,
         imagen = "https://images.unsplash.com/photo-1720067392108-89b9485aa090?w=800&h=520&fit=crop&auto=format",
+        coordinates = PlaceCoordinates(latitude = 4.6059, longitude = -74.0559),
         detail = PlaceDetail(
             durationRes = R.string.place_cerro_monserrate_duration,
             priceRes = R.string.place_cerro_monserrate_price,
@@ -50,6 +52,7 @@ object PreviewDataPopular {
         ubicacionRes = R.string.place_cartagena_amurallada_location,
         rating = 4.9,
         imagen = "https://images.unsplash.com/photo-1583997052103-b4a1cb974ce5?q=80&w=1200&auto=format&fit=crop",
+        coordinates = PlaceCoordinates(latitude = 10.4236, longitude = -75.5478),
         detail = PlaceDetail(
             durationRes = R.string.place_cartagena_amurallada_duration,
             priceRes = R.string.place_cartagena_amurallada_price,
@@ -74,6 +77,7 @@ object PreviewDataPopular {
         ubicacionRes = R.string.place_valle_cocora_location,
         rating = 4.9,
         imagen = "https://images.unsplash.com/photo-1596395819057-e37f55c7de0e?q=80&w=1200&auto=format&fit=crop",
+        coordinates = PlaceCoordinates(latitude = 4.6375, longitude = -75.5672),
         detail = PlaceDetail(
             durationRes = R.string.place_valle_cocora_duration,
             priceRes = R.string.place_valle_cocora_price,
@@ -98,6 +102,7 @@ object PreviewDataPopular {
         ubicacionRes = R.string.place_mirador_cafetero_location,
         rating = 4.8,
         imagen = "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=1200&auto=format&fit=crop",
+        coordinates = PlaceCoordinates(latitude = 4.5334, longitude = -75.6811),
         detail = PlaceDetail(
             durationRes = R.string.place_mirador_cafetero_duration,
             priceRes = R.string.place_mirador_cafetero_price,
@@ -115,6 +120,7 @@ object PreviewDataPopular {
         ubicacionRes = R.string.place_paseo_costero_location,
         rating = 4.7,
         imagen = "https://images.unsplash.com/photo-1473116763249-2faaef81ccda?q=80&w=1200&auto=format&fit=crop",
+        coordinates = PlaceCoordinates(latitude = 11.2408, longitude = -74.1990),
         detail = PlaceDetail(
             durationRes = R.string.place_paseo_costero_duration,
             priceRes = R.string.place_paseo_costero_price,
@@ -242,6 +248,7 @@ object PreviewDataPopular {
         categoriaRes = R.string.place_category_beach,
         ubicacionRes = R.string.place_playa_blanca_location,
         rating = 4.7,
+        coordinates = PlaceCoordinates(latitude = 10.218511, longitude = -75.612286),
         imagen = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1000&auto=format&fit=crop",
         detail = PlaceDetail(
             durationRes = R.string.place_playa_blanca_duration,
@@ -259,6 +266,7 @@ object PreviewDataPopular {
         categoriaRes = R.string.place_category_nature,
         ubicacionRes = R.string.place_parque_tayrona_location,
         rating = 4.8,
+        coordinates = PlaceCoordinates(latitude = 11.2825, longitude = -74.023611),
         imagen = "https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?q=80&w=1000&auto=format&fit=crop",
         detail = PlaceDetail(
             durationRes = R.string.place_parque_tayrona_duration,
@@ -276,6 +284,7 @@ object PreviewDataPopular {
         categoriaRes = R.string.place_category_mountain,
         ubicacionRes = R.string.place_piedra_del_penol_location,
         rating = 4.8,
+        coordinates = PlaceCoordinates(latitude = 6.2205, longitude = -75.1766),
         imagen = "https://i.redd.it/y10vhdjst9901.jpg",
         detail = PlaceDetail(
             durationRes = R.string.place_piedra_del_penol_duration,

@@ -13,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import com.example.wayspot.R
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.testTag
 import com.example.wayspot.data.local.PreviewData
@@ -29,6 +30,7 @@ import com.example.wayspot.ui.screens.home.components.HomeReviewsEmptyState
 import com.example.wayspot.ui.screens.home.components.HomeReviewsFilterError
 import com.example.wayspot.ui.screens.home.components.HomeReviewsHeader
 import com.example.wayspot.ui.screens.home.components.HomeReviewsLoadingState
+import com.example.wayspot.ui.screens.home.components.HomeLoadErrorSection
 import com.example.wayspot.ui.theme.WayspotTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.CircularProgressIndicator
@@ -57,6 +59,14 @@ fun HomeScreen(
         homeViewModel.refresh()
     }
 
+    val loadErrorMessage = when (state.loadFailure) {
+        HomeLoadFailure.PlacesUnavailable -> R.string.home_load_places_error
+        HomeLoadFailure.ReviewsUnavailable -> R.string.home_load_reviews_error
+        HomeLoadFailure.AuthorsUnavailable -> R.string.home_load_authors_error
+        HomeLoadFailure.ReviewLikesUnavailable -> R.string.home_load_review_likes_error
+        null -> null
+    }
+
     when {
         state.isLoading -> {
             Box(
@@ -67,14 +77,20 @@ fun HomeScreen(
             }
         }
 
+        loadErrorMessage != null -> {
+            HomeLoadErrorSection(
+                messageRes = loadErrorMessage,
+                modifier = modifier.fillMaxSize(),
+                onRetry = homeViewModel::refresh
+            )
+        }
+
         state.errorMessage != null -> {
             Box(
                 modifier = modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = state.errorMessage ?: ""
-                )
+                Text(text = state.errorMessage.orEmpty())
             }
         }
 
