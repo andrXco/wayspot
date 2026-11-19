@@ -63,7 +63,8 @@ class HomeViewModel @Inject constructor(
                 },
                 reviewLikeCounts = emptyMap(),
                 isLoading = true,
-                errorMessage = null
+                errorMessage = null,
+                loadFailure = null
             )
         }
 
@@ -72,13 +73,7 @@ class HomeViewModel @Inject constructor(
             val placesResult = placeRepository.getPlaces()
             val places = placesResult.getOrNull()
             if (places == null) {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        isLoading = false,
-                        errorMessage = placesResult.exceptionOrNull()?.message
-                            ?: "No se pudieron cargar los lugares"
-                    )
-                }
+                setLoadFailure(HomeLoadFailure.PlacesUnavailable)
                 return@launch
             }
 
@@ -89,15 +84,7 @@ class HomeViewModel @Inject constructor(
             }
 
             reviewRepository.getAllReviews()
-                .catch { error ->
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            isLoading = false,
-                            errorMessage = error.message
-                                ?: "No se pudieron escuchar las reseñas"
-                        )
-                    }
-                }
+                .catch { setLoadFailure(HomeLoadFailure.ReviewsUnavailable) }
                 .collect { reviews ->
                     val feed = mutableListOf<ReviewFeedItem>()
 
@@ -133,13 +120,7 @@ class HomeViewModel @Inject constructor(
                             users.none { user -> user.id == review.userId }
                     }
                     if (needsMissingAuthor && usersResult.isFailure) {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                isLoading = false,
-                                errorMessage = usersResult.exceptionOrNull()?.message
-                                    ?: "No se pudieron cargar los usuarios"
-                            )
-                        }
+                        setLoadFailure(HomeLoadFailure.AuthorsUnavailable)
                         return@collect
                     }
 
@@ -148,13 +129,7 @@ class HomeViewModel @Inject constructor(
                     )
                     val likedReviewIds = likedReviewsResult.getOrNull()
                     if (likedReviewIds == null) {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                isLoading = false,
-                                errorMessage = likedReviewsResult.exceptionOrNull()?.message
-                                    ?: "No se pudieron cargar los likes"
-                            )
-                        }
+                        setLoadFailure(HomeLoadFailure.ReviewLikesUnavailable)
                         return@collect
                     }
 
@@ -174,11 +149,16 @@ class HomeViewModel @Inject constructor(
                                 item.review.id to item.review.likesCount
                             },
                             isLoading = false,
+                            loadFailure = null,
                             errorMessage = null
                         )
                     }
                 }
         }
+    }
+
+    private fun setLoadFailure(failure: HomeLoadFailure) {
+        _uiState.update { it.copy(isLoading = false, loadFailure = failure) }
     }
 
     fun toggleFollowingFilter() {

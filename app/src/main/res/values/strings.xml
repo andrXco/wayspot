@@ -414,6 +414,11 @@
     <string name="home_reviews_filter_following">Ver seguidos</string>
     <string name="home_reviews_filter_active">Siguiendo</string>
     <string name="home_reviews_filter_loading">Cargando...</string>
+    <string name="home_load_places_error">No se pudieron cargar los lugares.</string>
+    <string name="home_load_reviews_error">No se pudieron cargar las reseñas.</string>
+    <string name="home_load_authors_error">No se pudieron cargar los perfiles de las reseñas.</string>
+    <string name="home_load_review_likes_error">No se pudieron cargar los Me gusta de las reseñas.</string>
+    <string name="home_load_retry">Reintentar</string>
     <string name="home_reviews_empty_following">Aún no hay reseñas de las personas que sigues.</string>
     <string name="home_reviews_following_loading">Cargando las cuentas que sigues...</string>
     <string name="home_reviews_following_error">No se pudo cargar la lista de personas que sigues. Inténtalo de nuevo.</string>
