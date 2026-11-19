@@ -3,6 +3,7 @@ package com.example.wayspot.ui.screens.map.components
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -105,7 +106,8 @@ fun PlacesMapLayout(
             locationFocusRequestId = locationFocusRequestId,
             isRequestingCurrentLocation =
                 locationRequestStatus == MapLocationRequestStatus.Requesting,
-            onRequestCurrentLocation = onRequestCurrentLocation
+            onRequestCurrentLocation = onRequestCurrentLocation,
+            protectTopControlsFromStatusBar = true
         )
 
         PlacesMapHeader(
@@ -114,6 +116,7 @@ fun PlacesMapLayout(
             nearbyRadiusKm = nearbyRadiusKm,
             modifier = Modifier
                 .align(Alignment.TopStart)
+                .statusBarsPadding()
                 .padding(16.dp)
         )
 
