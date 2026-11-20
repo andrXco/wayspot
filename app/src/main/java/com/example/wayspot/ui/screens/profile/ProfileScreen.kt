@@ -12,8 +12,6 @@ import com.example.wayspot.ui.theme.WayspotTheme
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LifecycleEventEffect
 
 /** Sincroniza el perfil recibido con el ViewModel y conecta sus acciones de navegación. */
 @Composable
@@ -36,7 +34,7 @@ fun ProfileScreen(
         profileViewModel.loadProfile(userProfile)
     }
 
-    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+    LaunchedEffect(Unit) {
         profileViewModel.loadReviews()
     }
 
@@ -46,7 +44,6 @@ fun ProfileScreen(
         ProfileContent(
             user = profile,
             reviews = state.reviews,
-            achievements = state.achievements,
             isLoading = state.isLoading,
             errorMessage = state.errorMessage,
             onEditProfileClick = onEditProfileClick,

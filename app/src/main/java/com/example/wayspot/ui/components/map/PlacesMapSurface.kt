@@ -48,7 +48,6 @@ import com.example.wayspot.R
 import com.example.wayspot.data.model.place.PlaceCoordinates
 import com.example.wayspot.data.model.place.PlaceInfo
 import com.example.wayspot.data.model.place.PlacesMapDefaults
-import com.example.wayspot.data.model.review.ReviewInfo
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.maps.MapLibreMap
 
@@ -56,11 +55,8 @@ import org.maplibre.android.maps.MapLibreMap
 @Composable
 fun PlacesMapSurface(
     places: List<PlaceInfo>,
-    reviews: List<ReviewInfo> = emptyList(),
     selectedPlaceId: String?,
-    selectedReviewId: String? = null,
     onPlaceSelected: (String) -> Unit,
-    onReviewSelected: (String) -> Unit = {},
     mapRenderState: MapRenderState,
     onMapRenderStatusChanged: (MapRenderStatus) -> Unit,
     onRetryMapRender: () -> Unit,
@@ -101,9 +97,7 @@ fun PlacesMapSurface(
             key(styleUrl, mapRenderState.attempt) {
                 MapLibreMapRenderer(
                     places = validPlaces,
-                    reviews = reviews,
                     selectedPlaceId = selectedPlaceId,
-                    selectedReviewId = selectedReviewId,
                     currentLocation = currentLocation,
                     locationFocusRequestId = locationFocusRequestId,
                     styleUrl = styleUrl,
@@ -111,7 +105,6 @@ fun PlacesMapSurface(
                     markerColor = colorScheme.primary,
                     mapSurfaceColor = colorScheme.surface,
                     onPlaceSelected = onPlaceSelected,
-                    onReviewSelected = onReviewSelected,
                     onMapReady = { map -> mapLibreMap = map },
                     onMapRenderStatusChanged = onMapRenderStatusChanged,
                     modifier = Modifier.fillMaxSize()
@@ -159,12 +152,7 @@ fun PlacesMapSurface(
                                 onClearNearbySearch()
                             } else {
                                 mapLibreMap?.let { map ->
-                                    focusMapOnPlaces(
-                                        map,
-                                        validPlaces,
-                                        selectedPlace,
-                                        reviews.mapNotNull(ReviewInfo::coordinates)
-                                    )
+                                    focusMapOnPlaces(map, validPlaces, selectedPlace)
                                 }
                             }
                         }

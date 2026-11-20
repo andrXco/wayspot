@@ -12,9 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -25,6 +23,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.rounded.FavoriteBorder
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.ui.platform.testTag
 import com.example.wayspot.R
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.local.PreviewDataPopular
@@ -32,9 +36,10 @@ import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.reviewdetail.components.ReviewCommentAction
 import com.example.wayspot.ui.screens.reviewdetail.components.ReviewCommentItem
 import com.example.wayspot.ui.screens.reviewdetail.components.ReviewCommentsHeader
-import com.example.wayspot.ui.screens.reviewdetail.components.ReviewDetailCard
+import com.example.wayspot.ui.screens.reviewdetail.components.ReviewDetailHeader
 import com.example.wayspot.ui.screens.reviewdetail.components.ReviewDetailTopBar
 import com.example.wayspot.ui.theme.WayspotTheme
+
 
 @Composable
 fun ReviewDetailScreen(
@@ -52,10 +57,7 @@ fun ReviewDetailScreen(
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.uiState.collectAsState()
-
-    LaunchedEffect(reviewId) {
-        viewModel.loadReview(reviewId)
-    }
+    LaunchedEffect(reviewId) { viewModel.loadReview(reviewId) }
     LaunchedEffect(reviewId, commentsRefreshReviewId, commentsRefreshVersion) {
         if (reviewId == commentsRefreshReviewId && commentsRefreshVersion > 0) {
             viewModel.loadReview(reviewId)
@@ -65,20 +67,19 @@ fun ReviewDetailScreen(
     LaunchedEffect(state.isDeleted) {
         if (state.isDeleted) onDeleted()
     }
-
     ReviewDetailContent(
         state = state,
         onBackClick = onBackClick,
         onCommentClick = { onCommentClick(reviewId) },
-        onPlaceClick = onPlaceClick,
+        onPlaceClick = { placeId -> onPlaceClick(placeId) },
         onAuthorClick = onAuthorClick,
         onEditClick = { onEditClick(reviewId) },
         onDeleteClick = viewModel::requestDelete,
         onConfirmDelete = viewModel::deleteReview,
         onDismissDelete = viewModel::dismissDelete,
         currentUserId = viewModel.currentUserId,
+        modifier = modifier,
         onLikeClick = viewModel::toggleReviewLike,
-        modifier = modifier
     )
 }
 
@@ -94,35 +95,22 @@ fun ReviewDetailContent(
     onConfirmDelete: () -> Unit,
     onDismissDelete: () -> Unit,
     currentUserId: String?,
-    onLikeClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onLikeClick: () -> Unit
 ) {
-    val review = state.review
-    val canManage = !state.isDeleting && !state.isDeleted &&
-        currentUserId != null && review?.userId == currentUserId
-
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
         ReviewDetailTopBar(
-            canManage = canManage,
             onBackClick = onBackClick,
-            onEditClick = onEditClick,
-            onDeleteClick = onDeleteClick,
             modifier = Modifier.fillMaxWidth()
         )
-
         LazyColumn(
             modifier = Modifier.weight(1f),
-            contentPadding = PaddingValues(
-                start = 16.dp,
-                end = 16.dp,
-                top = 12.dp,
-                bottom = 20.dp
-            ),
-            verticalArrangement = Arrangement.spacedBy(18.dp)
+            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 28.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             if (state.isLoading) {
                 item(key = "loading") {
@@ -149,20 +137,66 @@ fun ReviewDetailContent(
                 }
             }
 
-            review?.let { reviewInfo ->
+            state.review?.let { review ->
                 item(key = "review") {
-                    ReviewDetailCard(
-                        review = reviewInfo,
+                    ReviewDetailHeader(
+                        review = review,
                         place = state.place,
                         author = state.author,
-                        canLike = currentUserId != null && !state.isDeleting && !state.isDeleted,
-                        canComment = !state.isDeleting && !state.isDeleted,
-                        onLikeClick = onLikeClick,
-                        onCommentClick = onCommentClick,
+                        canManage = currentUserId != null && review.userId == currentUserId,
+                        isDeleting = state.isDeleting,
                         onPlaceClick = onPlaceClick,
-                        onAuthorClick = { onAuthorClick(reviewInfo.userId) },
+                        onAuthorClick = { onAuthorClick(review.userId) },
+                        onEditClick = onEditClick,
+                        onDeleteClick = onDeleteClick,
                         modifier = Modifier.fillMaxWidth()
                     )
+                }
+
+                item(key = "review-likes") {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("reviewLikesState_${review.likesCount}"),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        IconButton(
+                            onClick = onLikeClick,
+                            enabled = currentUserId != null,
+                            modifier = Modifier.testTag("reviewLikeButton")
+                        ) {
+                        Icon(
+                                imageVector = if (review.liked) {
+                                    Icons.Filled.Favorite
+                                } else {
+                                    Icons.Rounded.FavoriteBorder
+                                },
+                                contentDescription = stringResource(
+                                    if (review.liked) {
+                                        R.string.home_review_unlike_content_description
+                                    } else {
+                                        R.string.home_review_like_content_description
+                                    },
+                                    state.author?.name.orEmpty()
+                                ),
+                                tint = if (review.liked) {
+                                    MaterialTheme.colorScheme.tertiary
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                }
+                            )
+                        }
+                        Text(
+                            text = stringResource(
+                                R.string.home_review_action_count,
+                                review.likesCount
+                            ),
+                            modifier = Modifier.testTag("reviewLikesCount"),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
 
                 item(key = "comments-header") {
@@ -171,7 +205,6 @@ fun ReviewDetailContent(
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
-
                 if (state.comments.isEmpty()) {
                     item(key = "comments-empty") {
                         Text(
@@ -190,21 +223,10 @@ fun ReviewDetailContent(
                         )
                     }
                 }
-            }
-        }
-
-        if (review != null && !state.isDeleting && !state.isDeleted) {
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.background
-            ) {
-                Column {
-                    HorizontalDivider(
-                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.20f)
-                    )
+                item(key = "comments-action") {
                     ReviewCommentAction(
                         onClick = onCommentClick,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
@@ -253,7 +275,7 @@ private fun ReviewDetailScreenPreview() {
             onConfirmDelete = {},
             onDismissDelete = {},
             currentUserId = null,
-            onLikeClick = {}
+            onLikeClick = {},
         )
     }
 }

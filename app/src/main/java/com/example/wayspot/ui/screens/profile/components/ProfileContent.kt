@@ -21,7 +21,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.platform.testTag
-import com.example.wayspot.data.model.achievement.AchievementProgress
 import com.example.wayspot.data.model.review.ReviewInfo
 import com.example.wayspot.data.model.review.ReviewFeedItem
 import com.example.wayspot.data.model.user.UserProfile
@@ -48,7 +47,6 @@ fun ProfileContent(
     isOwnProfile: Boolean = true,
     onBackClick: (() -> Unit)? = null,
     reviewFeedItems: List<ReviewFeedItem> = emptyList(),
-    achievements: List<AchievementProgress> = emptyList(),
     reviewLikeCounts: Map<String, Int> = emptyMap(),
     likedReviewIds: Set<String> = emptySet(),
     areReviewLikesLoaded: Boolean = true,
@@ -169,15 +167,6 @@ fun ProfileContent(
                 }
         }
 
-
-        if (isOwnProfile && achievements.isNotEmpty()) {
-            item(key = "profile-achievements") {
-                ProfileAchievements(
-                    achievements = achievements,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
 
         if (isOwnProfile) {
             item {

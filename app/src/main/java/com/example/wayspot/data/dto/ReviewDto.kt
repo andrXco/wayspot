@@ -2,7 +2,6 @@
 package com.example.wayspot.data.dto
 
 import com.example.wayspot.data.model.review.ReviewInfo
-import com.example.wayspot.data.model.place.PlaceCoordinates
 
 data class ReviewDto(
     val id: Int,
@@ -10,8 +9,7 @@ data class ReviewDto(
     val title: String?,
     val description: String,
     val userId: Int,
-    val placeId: Int?,
-    val coordinates: PlaceCoordinates? = null,
+    val placeId: Int,
     val reviewDate: String? = null,
     val user: ReviewUserDto? = null
 ) : ReviewDtoGeneric() {
@@ -23,8 +21,7 @@ data class ReviewDto(
             title = title,
             description = description,
             userId = userId.toString(),
-            placeId = placeId?.toString(),
-            coordinates = coordinates,
+            placeId = placeId.toString(),
             reviewDate = reviewDate,
             authorName = user?.name
         )
@@ -45,8 +42,7 @@ data class SaveReviewDto(
     val title: String,
     val description: String,
     val userId: String,
-    val placeId: String?,
-    val coordinates: PlaceCoordinates? = null,
+    val placeId: String,
     val user: ReviewUserDto? = null,
     val likesCount: Int = 0
 )

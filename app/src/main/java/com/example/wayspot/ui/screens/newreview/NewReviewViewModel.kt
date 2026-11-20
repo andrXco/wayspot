@@ -5,7 +5,6 @@ import com.example.wayspot.R
 import androidx.lifecycle.viewModelScope
 import com.example.wayspot.data.model.review.ReviewDraft
 import com.example.wayspot.data.model.review.ReviewRules
-import com.example.wayspot.data.model.place.PlaceCoordinates
 import com.example.wayspot.data.repository.PlaceRepository
 import com.example.wayspot.data.repository.ReviewRepository
 import com.example.wayspot.data.repository.AuthRepository
@@ -33,7 +32,11 @@ class NewReviewViewModel @Inject constructor(
         _uiState.update { it.copy(isLoading = true, errorMessage = null, errorResId = null, editingReviewId = reviewId) }
         viewModelScope.launch {
             val placesResult = placeRepository.getPlaces()
-            val places = placesResult.getOrNull().orEmpty()
+            if (placesResult.isFailure) {
+                _uiState.update { it.copy(isLoading = false, errorMessage = placesResult.exceptionOrNull()?.message) }
+                return@launch
+            }
+            val places = placesResult.getOrNull() ?: return@launch
             val existing = reviewId?.let { id ->
                 val result = reviewRepository.getReviewById(id)
                 if (result.isFailure) {
@@ -61,7 +64,6 @@ class NewReviewViewModel @Inject constructor(
                 ReviewRules.normalizeDraft(
                     ReviewDraft(
                         placeId = existing.placeId,
-                        coordinates = existing.coordinates,
                         rating = existing.rating,
                         title = existing.title.orEmpty(),
                         description = existing.description,
@@ -69,8 +71,7 @@ class NewReviewViewModel @Inject constructor(
                     )
                 )
             } else {
-                if (placeId != null) ReviewRules.emptyDraft(placeId)
-                else ReviewRules.emptyDraft()
+                selectedPlace?.let { ReviewRules.emptyDraft(it.id) }
             }
             _uiState.update {
                 it.copy(
@@ -78,8 +79,7 @@ class NewReviewViewModel @Inject constructor(
                     place = selectedPlace,
                     reviewDraft = draft,
                     isPublishEnabled = draft?.let(ReviewRules::canPublish) ?: false,
-                    isLoading = false,
-                    errorMessage = placesResult.exceptionOrNull()?.message
+                    isLoading = false
                 )
             }
         }
@@ -133,44 +133,6 @@ class NewReviewViewModel @Inject constructor(
                 placeId = placeId
             )
         }
-    }
-
-    fun startLocationRequest() {
-        _uiState.update { it.copy(isRequestingLocation = true, locationErrorResId = null) }
-    }
-
-    fun setReviewCoordinates(coordinates: PlaceCoordinates) {
-        if (!coordinates.isValid) {
-            onLocationUnavailable()
-            return
-        }
-        updateDraft { it.copy(coordinates = coordinates) }
-        _uiState.update {
-            it.copy(isRequestingLocation = false, locationErrorResId = null)
-        }
-    }
-
-    fun onLocationPermissionDenied() {
-        _uiState.update {
-            it.copy(
-                isRequestingLocation = false,
-                locationErrorResId = R.string.new_review_location_permission_denied
-            )
-        }
-    }
-
-    fun onLocationUnavailable() {
-        _uiState.update {
-            it.copy(
-                isRequestingLocation = false,
-                locationErrorResId = R.string.new_review_location_unavailable
-            )
-        }
-    }
-
-    fun clearReviewCoordinates() {
-        updateDraft { it.copy(coordinates = null) }
-        _uiState.update { it.copy(locationErrorResId = null) }
     }
 
     fun updateRating(selectedRating: Int) {
@@ -248,8 +210,7 @@ class NewReviewViewModel @Inject constructor(
             return currentState
         }
 
-        val reviewDraft = currentState.reviewDraft?.copy(placeId = placeId)
-            ?: ReviewRules.emptyDraft(placeId)
+        val reviewDraft = ReviewRules.emptyDraft(placeId)
 
         return currentState.copy(
             place = place,
