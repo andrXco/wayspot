@@ -131,6 +131,7 @@ class ReviewRepository @Inject constructor(
                 description = draft.description,
                 userId = userId,
                 placeId = draft.placeId,
+                coordinates = draft.coordinates,
                 user = ReviewUserDto(
                     name = user.name,
                     username = user.username,
@@ -201,7 +202,8 @@ class ReviewRepository @Inject constructor(
                 title = draft.title,
                 description = draft.description,
                 userId = originalReview.userId,
-                placeId = originalReview.placeId,
+                placeId = draft.placeId,
+                coordinates = draft.coordinates,
                 user = originalReview.user
             )
 

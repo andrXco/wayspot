@@ -5,6 +5,6 @@ import com.example.wayspot.data.model.user.UserInfo
 
 data class ReviewFeedItem(
     val review: ReviewInfo,
-    val place: PlaceInfo,
+    val place: PlaceInfo?,
     val author: UserInfo
 )

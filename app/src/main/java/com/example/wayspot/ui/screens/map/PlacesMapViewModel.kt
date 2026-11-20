@@ -25,6 +25,11 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 /** Carga lugares con coordenadas y reseñas recientes, y permite buscar alrededor del mapa. */
 @HiltViewModel
@@ -58,7 +63,7 @@ class PlacesMapViewModel @Inject constructor(
     fun selectPlace(placeId: String?) {
         _uiState.update { currentState ->
             val latestReview = currentState.recentReviews
-                .filter { review -> review.placeId == placeId }
+                .filter { review -> placeId != null && review.placeId == placeId }
                 .maxByOrNull { review -> review.createdAtMillis ?: 0L }
 
             currentState.copy(
@@ -178,8 +183,14 @@ class PlacesMapViewModel @Inject constructor(
             }
             val recentReviews = recentReviewsFor(visiblePlaceIds)
             val selectedPlaceId = validNearbyPlaces.firstOrNull()?.place?.id
-            val selectedReviewId = recentReviews
-                .filter { review -> review.placeId == selectedPlaceId }
+            val inRadiusReviews = recentReviews.filter { review ->
+                (review.placeId != null && review.placeId in visiblePlaceIds) ||
+                    review.coordinates?.let { coordinates ->
+                        isWithinRadius(coordinates, center, PlacesMapDefaults.nearbySearchRadiusMeters)
+                    } == true
+            }
+            val selectedReviewId = inRadiusReviews
+                .filter { review -> selectedPlaceId != null && review.placeId == selectedPlaceId }
                 .maxByOrNull { review -> review.createdAtMillis ?: 0L }
                 ?.id
 
@@ -187,7 +198,7 @@ class PlacesMapViewModel @Inject constructor(
                 currentState.copy(
                     places = validNearbyPlaces.map(NearbyPlace::place),
                     nearbyPlaces = validNearbyPlaces,
-                    recentReviews = recentReviews,
+                    recentReviews = inRadiusReviews,
                     selectedPlaceId = selectedPlaceId,
                     selectedReviewId = selectedReviewId,
                     nearbyStatus = MapNearbyStatus.Ready
@@ -291,17 +302,18 @@ class PlacesMapViewModel @Inject constructor(
 
         mapLoadJob = viewModelScope.launch {
             val result = placeRepository.getPlaces()
-            val places = result.getOrNull()
-
-            if (places == null) {
-                _uiState.update { currentState ->
-                    currentState.copy(catalogStatus = MapCatalogStatus.PlacesUnavailable)
-                }
-                return@launch
-            }
-
+            val places = result.getOrNull().orEmpty()
             availablePlaces = places.filter { place ->
                 place.coordinates?.isValid == true
+            }
+            _uiState.update { currentState ->
+                currentState.copy(
+                    catalogStatus = if (result.isSuccess) {
+                        MapCatalogStatus.Loading
+                    } else {
+                        MapCatalogStatus.PlacesUnavailable
+                    }
+                )
             }
 
             flow { emitAll(reviewRepository.getRecentReviews()) }
@@ -312,7 +324,7 @@ class PlacesMapViewModel @Inject constructor(
                 }
                 .collect { reviews ->
                     loadedReviews = reviews
-                    refreshVisibleReviews(catalogUpdated = true)
+                    refreshVisibleReviews(catalogUpdated = result.isSuccess)
                     scheduleReviewExpiration()
                 }
         }
@@ -337,7 +349,17 @@ class PlacesMapViewModel @Inject constructor(
             val visibleRecentReviews = if (nearbyPlaceIds == null) {
                 recentReviews
             } else {
-                recentReviews.filter { review -> review.placeId in nearbyPlaceIds }
+                recentReviews.filter { review ->
+                    (review.placeId != null && review.placeId in nearbyPlaceIds) ||
+                        (currentState.nearbySearchCenter != null &&
+                            review.coordinates?.let { coordinates ->
+                                isWithinRadius(
+                                    coordinates,
+                                    currentState.nearbySearchCenter,
+                                    PlacesMapDefaults.nearbySearchRadiusMeters
+                                )
+                            } == true)
+                }
             }
             val visiblePlaces = currentState.nearbyPlaces?.map(NearbyPlace::place)
                 ?: availablePlaces.filter { place ->
@@ -352,10 +374,11 @@ class PlacesMapViewModel @Inject constructor(
             val selectedReviewId = currentState.selectedReviewId
                 ?.takeIf { reviewId ->
                     visibleRecentReviews.any { review ->
-                        review.id == reviewId && review.placeId == selectedPlaceId
+                        review.id == reviewId &&
+                            (selectedPlaceId == null || review.placeId == selectedPlaceId)
                     }
                 } ?: visibleRecentReviews
-                .filter { review -> review.placeId == selectedPlaceId }
+                .filter { review -> selectedPlaceId != null && review.placeId == selectedPlaceId }
                 .maxByOrNull { review -> review.createdAtMillis ?: 0L }
                 ?.id
 
@@ -372,8 +395,24 @@ class PlacesMapViewModel @Inject constructor(
         val now = System.currentTimeMillis()
         return loadedReviews.filter { review ->
             RecentReviewWindow.contains(review.createdAtMillis, now) &&
-                review.placeId in placeIds
+                (review.placeId != null && review.placeId in placeIds ||
+                    review.coordinates?.isValid == true)
         }
+    }
+
+    private fun isWithinRadius(
+        coordinates: PlaceCoordinates,
+        center: PlaceCoordinates,
+        radiusMeters: Int
+    ): Boolean {
+        val latitudeDifference = Math.toRadians(center.latitude - coordinates.latitude)
+        val longitudeDifference = Math.toRadians(center.longitude - coordinates.longitude)
+        val haversine = sin(latitudeDifference / 2).pow(2) +
+            cos(Math.toRadians(coordinates.latitude)) *
+            cos(Math.toRadians(center.latitude)) *
+            sin(longitudeDifference / 2).pow(2)
+        val distanceMeters = 6_371_000.0 * 2 * atan2(sqrt(haversine), sqrt(1 - haversine))
+        return distanceMeters <= radiusMeters
     }
 
     private fun scheduleReviewExpiration() {

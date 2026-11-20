@@ -3,6 +3,8 @@ package com.example.wayspot.data.dto
 
 import com.example.wayspot.data.model.review.ReviewInfo
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.GeoPoint
+import com.example.wayspot.data.model.place.PlaceCoordinates
 
 /**
  * Contrato de `reviews` en Firestore. `createdAt` es un Timestamp del servidor;
@@ -14,7 +16,8 @@ data class ReviewFirestoreDto(
     val title: String? = null,
     val description: String = "",
     val userId: String = "",
-    val placeId: String = "",
+    val placeId: String? = null,
+    val coordinates: GeoPoint? = null,
     val reviewDate: String? = null,
     val createdAt: Timestamp? = null,
     val authorName: String? = null,
@@ -31,7 +34,10 @@ data class ReviewFirestoreDto(
             title = title,
             description = description,
             userId = userId,
-            placeId = placeId,
+            placeId = placeId?.takeIf(String::isNotBlank),
+            coordinates = coordinates?.let { point ->
+                PlaceCoordinates(point.latitude, point.longitude)
+            },
             reviewDate = reviewDate,
             authorName = user?.name ?: authorName,
             authorUsername = user?.username,

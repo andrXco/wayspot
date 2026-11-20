@@ -61,6 +61,8 @@ data class PlacesMapState(
 
     val selectedPlaceReviews: List<ReviewInfo>
         get() = recentReviews
+            .takeIf { selectedPlaceId != null }
+            .orEmpty()
             .filter { review ->
                 review.placeId == selectedPlaceId
             }

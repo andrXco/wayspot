@@ -146,8 +146,8 @@ fun HomeContent(
                     review.author.username,
                     review.review.title.orEmpty(),
                     review.review.description,
-                    review.place.title,
-                    review.place.location
+                    review.place?.title.orEmpty(),
+                    review.place?.location.orEmpty()
                 )
             )
     }
@@ -231,7 +231,7 @@ fun HomeContent(
                     isShared = review.review.id in state.sharedReviewIds,
                     onReviewClick = { onReviewClick(review.review.id) },
                     onAuthorClick = { onAuthorClick(review.author.id) },
-                    onPlaceClick = { onPlaceClick(review.place.id) },
+                    onPlaceClick = { review.place?.id?.let(onPlaceClick) },
                     onLikeClick = { onReviewLikeClick(review.review.id) },
                     onExpandClick = { onReviewExpandClick(review.review.id) },
                     onCommentClick = { onReviewCommentClick(review.review.id) },

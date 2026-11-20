@@ -10,6 +10,7 @@ import com.example.wayspot.data.datasource.RecentReviewRemoteDataSource
 import com.example.wayspot.data.dto.CreateCommentDto
 import com.example.wayspot.data.dto.NotificationActorEventDto
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -32,6 +33,7 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
             "description" to review.description,
             "userId" to review.userId,
             "placeId" to review.placeId,
+            "coordinates" to review.coordinates?.let { GeoPoint(it.latitude, it.longitude) },
             "user" to review.user,
             "likesCount" to review.likesCount,
             "createdAt" to FieldValue.serverTimestamp()
@@ -49,6 +51,7 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
             description = review.description,
             userId = review.userId,
             placeId = review.placeId,
+            coordinates = review.coordinates?.let { GeoPoint(it.latitude, it.longitude) },
             user = review.user
         )
     }
@@ -64,6 +67,7 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
             "description" to review.description,
             "userId" to review.userId,
             "placeId" to review.placeId,
+            "coordinates" to review.coordinates?.let { GeoPoint(it.latitude, it.longitude) },
             "user" to review.user,
             "likesCount" to review.likesCount,
             "photoUrls" to photoUrls,
@@ -79,6 +83,7 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
             description = review.description,
             userId = review.userId,
             placeId = review.placeId,
+            coordinates = review.coordinates?.let { GeoPoint(it.latitude, it.longitude) },
             user = review.user,
             photoUrls = photoUrls
         )
@@ -149,7 +154,9 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
         val updatedReview = originalReview.copy(
             rating = review.rating,
             title = review.title,
-            description = review.description
+            description = review.description,
+            placeId = review.placeId,
+            coordinates = review.coordinates?.let { GeoPoint(it.latitude, it.longitude) }
         )
 
         val docRef = db.collection("reviews").document(id)
@@ -158,7 +165,9 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
             mapOf(
                 "rating" to review.rating,
                 "title" to review.title,
-                "description" to review.description
+                "description" to review.description,
+                "placeId" to review.placeId,
+                "coordinates" to review.coordinates?.let { GeoPoint(it.latitude, it.longitude) }
             )
         ).await()
 
@@ -175,7 +184,9 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
             rating = review.rating,
             title = review.title,
             description = review.description,
-            photoUrls = photoUrls
+            photoUrls = photoUrls,
+            placeId = review.placeId,
+            coordinates = review.coordinates?.let { GeoPoint(it.latitude, it.longitude) }
         )
 
         db.collection("reviews").document(id).update(
@@ -183,7 +194,9 @@ class ReviewFirestoreDataSourceImplementation @Inject constructor(
                 "rating" to review.rating,
                 "title" to review.title,
                 "description" to review.description,
-                "photoUrls" to photoUrls
+                "photoUrls" to photoUrls,
+                "placeId" to review.placeId,
+                "coordinates" to review.coordinates?.let { GeoPoint(it.latitude, it.longitude) }
             )
         ).await()
 
