@@ -8,7 +8,6 @@ data class UserFirestoreDto(
     val id: String = "",
     val name: String = "",
     val username: String = "",
-    val fcmToken: String = "",
     val country: String? = null,
     val bio: String? = null,
     val avatarUrl: String? = null,

@@ -222,6 +222,7 @@ private val bottomBarRoutes = setOf(
 private val edgeToEdgeRoutes = setOf(
     Screen.Splash.route,
     Screen.PlaceDetail.route,
+    Screen.Map.route,
     Screen.Profile.route,
     Screen.PublicProfile.route
 )

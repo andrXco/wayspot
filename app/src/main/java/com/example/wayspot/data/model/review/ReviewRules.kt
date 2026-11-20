@@ -7,7 +7,7 @@ object ReviewRules {
     const val DEFAULT_RATING = 2
     const val MAX_TITLE_LENGTH = 80
     const val MAX_DESCRIPTION_LENGTH = 500
-    const val MAX_PHOTOS = 3
+    const val MAX_PHOTOS = 2
 
     fun emptyDraft(placeId: String): ReviewDraft = ReviewDraft(
         placeId = placeId,

@@ -119,6 +119,12 @@ fun HomeReviewCard(
                 maxLines = if (isExpanded) Int.MAX_VALUE else HomeRules.MAX_COLLAPSED_REVIEW_LINES,
                 overflow = TextOverflow.Ellipsis
             )
+            if (item.review.photoUrls.isNotEmpty()) {
+                HomeReviewPhotos(
+                    photoUrls = item.review.photoUrls,
+                    placeTitle = item.place.title
+                )
+            }
             TextButton(
                 onClick = onExpandClick,
                 modifier = Modifier.padding(horizontal = 8.dp),

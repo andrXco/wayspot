@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -68,7 +69,8 @@ fun PlacesMapSurface(
     currentLocation: PlaceCoordinates? = null,
     locationFocusRequestId: Long = 0L,
     isRequestingCurrentLocation: Boolean = false,
-    onRequestCurrentLocation: () -> Unit = {}
+    onRequestCurrentLocation: () -> Unit = {},
+    protectTopControlsFromStatusBar: Boolean = false
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val styleUrl = if (isSystemInDarkTheme()) DARK_STYLE_URL else LIBERTY_STYLE_URL
@@ -128,6 +130,13 @@ fun PlacesMapSurface(
             Column(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
+                    .then(
+                        if (protectTopControlsFromStatusBar) {
+                            Modifier.statusBarsPadding()
+                        } else {
+                            Modifier
+                        }
+                    )
                     .padding(12.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {

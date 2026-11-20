@@ -62,6 +62,22 @@ object PreviewData {
         placeId = PreviewDataPopular.previewPlaceInfo.id
     )
 
+    val placeDetailReview = ReviewInfo(
+        id = "preview-place-detail-review",
+        rating = 5,
+        title = "Una vista que vale la subida",
+        description = "El paisaje y los senderos son increíbles. Subimos temprano y la vista de Bogotá estaba despejada; es un plan que definitivamente repetiría.",
+        userId = "preview-place-detail-author",
+        placeId = PreviewDataPopular.cerroMonserrate.id,
+        reviewDate = "25 jul 2026",
+        authorName = "Laura Martínez",
+        authorUsername = "lauram",
+        photoUrls = listOf(
+            "https://images.unsplash.com/photo-1700526032306-e93c9254f594?w=300&h=300&fit=crop&auto=format",
+            "https://images.unsplash.com/photo-1720067392108-89b9485aa090?w=300&h=300&fit=crop&auto=format"
+        )
+    )
+
     val reviewDetailComments = listOf(
         ReviewComment(
             id = "preview-comment-1",

@@ -232,6 +232,19 @@
     <string name="places_map_next_review">Siguiente</string>
     <string name="places_map_review_position">Reseña %1$d de %2$d</string>
     <string name="recent_reviews_title">Reseñas recientes</string>
+    <string name="recent_reviews_subtitle">Lo más destacado por los visitantes</string>
+    <plurals name="recent_reviews_count">
+        <item quantity="one">%d reseña</item>
+        <item quantity="other">%d reseñas</item>
+    </plurals>
+    <string name="review_author_metadata">%1$s · %2$s</string>
+    <string name="review_rating_summary_1">Mala</string>
+    <string name="review_rating_summary_2">Regular</string>
+    <string name="review_rating_summary_3">Buena</string>
+    <string name="review_rating_summary_4">Muy buena</string>
+    <string name="review_rating_summary_5">Excelente</string>
+    <string name="review_summary_link">Resumen de la reseña</string>
+    <string name="review_photo_content_description">Foto %1$d de la reseña</string>
     <string name="see_all">Ver todas</string>
     <string name="time_label">2-3 horas</string>
     <string name="price_label">Gratuito</string>

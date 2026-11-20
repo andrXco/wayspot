@@ -20,7 +20,8 @@ data class ReviewFirestoreDto(
     val authorName: String? = null,
     val user: ReviewUserDto? = null,
     val likesCount: Int = 0,
-    val liked: Boolean = false
+    val liked: Boolean = false,
+    val photoUrls: List<String> = emptyList()
 ) : ReviewDtoGeneric() {
 
     override fun toReviewInfo(): ReviewInfo {
@@ -37,7 +38,8 @@ data class ReviewFirestoreDto(
             authorAvatarUrl = user?.avatarUrl,
             likesCount = likesCount,
             liked = liked,
-            createdAtMillis = createdAt?.toDate()?.time
+            createdAtMillis = createdAt?.toDate()?.time,
+            photoUrls = photoUrls
 
         )
     }

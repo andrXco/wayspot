@@ -13,6 +13,7 @@ data class ReviewInfo(
     val authorAvatarUrl: String? = null,
     val likesCount: Int = 0,
     val liked: Boolean = false,
-    val createdAtMillis: Long? = null
+    val createdAtMillis: Long? = null,
+    val photoUrls: List<String> = emptyList()
 
 )

@@ -49,14 +49,14 @@ fun WayspotBottomBar(
             R.string.nav_map
         ),
         BottomNavItem(
-            Screen.Notifications.route,
-            Icons.Default.Notifications,
-            R.string.notifications_content_description
-        ),
-        BottomNavItem(
             Screen.Home.route,
             Icons.Default.Home,
             R.string.nav_home
+        ),
+        BottomNavItem(
+            Screen.Notifications.route,
+            Icons.Default.Notifications,
+            R.string.notifications_content_description
         ),
         BottomNavItem(
             Screen.Profile.route,
