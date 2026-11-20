@@ -416,6 +416,10 @@
     <!-- Home Screen -->
     <string name="home_title">Tu próximo plan</string>
     <string name="home_subtitle">Encuentra un lugar para salir de la rutina</string>
+    <string name="home_category_all">Todos</string>
+    <string name="home_places_results_count">Lugares encontrados: %1$d</string>
+    <string name="home_places_no_results">No se encontraron lugares con esos filtros.</string>
+    <string name="home_places_no_data">Aún no hay lugares disponibles.</string>
     <string name="home_category_nature">Naturaleza</string>
     <string name="home_category_gastronomy">Gastronomía</string>
     <string name="home_category_getaways">Escapadas</string>
@@ -542,4 +546,6 @@
     <string name="profile_following_action">Siguiendo</string>
     <string name="profile_follow_error">No se pudo actualizar el seguimiento. Inténtalo de nuevo.</string>
     <string name="public_profile_data_load_error">No se pudo cargar toda la información del perfil. Inténtalo de nuevo.</string>
+    <string name="explore_results_count">Lugares encontrados: %1$d</string>
+    <string name="explore_no_results">No se encontraron lugares con esos filtros.</string>
 </resources>

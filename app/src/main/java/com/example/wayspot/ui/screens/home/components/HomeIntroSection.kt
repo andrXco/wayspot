@@ -13,14 +13,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
-import com.example.wayspot.ui.components.WayspotSearch
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.theme.WayspotTheme
 
 @Composable
 fun HomeIntroSection(
-    searchQuery: String,
-    onSearchQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -28,17 +25,12 @@ fun HomeIntroSection(
             .fillMaxWidth()
             .padding(top = 12.dp)
     ) {
-        WayspotSearch(
-            searchText = searchQuery,
-            onSearchChange = onSearchQueryChange,
-            modifier = Modifier.fillMaxWidth()
-        )
         Text(
             text = stringResource(R.string.home_title),
             color = MaterialTheme.colorScheme.onBackground,
             fontSize = 24.sp,
             fontWeight = FontWeight.ExtraBold,
-            modifier = Modifier.padding(top = 16.dp)
+            modifier = Modifier.padding(top = 4.dp)
         )
         Text(
             text = stringResource(R.string.home_subtitle),
@@ -55,8 +47,6 @@ private fun HomeIntroSectionPreview() {
     WayspotTheme {
         Surface {
             HomeIntroSection(
-                searchQuery = "",
-                onSearchQueryChange = {},
                 modifier = Modifier.padding(16.dp)
             )
         }

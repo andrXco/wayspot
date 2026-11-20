@@ -2,12 +2,11 @@ package com.example.wayspot.ui.screens.explore
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.wayspot.data.repository.PlaceRepository
-import com.example.wayspot.data.model.explore.ExploreCategory
-import com.example.wayspot.data.model.explore.ExploreCategoryRules
+import com.example.wayspot.data.model.explore.ExplorePlaceFilter
 import com.example.wayspot.data.model.place.Place
 import com.example.wayspot.data.model.savedplace.SavedPlace
 import com.example.wayspot.data.model.savedplace.SavedPlacesRules
+import com.example.wayspot.data.repository.PlaceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,78 +14,69 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/**
- * Conserva el catálogo completo internamente y publica la selección filtrada junto con el estado
- * de búsqueda y los identificadores guardados.
- */
+/** Conserva el catálogo completo y expone solo los lugares que coinciden con ambos filtros. */
 @HiltViewModel
 class ExploreViewModel @Inject constructor(
     private val placeRepository: PlaceRepository
 ) : ViewModel() {
 
     private var allPlaces: List<Place> = emptyList()
-
     private val _uiState = MutableStateFlow(ExploreState())
-
     val uiState: StateFlow<ExploreState> = _uiState
 
     init {
         loadPlaces()
     }
 
-
     private fun loadPlaces() {
-
-        _uiState.update { currentState ->
-            currentState.copy(
-                categories = ExploreCategoryRules.categories,
-                places = emptyList()
-            )
-        }
-
+        _uiState.update { it.copy(isLoading = true, loadFailed = false) }
         viewModelScope.launch {
-            val result = placeRepository.getExplorePlaces()
-
-            result.getOrNull()?.let { firestorePlaces ->
-                allPlaces = firestorePlaces
-
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        places = ExploreCategoryRules.filterPlaces(
-                            places = allPlaces,
-                            selectedCategory = currentState.selectedCategory
+            placeRepository.getExplorePlaces().fold(
+                onSuccess = { fetched ->
+                    allPlaces = fetched
+                    _uiState.update { current ->
+                        val categories = ExplorePlaceFilter.categories(fetched)
+                        val selected = current.selectedCategory
+                            ?.takeIf { it in categories }
+                        current.copy(
+                            categories = categories,
+                            selectedCategory = selected,
+                            places = ExplorePlaceFilter.filter(
+                                fetched, current.searchText, selected
+                            ),
+                            isLoading = false,
+                            loadFailed = false
                         )
-                    )
+                    }
+                },
+                onFailure = {
+                    _uiState.update { it.copy(isLoading = false, loadFailed = true) }
                 }
-            }
+            )
         }
     }
 
     fun updateSearchText(input: String) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                searchText = input
+        _uiState.update { current ->
+            current.copy(
+                searchText = input,
+                places = ExplorePlaceFilter.filter(allPlaces, input, current.selectedCategory)
             )
         }
     }
 
-    fun updateSelectedCategory(category: ExploreCategory) {
-        _uiState.update { currentState ->
-            currentState.copy(
+    fun updateSelectedCategory(category: String?) {
+        _uiState.update { current ->
+            current.copy(
                 selectedCategory = category,
-                places = ExploreCategoryRules.filterPlaces(
-                    places = allPlaces,
-                    selectedCategory = category
-                )
+                places = ExplorePlaceFilter.filter(allPlaces, current.searchText, category)
             )
         }
     }
 
     fun updateSavedPlaces(savedPlaces: List<SavedPlace>) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                savedPlaceIds = SavedPlacesRules.savedPlaceIds(savedPlaces)
-            )
+        _uiState.update { current ->
+            current.copy(savedPlaceIds = SavedPlacesRules.savedPlaceIds(savedPlaces))
         }
     }
 }

@@ -1,8 +1,5 @@
 package com.example.wayspot.ui.screens.home
 
-import com.example.wayspot.data.model.home.HomeCategory
-import com.example.wayspot.data.model.home.HomeCategoryId
-import com.example.wayspot.data.model.home.HomeFeaturedPlan
 import com.example.wayspot.data.model.review.ReviewFeedItem
 import com.example.wayspot.data.model.place.PlaceInfo
 
@@ -15,10 +12,6 @@ enum class HomeLoadFailure {
 
 /** Estado inmutable de la experiencia de inicio, incluidas sus interacciones locales de feed. */
 data class HomeState(
-    val searchQuery: String = "",
-    val selectedCategory: HomeCategoryId? = null,
-    val categories: List<HomeCategory> = emptyList(),
-    val featuredPlans: List<HomeFeaturedPlan> = emptyList(),
     val reviews: List<ReviewFeedItem> = emptyList(),
     val followingUserIds: Set<String> = emptySet(),
     val isFollowingOnly: Boolean = false,

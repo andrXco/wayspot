@@ -2,6 +2,7 @@ package com.example.wayspot.ui.screens.explore
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -26,8 +27,6 @@ import androidx.compose.ui.unit.sp
 import com.example.wayspot.R
 import com.example.wayspot.data.local.PreviewData
 import com.example.wayspot.data.local.PreviewDataPopular
-import com.example.wayspot.data.model.explore.ExploreCategory
-import com.example.wayspot.data.model.explore.ExploreCategoryRules
 import com.example.wayspot.data.model.place.Place
 import com.example.wayspot.data.model.savedplace.SavedPlace
 import com.example.wayspot.data.model.savedplace.SavedPlacesRules
@@ -56,6 +55,8 @@ fun ExploreScreen(
         places = state.places,
         searchText = state.searchText,
         categories = state.categories,
+        isLoading = state.isLoading,
+        loadFailed = state.loadFailed,
         selectedCategory = state.selectedCategory,
         onSearchChange = {
             exploreViewModel.updateSearchText(it)
@@ -75,15 +76,18 @@ fun ExploreScreen(
 fun ExplorerContent(
     places: List<Place>,
     searchText: String,
-    categories: List<ExploreCategory>,
-    selectedCategory: ExploreCategory,
+    categories: List<String>,
+    selectedCategory: String?,
     onSearchChange: (String) -> Unit,
-    onCategorySelect: (ExploreCategory) -> Unit,
+    onCategorySelect: (String?) -> Unit,
     onPlaceClick: (String) -> Unit,
     savedPlaceIds: Set<String>,
     onSaveClick: (Place) -> Unit,
+    isLoading: Boolean = false,
+    loadFailed: Boolean = false,
     modifier: Modifier = Modifier
 ) {
+    val hasFilters = searchText.isNotBlank() || selectedCategory != null
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
@@ -129,27 +133,48 @@ fun ExplorerContent(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = stringResource(
-                        R.string.popular_destinations_title
-                    ),
+                    text = if (hasFilters) {
+                        stringResource(R.string.explore_results_count, places.size)
+                    } else {
+                        stringResource(R.string.popular_destinations_title)
+                    },
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
+                if (hasFilters) {
+                    Text(
+                        text = stringResource(R.string.see_all),
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.clickable {
+                            onSearchChange("")
+                            onCategorySelect(null)
+                        }
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+        }
 
+        if (isLoading) {
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) { CircularProgressIndicator() }
+            }
+        } else if (loadFailed || places.isEmpty()) {
+            item {
                 Text(
                     text = stringResource(
-                        R.string.see_all
+                        if (loadFailed) R.string.home_load_places_error
+                        else if (hasFilters) R.string.explore_no_results
+                        else R.string.home_places_no_data
                     ),
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.clickable {
-                    }
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
                 )
             }
-
-            Spacer(
-                modifier = Modifier.height(16.dp)
-            )
         }
 
         val rows = places.chunked(2)
@@ -213,8 +238,8 @@ private fun ExploreScreenPreview() {
         ExplorerContent(
             places = PreviewDataPopular.listPlaces,
             searchText = "",
-            categories = ExploreCategoryRules.categories,
-            selectedCategory = ExploreCategoryRules.initialCategory,
+            categories = listOf("Playa", "Montaña", "Museo"),
+            selectedCategory = null,
             onSearchChange = {},
             onCategorySelect = {},
             onPlaceClick = {},

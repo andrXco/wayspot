@@ -17,12 +17,9 @@ import com.example.wayspot.R
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.testTag
 import com.example.wayspot.data.local.PreviewData
-import com.example.wayspot.data.model.home.HomeCategoryId
-import com.example.wayspot.data.model.home.HomeRules
 import com.example.wayspot.data.model.place.Place
 import com.example.wayspot.data.model.savedplace.SavedPlace
 import com.example.wayspot.ui.preview.WayspotMultiPreview
-import com.example.wayspot.ui.screens.home.components.HomeCategoryChips
 import com.example.wayspot.ui.screens.home.components.HomeFeaturedPlanCarousel
 import com.example.wayspot.ui.screens.home.components.HomeIntroSection
 import com.example.wayspot.ui.screens.home.components.HomeReviewCard
@@ -97,8 +94,6 @@ fun HomeScreen(
         else -> {
             HomeContent(
                 state = state,
-                onSearchQueryChange = homeViewModel::updateSearchQuery,
-                onCategoryClick = homeViewModel::selectCategory,
                 onPreviousFeaturedPlanClick = homeViewModel::showPreviousFeaturedPlan,
                 onNextFeaturedPlanClick = homeViewModel::showNextFeaturedPlan,
                 onFeaturedLikeClick = homeViewModel::toggleFeaturedLike,
@@ -121,8 +116,6 @@ fun HomeScreen(
 @Composable
 fun HomeContent(
     state: HomeState,
-    onSearchQueryChange: (String) -> Unit,
-    onCategoryClick: (HomeCategoryId) -> Unit,
     onPreviousFeaturedPlanClick: () -> Unit,
     onNextFeaturedPlanClick: () -> Unit,
     onFeaturedLikeClick: (String) -> Unit,
@@ -138,18 +131,7 @@ fun HomeContent(
     modifier: Modifier = Modifier
 ) {
     val visibleReviews = state.reviews.filter { review ->
-        (!state.isFollowingOnly || review.author.id in state.followingUserIds) &&
-            HomeRules.matchesSearch(
-                query = state.searchQuery,
-                candidates = listOf(
-                    review.author.name,
-                    review.author.username,
-                    review.review.title.orEmpty(),
-                    review.review.description,
-                    review.place?.title.orEmpty(),
-                    review.place?.location.orEmpty()
-                )
-            )
+        !state.isFollowingOnly || review.author.id in state.followingUserIds
     }
 
     LazyColumn(
@@ -161,34 +143,32 @@ fun HomeContent(
         verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(14.dp)
     ) {
         item(key = HomeSectionKey.INTRO) {
-            HomeIntroSection(
-                searchQuery = state.searchQuery,
-                onSearchQueryChange = onSearchQueryChange,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
+            HomeIntroSection(modifier = Modifier.padding(horizontal = 16.dp))
         }
-        item(key = HomeSectionKey.CATEGORIES) {
-            HomeCategoryChips(
-                categories = state.categories,
-                selectedCategory = state.selectedCategory,
-                onCategoryClick = onCategoryClick,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-        item(key = HomeSectionKey.FEATURED) {
-            HomeFeaturedPlanCarousel(
-                places = state.places,
-                activePlanIndex = state.activeFeaturedPlanIndex,
-                likeCounts = state.featuredLikeCounts,
-                likedPlanIds = state.likedFeaturedPlanIds,
-                savedPlaceIds = state.savedPlaceIds,
-                onPreviousClick = onPreviousFeaturedPlanClick,
-                onNextClick = onNextFeaturedPlanClick,
-                onLikeClick = onFeaturedLikeClick,
-                onSaveClick = {},
-                onPlaceClick = onPlaceClick,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
+        if (state.places.isEmpty()) {
+            item(key = "no_places_loaded") {
+                Text(
+                    text = androidx.compose.ui.res.stringResource(R.string.home_places_no_data),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
+        } else {
+            item(key = HomeSectionKey.FEATURED) {
+                HomeFeaturedPlanCarousel(
+                    places = state.places,
+                    activePlanIndex = state.activeFeaturedPlanIndex,
+                    likeCounts = state.featuredLikeCounts,
+                    likedPlanIds = state.likedFeaturedPlanIds,
+                    savedPlaceIds = state.savedPlaceIds,
+                    onPreviousClick = onPreviousFeaturedPlanClick,
+                    onNextClick = onNextFeaturedPlanClick,
+                    onLikeClick = onFeaturedLikeClick,
+                    onSaveClick = {},
+                    onPlaceClick = onPlaceClick,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
         }
         item(key = HomeSectionKey.REVIEWS_HEADER) {
             HomeReviewsHeader(
@@ -245,7 +225,6 @@ fun HomeContent(
 
 private enum class HomeSectionKey {
     INTRO,
-    CATEGORIES,
     FEATURED,
     REVIEWS_HEADER,
     EMPTY_REVIEWS,
@@ -256,16 +235,9 @@ private enum class HomeSectionKey {
 @WayspotMultiPreview
 @Composable
 private fun HomeScreenPreview() {
-    val selectedCategory = HomeCategoryId.NATURE
     WayspotTheme {
         HomeContent(
             state = HomeState(
-                selectedCategory = selectedCategory,
-                categories = PreviewData.homeCategories,
-                featuredPlans = HomeRules.filterFeaturedPlans(
-                    plans = PreviewData.homeFeaturedPlans,
-                    categoryId = selectedCategory
-                ),
                 reviews = emptyList(),
                 places = emptyList(),
                 featuredLikeCounts = PreviewData.homeFeaturedPlans.associate { plan ->
@@ -273,8 +245,6 @@ private fun HomeScreenPreview() {
                 },
                 reviewLikeCounts = emptyMap()
             ),
-            onSearchQueryChange = {},
-            onCategoryClick = {},
             onPreviousFeaturedPlanClick = {},
             onNextFeaturedPlanClick = {},
             onFeaturedLikeClick = {},

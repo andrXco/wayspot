@@ -3,7 +3,6 @@ package com.example.wayspot.ui.screens.home
 import androidx.lifecycle.ViewModel
 import com.example.wayspot.data.repository.AuthRepository
 import com.example.wayspot.data.local.PreviewData
-import com.example.wayspot.data.model.home.HomeCategoryId
 import com.example.wayspot.data.model.home.HomeRules
 import com.example.wayspot.data.model.savedplace.SavedPlace
 import com.example.wayspot.data.model.savedplace.SavedPlacesRules
@@ -47,16 +46,8 @@ class HomeViewModel @Inject constructor(
 
     private fun loadHome() {
         homeLoadJob?.cancel()
-        val selectedCategory = _uiState.value.selectedCategory ?: HomeCategoryId.NATURE
-
         _uiState.update { currentState ->
             currentState.copy(
-                selectedCategory = selectedCategory,
-                categories = PreviewData.homeCategories,
-                featuredPlans = HomeRules.filterFeaturedPlans(
-                    plans = PreviewData.homeFeaturedPlans,
-                    categoryId = selectedCategory
-                ),
                 reviews = emptyList(),
                 featuredLikeCounts = PreviewData.homeFeaturedPlans.associate { plan ->
                     plan.id to plan.initialLikeCount
@@ -77,11 +68,11 @@ class HomeViewModel @Inject constructor(
                 return@launch
             }
 
+            _uiState.update { currentState ->
+                currentState.copy(places = places, activeFeaturedPlanIndex = 0)
+            }
             val usersResult = userRepository.getUsers()
             val users = usersResult.getOrNull().orEmpty()
-            _uiState.update { currentState ->
-                currentState.copy(places = places)
-            }
 
             reviewRepository.getAllReviews()
                 .catch { setLoadFailure(HomeLoadFailure.ReviewsUnavailable) }
@@ -216,25 +207,6 @@ class HomeViewModel @Inject constructor(
             )
         }
     }
-
-        fun updateSearchQuery(query: String) {
-            _uiState.update { currentState ->
-                currentState.copy(searchQuery = query)
-            }
-        }
-
-        fun selectCategory(categoryId: HomeCategoryId) {
-            _uiState.update { currentState ->
-                currentState.copy(
-                    selectedCategory = categoryId,
-                    featuredPlans = HomeRules.filterFeaturedPlans(
-                        plans = PreviewData.homeFeaturedPlans,
-                        categoryId = categoryId
-                    ),
-                    activeFeaturedPlanIndex = 0
-                )
-            }
-        }
 
         fun showNextFeaturedPlan() {
             _uiState.update { currentState ->
