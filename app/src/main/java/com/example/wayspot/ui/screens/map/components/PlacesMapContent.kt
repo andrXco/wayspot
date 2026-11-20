@@ -30,6 +30,7 @@ import com.example.wayspot.ui.screens.map.MapNearbyStatus
 @Composable
 fun PlacesMapLayout(
     places: List<PlaceInfo>,
+    reviews: List<ReviewInfo> = emptyList(),
     selectedPlace: PlaceInfo?,
     selectedPlaceId: String?,
     onPlaceSelected: (String) -> Unit,
@@ -42,6 +43,7 @@ fun PlacesMapLayout(
     onMapRenderStatusChanged: (MapRenderStatus) -> Unit = {},
     onRetryMapRender: () -> Unit = {},
     selectedReview: ReviewInfo? = null,
+    onReviewSelected: (String) -> Unit = {},
     onReviewClick: (String) -> Unit = {},
     selectedPlaceReviews: List<ReviewInfo> = emptyList(),
     onPreviousReview: () -> Unit = {},
@@ -98,8 +100,11 @@ fun PlacesMapLayout(
     Box(modifier = modifier.fillMaxSize()) {
         PlacesMapSurface(
             places = places,
+            reviews = reviews,
             selectedPlaceId = selectedPlaceId,
+            selectedReviewId = selectedReview?.id,
             onPlaceSelected = onPlaceSelected,
+            onReviewSelected = onReviewSelected,
             mapRenderState = mapRenderState,
             onMapRenderStatusChanged = onMapRenderStatusChanged,
             onRetryMapRender = onRetryMapRender,
@@ -138,7 +143,8 @@ fun PlacesMapLayout(
                 modifier = Modifier.align(Alignment.Center)
             )
 
-            dataErrorMessage != null || places.isEmpty() ||
+            (dataErrorMessage != null && reviews.none { it.coordinates?.isValid == true }) ||
+                (places.isEmpty() && reviews.none { it.coordinates?.isValid == true }) ||
                 (selectedPlaceId != null && selectedPlace == null) -> PlacesMapStatusCard(
                 canRetry = dataErrorMessage != null &&
                     nearbyStatus != MapNearbyStatus.InvalidCenter,
@@ -154,11 +160,12 @@ fun PlacesMapLayout(
                     .padding(16.dp)
             )
 
-            selectedPlace != null &&
-                    selectedReview != null &&
-                    selectedReview.placeId == selectedPlace.id -> MapReviewCard(
+            selectedReview != null &&
+                    (selectedReview.coordinates?.isValid == true ||
+                        selectedPlace?.id == selectedReview.placeId) -> MapReviewCard(
                 place = selectedPlace,
                 review = selectedReview,
+                coordinates = selectedReview.coordinates,
                 onReviewClick = {
                     onReviewClick(selectedReview.id)
                 },
@@ -167,8 +174,8 @@ fun PlacesMapLayout(
                     .padding(16.dp),
                 reviewPosition = selectedPlaceReviews.indexOfFirst {
                     it.id == selectedReview.id
-                } + 1,
-                reviewCount = selectedPlaceReviews.size,
+                }.takeIf { it >= 0 }?.plus(1) ?: 1,
+                reviewCount = selectedPlaceReviews.size.coerceAtLeast(1),
                 onPreviousReview = onPreviousReview,
                 onNextReview = onNextReview,
                 distanceMeters = selectedPlaceDistanceMeters
