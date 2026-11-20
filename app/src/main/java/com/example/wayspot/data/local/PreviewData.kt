@@ -59,7 +59,15 @@ object PreviewData {
         title = "Visita recomendada",
         description = "El paisaje y los senderos son increíbles.",
         userId = reviewDetailAuthor.id,
-        placeId = PreviewDataPopular.previewPlaceInfo.id
+        placeId = PreviewDataPopular.previewPlaceInfo.id,
+        reviewDate = "Hace 3 días",
+        authorName = reviewDetailAuthor.name,
+        authorUsername = reviewDetailAuthor.username,
+        likesCount = 2,
+        photoUrls = listOf(
+            "https://images.unsplash.com/photo-1700526032306-e93c9254f594?w=700&h=500&fit=crop&auto=format",
+            "https://images.unsplash.com/photo-1720067392108-89b9485aa090?w=700&h=500&fit=crop&auto=format"
+        )
     )
 
     val placeDetailReview = ReviewInfo(

@@ -514,6 +514,11 @@
     <string name="place_paseo_costero_description">Un recorrido junto al mar con senderos, vistas abiertas y paradas para descubrir la costa caribeña.</string>
     <string name="review_comments_count">%1$d comentarios</string>
     <string name="review_comments_title">Comentarios</string>
+    <string name="review_detail_title">Reseña</string>
+    <string name="review_detail_comment_action">Comentar</string>
+    <string name="review_conversation_label">Conversación</string>
+    <string name="review_detail_rating_display">%1$.1f de 5</string>
+    <string name="review_detail_overflow_content_description">Opciones de la reseña</string>
     <string name="review_comments_empty">Aún no hay comentarios.</string>
     <string name="review_author_avatar_content_description">Foto de perfil de %1$s</string>
     <string name="review_comment_hint">Escribe un comentario</string>
