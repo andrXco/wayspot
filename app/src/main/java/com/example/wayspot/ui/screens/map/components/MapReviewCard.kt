@@ -26,11 +26,13 @@ import androidx.compose.material3.TextButton
 import com.example.wayspot.R
 import com.example.wayspot.data.model.place.PlaceInfo
 import com.example.wayspot.data.model.review.ReviewInfo
+import com.example.wayspot.data.model.place.PlaceCoordinates
 
 @Composable
 fun MapReviewCard(
-    place: PlaceInfo,
+    place: PlaceInfo?,
     review: ReviewInfo,
+    coordinates: PlaceCoordinates? = review.coordinates,
     onReviewClick: () -> Unit,
     modifier: Modifier = Modifier,
     reviewPosition: Int = 1,
@@ -51,17 +53,28 @@ fun MapReviewCard(
             verticalArrangement = Arrangement.spacedBy(10.dp)
 
         ) {
-            Text(
-                text = place.title,
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            PlacesMapPlaceSummary(
-                rating = place.rating,
-                reviewCount = place.reviewCount,
-                distanceMeters = distanceMeters
-            )
+            if (place != null) {
+                Text(
+                    text = place.title,
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                PlacesMapPlaceSummary(
+                    rating = place.rating,
+                    reviewCount = place.reviewCount,
+                    distanceMeters = distanceMeters
+                )
+            } else if (coordinates?.isValid == true) {
+                Text(
+                    text = stringResource(
+                        R.string.places_map_review_coordinates,
+                        coordinates.latitude,
+                        coordinates.longitude
+                    ),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
 
 
             review.title?.takeIf { it.isNotBlank() }?.let { title ->
