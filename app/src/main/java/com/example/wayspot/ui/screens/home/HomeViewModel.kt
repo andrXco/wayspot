@@ -110,7 +110,7 @@ class HomeViewModel @Inject constructor(
                             storedAuthor
                         }
 
-                        if (place != null && author != null) {
+                        if ((place != null || review.coordinates?.isValid == true) && author != null) {
                             feed.add(ReviewFeedItem(review, place, author))
                         }
                     }

@@ -1,5 +1,6 @@
 package com.example.wayspot.ui.screens.newreview
 
+import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.BackHandler
 import androidx.activity.result.PickVisualMediaRequest
@@ -27,12 +28,16 @@ import com.example.wayspot.data.local.PreviewDataPopular
 import com.example.wayspot.data.model.place.PlaceInfo
 import com.example.wayspot.data.model.review.ReviewDraft
 import com.example.wayspot.data.model.review.ReviewRules
+import com.example.wayspot.ui.screens.newreview.components.ReviewLocationSection
 import com.example.wayspot.ui.preview.WayspotMultiPreview
 import com.example.wayspot.ui.screens.newreview.components.NewReviewHeader
 import com.example.wayspot.ui.screens.newreview.components.ReviewBottomAction
 import com.example.wayspot.ui.screens.newreview.components.ReviewEditorSection
 import com.example.wayspot.ui.screens.newreview.components.ReviewPlaceSummaryCard
 import com.example.wayspot.ui.theme.WayspotTheme
+import androidx.compose.ui.platform.LocalContext
+import com.example.wayspot.ui.components.location.hasLocationPermission
+import com.example.wayspot.ui.components.location.requestCurrentLocation
 
 /** Conecta el borrador con el editor y coordina la selección de fotografías del sistema. */
 @Composable
@@ -45,6 +50,20 @@ fun NewReviewScreen(
     onPublishReview: () -> Unit = {}
 ) {
     val state by newReviewViewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        if (permissions.values.any { it }) {
+            requestCurrentLocation(
+                context = context,
+                onLocationFound = newReviewViewModel::setReviewCoordinates,
+                onUnavailable = newReviewViewModel::onLocationUnavailable
+            )
+        } else {
+            newReviewViewModel.onLocationPermissionDenied()
+        }
+    }
     val photoPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri ->
@@ -70,10 +89,30 @@ fun NewReviewScreen(
         places = state.places,
         selectedPlace = state.place,
         reviewDraft = state.reviewDraft,
+        isRequestingLocation = state.isRequestingLocation,
+        locationErrorMessage = state.locationErrorResId?.let { stringResource(it) },
 
         onPlaceSelected = {
             newReviewViewModel.selectPlace(it)
         },
+        onRequestLocation = {
+            newReviewViewModel.startLocationRequest()
+            if (hasLocationPermission(context)) {
+                requestCurrentLocation(
+                    context = context,
+                    onLocationFound = newReviewViewModel::setReviewCoordinates,
+                    onUnavailable = newReviewViewModel::onLocationUnavailable
+                )
+            } else {
+                locationPermissionLauncher.launch(
+                    arrayOf(
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    )
+                )
+            }
+        },
+        onClearLocation = newReviewViewModel::clearReviewCoordinates,
 
         onRatingSelected = {
             newReviewViewModel.updateRating(it)
@@ -112,7 +151,11 @@ fun NewReviewContent(
     places: List<PlaceInfo>,
     selectedPlace: PlaceInfo?,
     reviewDraft: ReviewDraft?,
+    isRequestingLocation: Boolean,
+    locationErrorMessage: String?,
     onPlaceSelected: (String) -> Unit,
+    onRequestLocation: () -> Unit,
+    onClearLocation: () -> Unit,
     onRatingSelected: (Int) -> Unit,
     onTitleChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
@@ -163,7 +206,19 @@ fun NewReviewContent(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            if (selectedPlace != null && reviewDraft != null) {
+            ReviewLocationSection(
+                coordinates = reviewDraft?.coordinates,
+                isLoading = isRequestingLocation,
+                isEnabled = reviewDraft != null && !isLoading,
+                errorMessage = locationErrorMessage,
+                onRequestLocation = onRequestLocation,
+                onClearLocation = onClearLocation,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 20.dp)
+            )
+
+            if (reviewDraft != null) {
                 ReviewEditorSection(
                     reviewDraft = reviewDraft,
                     onRatingSelected = onRatingSelected,
@@ -197,7 +252,11 @@ private fun NewReviewScreenPreview() {
             places = listOf(PreviewDataPopular.previewPlaceInfo),
             selectedPlace = PreviewDataPopular.previewPlaceInfo,
             reviewDraft = reviewDraft,
+            isRequestingLocation = false,
+            locationErrorMessage = null,
             onPlaceSelected = {},
+            onRequestLocation = {},
+            onClearLocation = {},
             onRatingSelected = {},
             onTitleChange = {},
             onDescriptionChange = {},

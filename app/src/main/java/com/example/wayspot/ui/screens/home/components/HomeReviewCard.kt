@@ -96,9 +96,16 @@ fun HomeReviewCard(
             )
 
             HomeReviewPlacePill(
-                title = item.place.title,
-                location = item.place.location,
+                title = item.place?.title ?: stringResource(R.string.home_review_shared_location),
+                location = item.place?.location ?: item.review.coordinates?.let { coordinates ->
+                    stringResource(
+                        R.string.places_map_review_coordinates,
+                        coordinates.latitude,
+                        coordinates.longitude
+                    )
+                }.orEmpty(),
                 onClick = onPlaceClick,
+                isClickable = item.place != null,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             HomeReviewRating(
@@ -122,7 +129,7 @@ fun HomeReviewCard(
             if (item.review.photoUrls.isNotEmpty()) {
                 HomeReviewPhotos(
                     photoUrls = item.review.photoUrls,
-                    placeTitle = item.place.title
+                    placeTitle = item.place?.title ?: stringResource(R.string.home_review_shared_location)
                 )
             }
             TextButton(
@@ -205,10 +212,11 @@ private fun HomeReviewPlacePill(
     title: String,
     location: String,
     onClick: () -> Unit,
+    isClickable: Boolean,
     modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = modifier.clickable(onClick = onClick),
+        modifier = modifier.clickable(enabled = isClickable, onClick = onClick),
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.38f),
         contentColor = MaterialTheme.colorScheme.primary

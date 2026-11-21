@@ -9,7 +9,7 @@ object ReviewRules {
     const val MAX_DESCRIPTION_LENGTH = 500
     const val MAX_PHOTOS = 2
 
-    fun emptyDraft(placeId: String): ReviewDraft = ReviewDraft(
+    fun emptyDraft(placeId: String? = null): ReviewDraft = ReviewDraft(
         placeId = placeId,
         rating = DEFAULT_RATING,
         title = "",
@@ -19,7 +19,7 @@ object ReviewRules {
 
     fun normalizeDraft(
         draft: ReviewDraft,
-        placeId: String = draft.placeId
+        placeId: String? = draft.placeId
     ): ReviewDraft = draft.copy(
         placeId = placeId,
         rating = draft.rating.coerceIn(MIN_RATING, MAX_RATING),
@@ -39,11 +39,13 @@ object ReviewRules {
         title.isNotBlank() &&
         description.isNotBlank()
 
-    fun canPublish(draft: ReviewDraft): Boolean = canPublish(
-        rating = draft.rating,
-        title = draft.title,
-        description = draft.description
-    )
+    fun canPublish(draft: ReviewDraft): Boolean =
+        (draft.placeId?.isNotBlank() == true || draft.coordinates?.isValid == true) &&
+            canPublish(
+                rating = draft.rating,
+                title = draft.title,
+                description = draft.description
+            )
 
     fun prepareForPublish(draft: ReviewDraft): ReviewDraft? {
         val normalizedDraft = normalizeDraft(draft).copy(

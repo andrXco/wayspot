@@ -83,8 +83,10 @@ class PublicProfileViewModel @Inject constructor(
             val places = placesResult.getOrNull().orEmpty()
             val reviewFeedItems = if (placesResult.isSuccess && profile != null) {
                 reviewsWithLikes.mapNotNull { review ->
-                    val place = places.firstOrNull { it.id == review.placeId }
-                        ?: return@mapNotNull null
+                    val place = review.placeId?.let { placeId ->
+                        places.firstOrNull { it.id == placeId }
+                    }
+                    if (place == null && review.coordinates?.isValid != true) return@mapNotNull null
                     val author = UserInfo(
                         id = review.userId,
                         name = review.authorName?.takeIf(String::isNotBlank)

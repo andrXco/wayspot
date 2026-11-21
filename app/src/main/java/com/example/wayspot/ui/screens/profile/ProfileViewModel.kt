@@ -11,10 +11,13 @@ import com.example.wayspot.data.repository.UserRepository
 import com.example.wayspot.data.repository.ReviewRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 
 /** Expone los datos del perfil y delega el cierre de sesión al repositorio de autenticación. */
@@ -30,93 +33,77 @@ class ProfileViewModel @Inject constructor(
 
 
     private val _uiState = MutableStateFlow(ProfileState())
+    private val reviewUpdates = Mutex()
 
     val uiState: StateFlow<ProfileState> = _uiState
 
 
     fun loadReviews() {
-        val userId = authRepository.currentUser?.uid
-
-        if (userId == null) {
-            _uiState.update {
-                it.copy(
-                    reviews = emptyList(),
-                    reviewFeedItems = emptyList(),
-                    reviewLikeCounts = emptyMap(),
-                    likedReviewIds = emptySet(),
-                    areReviewLikesLoaded = false,
-                    isLoading = false,
-                    errorMessage = "Usuario no autenticado"
-                )
-            }
-            return
-        }
-
-        _uiState.update {
-            it.copy(
-                isLoading = true,
-                areReviewLikesLoaded = false,
-                errorMessage = null
-            )
-        }
-
         viewModelScope.launch {
+            reviewUpdates.withLock {
+                val userId = authRepository.currentUser?.uid
+                if (userId == null) {
+                    _uiState.update { state ->
+                        ProfileState(
+                            userProfile = state.userProfile,
+                            errorMessage = "Usuario no autenticado"
+                        )
+                    }
+                    return@withLock
+                }
 
-            val result = userRepository.getReviewsByUserId(userId)
-            val placesResult = placeRepository.getPlaces()
+                _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-            val reviews = result.getOrNull().orEmpty()
-            val places = placesResult.getOrNull().orEmpty()
-            val likedReviewsResult = reviewRepository.getLikedReviewIds(
-                reviews.map { review -> review.id }
-            )
+                val result = userRepository.getReviewsByUserId(userId)
+                ensureActive()
+                val reviews = result.getOrNull()
+                if (reviews == null) {
+                    _uiState.update { state ->
+                        state.copy(
+                            isLoading = false,
+                            errorMessage = result.exceptionOrNull()?.message
+                                ?: "No se pudieron cargar las reseñas"
+                        )
+                    }
+                    return@withLock
+                }
 
-            val likedReviewIds = likedReviewsResult.getOrNull()
-            if (likedReviewIds == null) {
-                _uiState.update { currentState ->
-                    currentState.copy(
+                val places = placeRepository.getPlaces().getOrNull().orEmpty()
+                val likedReviewsResult = reviewRepository.getLikedReviewIds(reviews.map { it.id })
+                ensureActive()
+                val likedReviewIds = likedReviewsResult.getOrNull().orEmpty()
+                val reviewsWithLikes = reviews.map { review ->
+                    review.copy(liked = review.id in likedReviewIds)
+                }
+
+                val profile = _uiState.value.userProfile
+                val placesById = places.associateBy { it.id }
+                val reviewFeedItems = reviewsWithLikes.mapNotNull { review ->
+                    val place = review.placeId?.let(placesById::get)
+                    if (place == null && review.coordinates?.isValid != true) return@mapNotNull null
+                    val author = UserInfo(
+                        id = review.userId,
+                        name = review.authorName?.takeIf(String::isNotBlank) ?: profile?.name.orEmpty(),
+                        username = review.authorUsername?.takeIf(String::isNotBlank)
+                            ?: profile?.username.orEmpty(),
+                        bio = profile?.bio,
+                        location = profile?.location,
+                        avatarUrl = review.authorAvatarUrl?.takeIf(String::isNotBlank)
+                            ?: profile?.avatarUrl
+                    )
+                    ReviewFeedItem(review = review, place = place, author = author)
+                }
+
+                _uiState.update { state ->
+                    state.copy(
+                        reviews = reviewsWithLikes,
+                        reviewFeedItems = reviewFeedItems,
+                        areReviewsLoaded = true,
+                        areReviewLikesLoaded = likedReviewsResult.isSuccess,
                         isLoading = false,
-                        areReviewLikesLoaded = false,
                         errorMessage = likedReviewsResult.exceptionOrNull()?.message
-                            ?: "No se pudieron cargar los likes"
                     )
                 }
-                return@launch
-            }
-
-            val reviewsWithLikes = reviews.map { review ->
-                review.copy(liked = review.id in likedReviewIds)
-            }
-
-            val profile = _uiState.value.userProfile
-            val reviewFeedItems = reviewsWithLikes.mapNotNull { review ->
-                val place = places.firstOrNull { it.id == review.placeId } ?: return@mapNotNull null
-                val author = UserInfo(
-                    id = review.userId,
-                    name = review.authorName?.takeIf(String::isNotBlank)
-                        ?: profile?.name.orEmpty(),
-                    username = review.authorUsername?.takeIf(String::isNotBlank)
-                        ?: profile?.username.orEmpty(),
-                    bio = profile?.bio,
-                    location = profile?.location,
-                    avatarUrl = review.authorAvatarUrl?.takeIf(String::isNotBlank)
-                        ?: profile?.avatarUrl
-                )
-                ReviewFeedItem(review = review, place = place, author = author)
-            }
-
-            _uiState.update { currentState ->
-                currentState.copy(
-                    reviews = reviewsWithLikes,
-                    reviewFeedItems = reviewFeedItems,
-                    likedReviewIds = likedReviewIds,
-                    reviewLikeCounts = reviewsWithLikes.associate { review ->
-                        review.id to review.likesCount
-                    },
-                    areReviewLikesLoaded = true,
-                    isLoading = false,
-                    errorMessage = result.exceptionOrNull()?.message
-                )
             }
         }
     }
@@ -136,27 +123,37 @@ class ProfileViewModel @Inject constructor(
 
     fun toggleReviewLike(reviewId: String) {
         viewModelScope.launch {
-            val result = reviewRepository.sendOrDeleteReviewLike(reviewId)
+            reviewUpdates.withLock {
+                val state = _uiState.value
+                if (!state.areReviewLikesLoaded) return@withLock
+                val review = state.reviews.firstOrNull { it.id == reviewId } ?: return@withLock
 
-            if (result.isSuccess) {
-                _uiState.update { currentState ->
-                    val wasLiked = reviewId in currentState.likedReviewIds
-
-                    currentState.copy(
-                        likedReviewIds = currentState.likedReviewIds.toggle(reviewId),
-                        reviewLikeCounts = currentState.reviewLikeCounts.withAdjustedCount(
-                            id = reviewId,
-                            delta = if (wasLiked) -1 else 1
-                        ),
-                        errorMessage = null
+                val result = reviewRepository.sendOrDeleteReviewLike(reviewId)
+                ensureActive()
+                if (result.isSuccess) {
+                    val delta = if (review.liked) -1 else 1
+                    val updatedReview = review.copy(
+                        likesCount = (review.likesCount + delta).coerceAtLeast(0),
+                        liked = !review.liked
                     )
-                }
-            } else {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        errorMessage = result.exceptionOrNull()?.message
-                            ?: "No se pudo actualizar el like"
-                    )
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            reviews = currentState.reviews.map {
+                                if (it.id == reviewId) updatedReview else it
+                            },
+                            reviewFeedItems = currentState.reviewFeedItems.map {
+                                if (it.review.id == reviewId) it.copy(review = updatedReview) else it
+                            },
+                            errorMessage = null
+                        )
+                    }
+                } else {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            errorMessage = result.exceptionOrNull()?.message
+                                ?: "No se pudo actualizar el like"
+                        )
+                    }
                 }
             }
         }
@@ -177,8 +174,4 @@ class ProfileViewModel @Inject constructor(
         this + id
     }
 
-    private fun Map<String, Int>.withAdjustedCount(
-        id: String,
-        delta: Int
-    ): Map<String, Int> = this + (id to ((this[id] ?: 0) + delta).coerceAtLeast(0))
 }

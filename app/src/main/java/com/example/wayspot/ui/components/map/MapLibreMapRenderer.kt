@@ -31,6 +31,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.wayspot.data.model.place.PlaceCoordinates
 import com.example.wayspot.data.model.place.PlaceInfo
 import com.example.wayspot.data.model.place.PlacesMapDefaults
+import com.example.wayspot.data.model.review.ReviewInfo
 import com.google.gson.JsonObject
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.filterNotNull
@@ -67,11 +68,14 @@ internal const val DARK_STYLE_URL = "https://tiles.openfreemap.org/styles/dark"
 
 private const val PLACE_SOURCE_ID = "wayspot-places"
 private const val PLACE_LAYER_ID = "wayspot-place-markers"
+private const val REVIEW_SOURCE_ID = "wayspot-review-markers"
+private const val REVIEW_LAYER_ID = "wayspot-review-markers-layer"
 private const val LOCATION_SOURCE_ID = "wayspot-current-location"
 private const val LOCATION_LAYER_ID = "wayspot-current-location-marker"
 private const val DEFAULT_MARKER_IMAGE_ID = "wayspot-marker"
 private const val SELECTED_MARKER_IMAGE_ID = "wayspot-marker-selected"
 private const val PLACE_ID_PROPERTY = "place_id"
+private const val REVIEW_ID_PROPERTY = "review_id"
 private const val MARKER_IMAGE_PROPERTY = "marker_image"
 private const val MAP_LOAD_TIMEOUT_MILLIS = 15_000L
 
@@ -79,7 +83,9 @@ private const val MAP_LOAD_TIMEOUT_MILLIS = 15_000L
 @Composable
 internal fun MapLibreMapRenderer(
     places: List<PlaceInfo>,
+    reviews: List<ReviewInfo>,
     selectedPlaceId: String?,
+    selectedReviewId: String?,
     currentLocation: PlaceCoordinates?,
     locationFocusRequestId: Long,
     styleUrl: String,
@@ -87,6 +93,7 @@ internal fun MapLibreMapRenderer(
     markerColor: androidx.compose.ui.graphics.Color,
     mapSurfaceColor: androidx.compose.ui.graphics.Color,
     onPlaceSelected: (String) -> Unit,
+    onReviewSelected: (String) -> Unit,
     onMapReady: (MapLibreMap) -> Unit,
     onMapRenderStatusChanged: (MapRenderStatus) -> Unit,
     modifier: Modifier = Modifier
@@ -94,6 +101,7 @@ internal fun MapLibreMapRenderer(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val latestOnPlaceSelected by rememberUpdatedState(onPlaceSelected)
+    val latestOnReviewSelected by rememberUpdatedState(onReviewSelected)
     val latestOnMapReady by rememberUpdatedState(onMapReady)
     val latestOnMapRenderStatusChanged by rememberUpdatedState(onMapRenderStatusChanged)
     val mapView = remember(context) {
@@ -121,6 +129,13 @@ internal fun MapLibreMapRenderer(
                 map.cameraPosition = initialCameraPosition()
                 map.addOnMapClickListener { tappedLocation ->
                     val screenPoint = map.projection.toScreenLocation(tappedLocation)
+                    val reviewFeature = map.queryRenderedFeatures(screenPoint, REVIEW_LAYER_ID)
+                        .firstOrNull()
+                    val reviewId = reviewFeature?.getStringProperty(REVIEW_ID_PROPERTY)
+                    if (reviewId != null) {
+                        latestOnReviewSelected(reviewId)
+                        return@addOnMapClickListener true
+                    }
                     val feature = map.queryRenderedFeatures(screenPoint, PLACE_LAYER_ID)
                         .firstOrNull()
                     val placeId = feature?.getStringProperty(PLACE_ID_PROPERTY)
@@ -169,7 +184,7 @@ internal fun MapLibreMapRenderer(
         }
     }
 
-    LaunchedEffect(loadedMap, places, selectedPlaceId, currentLocation) {
+    LaunchedEffect(loadedMap, places, reviews, selectedPlaceId, selectedReviewId, currentLocation) {
         val style = loadedMap?.style ?: return@LaunchedEffect
         style.getSourceAs<GeoJsonSource>(PLACE_SOURCE_ID)?.setGeoJson(
             placesFeatureCollection(places, selectedPlaceId)
@@ -177,9 +192,12 @@ internal fun MapLibreMapRenderer(
         style.getSourceAs<GeoJsonSource>(LOCATION_SOURCE_ID)?.setGeoJson(
             locationFeatureCollection(currentLocation)
         )
+        style.getSourceAs<GeoJsonSource>(REVIEW_SOURCE_ID)?.setGeoJson(
+            reviewsFeatureCollection(reviews, selectedReviewId)
+        )
     }
 
-    LaunchedEffect(loadedMap, places, selectedPlaceId, currentLocation, locationFocusRequestId) {
+    LaunchedEffect(loadedMap, places, reviews, selectedPlaceId, selectedReviewId, currentLocation, locationFocusRequestId) {
         val map = loadedMap ?: return@LaunchedEffect
 
         if (locationFocusRequestId != lastHandledLocationRequestId && currentLocation != null) {
@@ -190,11 +208,30 @@ internal fun MapLibreMapRenderer(
                 )
             )
             lastHandledLocationRequestId = locationFocusRequestId
+        } else if (selectedReviewId != null) {
+            val coordinates = reviews.firstOrNull { it.id == selectedReviewId }
+                ?.coordinates?.takeIf(PlaceCoordinates::isValid)
+            if (coordinates != null) {
+                map.animateCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        coordinates.toMapLibreLatLng(),
+                        PlacesMapDefaults.selectedPlaceZoom.toDouble()
+                    )
+                )
+            } else {
+                focusMapOnPlaces(
+                    map = map,
+                    places = places,
+                    selectedPlace = places.firstOrNull { it.id == selectedPlaceId },
+                    reviewCoordinates = reviews.mapNotNull(ReviewInfo::coordinates)
+                )
+            }
         } else {
             focusMapOnPlaces(
                 map = map,
                 places = places,
-                selectedPlace = places.firstOrNull { place -> place.id == selectedPlaceId }
+                selectedPlace = places.firstOrNull { place -> place.id == selectedPlaceId },
+                reviewCoordinates = reviews.mapNotNull(ReviewInfo::coordinates)
             )
         }
     }
@@ -240,6 +277,15 @@ private fun Style.addWaySpotLayers(context: Context, markerColor: Int, surfaceCo
                     iconAllowOverlap(true),
                     iconIgnorePlacement(true)
                 )
+    )
+    addSource(GeoJsonSource(REVIEW_SOURCE_ID, emptyFeatureCollection()))
+    addLayer(
+        CircleLayer(REVIEW_LAYER_ID, REVIEW_SOURCE_ID).withProperties(
+            circleRadius(9f),
+            circleColor(markerColor),
+            circleStrokeColor(surfaceColor),
+            circleStrokeWidth(3f)
+        )
     )
     addSource(GeoJsonSource(LOCATION_SOURCE_ID, emptyFeatureCollection()))
     addLayer(
@@ -343,7 +389,8 @@ private fun initialCameraPosition(): CameraPosition = CameraPosition.Builder()
 internal fun focusMapOnPlaces(
     map: MapLibreMap,
     places: List<PlaceInfo>,
-    selectedPlace: PlaceInfo?
+    selectedPlace: PlaceInfo?,
+    reviewCoordinates: List<PlaceCoordinates> = emptyList()
 ) {
     val selectedCoordinates = selectedPlace?.coordinates?.takeIf(PlaceCoordinates::isValid)
     if (selectedCoordinates != null) {
@@ -358,9 +405,10 @@ internal fun focusMapOnPlaces(
 
     val coordinates = places.mapNotNull { place ->
         place.coordinates?.takeIf(PlaceCoordinates::isValid)
-    }.distinct()
+    } + reviewCoordinates.filter(PlaceCoordinates::isValid)
+    val distinctCoordinates = coordinates.distinct()
 
-    when (coordinates.size) {
+    when (distinctCoordinates.size) {
         0 -> map.animateCamera(
             CameraUpdateFactory.newLatLngZoom(
                 PlacesMapDefaults.initialCenter.toMapLibreLatLng(),
@@ -370,14 +418,14 @@ internal fun focusMapOnPlaces(
 
         1 -> map.animateCamera(
             CameraUpdateFactory.newLatLngZoom(
-                coordinates.first().toMapLibreLatLng(),
+                distinctCoordinates.first().toMapLibreLatLng(),
                 PlacesMapDefaults.selectedPlaceZoom.toDouble()
             )
         )
 
         else -> {
             val boundsBuilder = LatLngBounds.Builder()
-            coordinates.forEach { coordinate ->
+            distinctCoordinates.forEach { coordinate ->
                 boundsBuilder.include(coordinate.toMapLibreLatLng())
             }
             map.animateCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), 120))
@@ -410,6 +458,22 @@ private fun locationFeatureCollection(coordinates: PlaceCoordinates?): FeatureCo
     return FeatureCollection.fromFeatures(
         arrayOf(Feature.fromGeometry(validCoordinates.toMapLibrePoint()))
     )
+}
+
+private fun reviewsFeatureCollection(
+    reviews: List<ReviewInfo>,
+    selectedReviewId: String?
+): FeatureCollection {
+    val features = reviews.mapNotNull { review ->
+        val coordinates = review.coordinates?.takeIf(PlaceCoordinates::isValid)
+            ?: return@mapNotNull null
+        val properties = JsonObject().apply {
+            addProperty(REVIEW_ID_PROPERTY, review.id)
+            addProperty("selected", review.id == selectedReviewId)
+        }
+        Feature.fromGeometry(coordinates.toMapLibrePoint(), properties)
+    }
+    return FeatureCollection.fromFeatures(features.toTypedArray())
 }
 
 private fun emptyFeatureCollection(): FeatureCollection =
