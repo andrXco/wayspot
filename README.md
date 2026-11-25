@@ -1,91 +1,84 @@
 <div align="center">
 
-#  WaySpot
-<img width="470" height="405" alt="Branding_logo_claro_WaySpot (1)" src="https://github.com/user-attachments/assets/4debffe2-fa8f-4ef6-b2e5-f73d80e3a410" />
+<img src="./app/src/main/res/drawable/branding_logo_claro_wayspot.png" width="210" alt="WaySpot logo">
 
+**Discover places. Share experiences. Find your next favorite spot.**
 
-### Descubre lugares. Comparte experiencias. Encuentra tu próximo spot.
-
-**Aplicación móvil para descubrir, reseñar y compartir lugares turísticos y spots especiales.**
-
----
+[English](./README.md) | [Español](./README.es.md)
 
 </div>
-
-## Sobre WaySpot
-
-**WaySpot** es una aplicación móvil diseñada para crear una comunidad alrededor del descubrimiento de lugares turísticos y spots especiales.
-
-Los usuarios podrán explorar nuevos lugares, compartir sus experiencias mediante **reseñas y calificaciones**, interactuar con las opiniones de otros usuarios y seguir cuentas para descubrir nuevas recomendaciones.
-
-> **Nuestra idea:** facilitar el descubrimiento de nuevos lugares a través de las experiencias reales de la comunidad.
-
----
-##  Propuesta de Valor
-
-WaySpot es una red social de turismo que permite descubrir, calificar y compartir experiencias sobre lugares turísticos. A través de reseñas auténticas de otros viajeros, los usuarios pueden encontrar destinos de interés, tomar mejores decisiones de viaje y conectar con una comunidad apasionada por explorar el mundo.
-<img width="370" height="623" alt="image" src="https://github.com/user-attachments/assets/308211e9-1c8e-4347-9568-548debae9295" />
-
-## Funcionalidades principales
-
-* Explorar lugares turísticos y spots especiales.
-* Calificar lugares.
-* Publicar reseñas y comentarios.
-* Interactuar con las reseñas de otros usuarios.
-* Seguir a otros usuarios.
-* Recibir notificaciones sobre interacciones.
-* Consultar un feed con opiniones y recomendaciones.
-
----
-
-## Tecnologías
-
-| Tecnología          | Uso                                 |
-| ------------------- | ----------------------------------- |
-| **Kotlin**          | Desarrollo de la aplicación Android |
-| **Android Studio**  | Entorno de desarrollo               |
-| **Git & GitHub**    | Control de versiones y colaboración |
-| **GitHub Projects** | Gestión de Issues y Sprints         |
-
----
-
-## Identidad visual
-
-### Paleta de colores
-
-Los colores de WaySpot combinan naturaleza, calidez y contraste para crear una experiencia cercana y fácil de reconocer.
-
-![Paleta de colores de WaySpot](./doc/paleta-wayspot.png)
-
-### Iconos de la app
-
-| Versión clara | Versión oscura |
-|:---:|:---:|
-| ![Icono claro de WaySpot](./doc/icono-claro-wayspot.png) | ![Icono oscuro de WaySpot](./doc/icono-oscuro-wayspot.png) |
-
----
-
-## Diseño en Figma
-
-Las pantallas de WaySpot fueron diseñadas previamente en Figma para definir la interfaz y experiencia de usuario de la aplicación.
-
-[Ver diseño de WaySpot en Figma](https://www.figma.com/make/RBOjIUcUe0htgqXmQTybX8/ReviewHub-mobile-app-design?code-node-id=0-6&p=f&t=n2XtAjCNciJ0qnT3-0&fullscreen=1)
-
----
-
-## Documentación
-
-* [Requisitos funcionales](./doc/Requisitos%20Funcionales.pdf)
-* [Diagrama de base de datos](doc/diagrams/Diagrama%20de%20BD.png)
-* [Diagrama de clases](doc/diagrams/Diagrama%20de%20clases%20-%20WaySpot.jpeg)
-
----
 
 <div align="center">
-
-### WaySpot
-
-**Descubre · Comparte · Explora**
-
+  <a href="./doc/readme-assets/wayspot-promo-en.mp4">
+    <img src="./doc/readme-assets/video-preview-en.jpg" width="760" alt="Watch the WaySpot promotional video in English">
+  </a>
+  <br>
+  <sub>Select the preview to open the 60-second English promotional video.</sub>
 </div>
 
+## About WaySpot
+
+WaySpot is an Android app designed to bring people together around discovering tourist destinations and special places. Users can explore places, share experiences through reviews and ratings, interact with community recommendations, and follow other travelers.
+
+### Our value proposition
+
+WaySpot helps travelers discover, rate, and share places through authentic community reviews. These experiences help people find destinations, make more informed travel plans, and connect with others who enjoy exploring.
+
+## Main features
+
+- Explore tourist destinations and special places by category.
+- Find places on an interactive map.
+- Publish reviews, ratings, and photos.
+- Interact with reviews and follow other users.
+- Save places for later.
+- Browse a community feed and receive activity notifications.
+
+## Selected app mockups
+
+These mockups show the current interface in Spanish.
+
+### Explore and map
+
+<div align="center">
+  <img src="./doc/readme-assets/destinations.jpeg" width="190" alt="Popular destinations screen">
+  <img src="./doc/readme-assets/map-light.jpeg" width="190" alt="Map screen in light theme">
+  <img src="./doc/readme-assets/map-dark.jpeg" width="190" alt="Map screen in dark theme">
+</div>
+
+### Place details
+
+<div align="center">
+  <img src="./doc/readme-assets/place-detail-light.jpeg" width="190" alt="Place details screen in light theme">
+  <img src="./doc/readme-assets/place-detail-dark.jpeg" width="190" alt="Place details screen in dark theme">
+</div>
+
+## Technologies
+
+- Kotlin and Android
+- Jetpack Compose and Material 3
+- Firebase Authentication, Firestore, Cloud Functions, Storage, Analytics, Cloud Messaging, and Crashlytics
+- MapLibre for maps
+- Retrofit for REST API communication
+- Hilt for dependency injection
+- Git, GitHub, and Android Studio
+
+## Visual identity
+
+WaySpot's palette combines nature-inspired greens, warmth, and contrast to create a recognizable and welcoming visual identity.
+
+<div align="center">
+  <img src="./doc/paleta-wayspot.png" width="650" alt="WaySpot visual identity color palette">
+</div>
+
+## Figma design
+
+The app mockups and interaction design are available in [the WaySpot Figma file](https://www.figma.com/make/RBOjIUcUe0htgqXmQTybX8/ReviewHub-mobile-app-design?code-node-id=0-6&p=f&t=n2XtAjCNciJ0qnT3-0&fullscreen=1).
+
+## Project team
+
+| Team member | Role |
+| --- | --- |
+| Andrés Cortés | Technical Project Manager and Developer |
+| Santiago Bautista Velásquez | Scrum Master and Developer |
+| Iván Fuenmayor | Software Developer |
+| Andrés Rodríguez Díaz | Software Developer |
