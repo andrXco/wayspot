@@ -4,13 +4,14 @@
 
 **Descubre lugares. Comparte experiencias. Encuentra tu próximo spot.**
 
-[English](./README.md) | [Español](./README.es.md)
+<a href="./README.md"><img src="https://img.shields.io/badge/ENGLISH-READ%20IN%20ENGLISH-DDE8E1?style=for-the-badge&labelColor=50665B" alt="Read in English"></a>
+<a href="./README.es.md"><img src="https://img.shields.io/badge/ESPA%C3%91OL-ACTUAL-1F6B57?style=for-the-badge&labelColor=163D33" alt="Versión actual en español"></a>
 
 </div>
 
 ## Video promocional
 
-https://github.com/user-attachments/assets/3c64ea2a-a61d-4401-9707-049da7fe5c72
+https://github.com/user-attachments/assets/51c5f168-5138-4f3f-b2d4-b18493d73697
 
 ---
 
@@ -35,23 +36,12 @@ WaySpot ayuda a los viajeros a descubrir, calificar y compartir lugares mediante
 
 ---
 
-## Mockups seleccionados
+## Mockups de la app en movimiento
 
-Estos mockups muestran la interfaz actual en español.
-
-### Explorar y mapa
+La vista animada recorre las pantallas de explorar, mapa y detalles dentro de un marco de celular de WaySpot.
 
 <div align="center">
-  <img src="./doc/readme-assets/destinations.jpeg" width="190" alt="Pantalla de destinos populares">
-  <img src="./doc/readme-assets/map-light.jpeg" width="190" alt="Pantalla del mapa en tema claro">
-  <img src="./doc/readme-assets/map-dark.jpeg" width="190" alt="Pantalla del mapa en tema oscuro">
-</div>
-
-### Detalles de un lugar
-
-<div align="center">
-  <img src="./doc/readme-assets/place-detail-light.jpeg" width="190" alt="Pantalla de detalles del lugar en tema claro">
-  <img src="./doc/readme-assets/place-detail-dark.jpeg" width="190" alt="Pantalla de detalles del lugar en tema oscuro">
+  <img src="./doc/readme-assets/wayspot-mockups-motion.gif" width="500" alt="Pantallas de WaySpot animadas dentro de un mockup de celular">
 </div>
 
 ---
@@ -70,14 +60,25 @@ Estos mockups muestran la interfaz actual en español.
 
 ## Descripción técnica: la capa `data`
 
-El paquete `data` conecta la aplicación con sus servicios remotos y transforma sus respuestas en modelos que puede usar el resto de la app:
+El paquete `data` conecta los ViewModels con Firebase y los servicios REST; así, el acceso remoto y la conversión de respuestas quedan fuera de la capa visual.
 
-1. Un ViewModel solicita información a través de un repositorio, por ejemplo `PlaceRepository`.
-2. El repositorio llama a una fuente de datos mediante una interfaz. Hilt conecta esas interfaces con sus implementaciones en `DataSourceModule`.
-3. Las fuentes de datos leen o escriben en servicios remotos. Los lugares y los datos de usuarios/reseñas usan Cloud Firestore; las recomendaciones de lugares cercanos usan una función callable de Firebase. También hay servicios Retrofit para endpoints REST.
-4. Los DTO representan las respuestas remotas y los mappers las convierten en modelos de la aplicación. Los repositorios devuelven valores `Result`, incluidos los errores, a la capa que los llamó.
+### Recorrido de una solicitud de lugares
 
-El paquete se organiza en `datasource` (acceso a servicios), `dto` (formatos de intercambio), `mapper` (conversiones), `model` (datos de la app), `repository` (coordinación y manejo de errores) e `injection` (vinculaciones de Hilt). `data/local/PreviewData.kt` y `PreviewDataPopular.kt` contienen datos de muestra para las vistas previas; no son una base de datos local persistente.
+1. Un ViewModel solicita lugares o un lugar por ID a `PlaceRepository`.
+2. Hilt proporciona el repositorio mediante su constructor `@Inject` y resuelve su dependencia `PlaceRemoteDataSource`.
+3. `DataSourceModule` vincula `PlaceRemoteDataSource` con `PlaceFirestoreDataSourceImplementation`. Hilt inyecta `FirebaseFirestore` en esa implementación, que consulta la colección `places`; `await()` integra las tareas de Firebase con las corrutinas.
+4. Los documentos de Firestore se convierten en DTO. El repositorio los mapea a modelos de la app, como `PlaceInfo`, y devuelve un `Result` de Kotlin a quien hizo la solicitud.
+
+### Cómo se configura la inyección de dependencias
+
+- `FirebaseHiltModule` se instala en el `SingletonComponent` de Hilt. Sus métodos `@Provides` entregan Firebase Authentication, Storage, Firestore y Functions; Firestore y Functions están marcados como singletons.
+- `AppModule` proporciona una instancia singleton de Retrofit y las interfaces de servicios REST para lugares, reseñas y usuarios.
+- `DataSourceModule` usa `@Binds` para relacionar las interfaces de fuentes de datos con sus implementaciones concretas: por ejemplo, lugares, reseñas y usuarios respaldados por Firestore, y la fuente callable para lugares cercanos.
+- Los repositorios reciben esas interfaces en constructores `@Inject`. Hilt arma el grafo de dependencias, de modo que los ViewModels dependen de repositorios sin construir objetos de Firebase o Retrofit.
+
+La búsqueda de lugares cercanos sigue el mismo patrón: `NearbyPlacesRepository` llama a la fuente callable, convierte cada respuesta en `NearbyPlace` y devuelve un `Result`. Los repositorios representan las excepciones normales como fallos y vuelven a lanzar la cancelación de corrutinas para conservar su comportamiento.
+
+El paquete se organiza en `datasource` (acceso remoto), `dto` (respuestas de servicios), `mapper` (conversiones), `model` (datos de la app), `repository` (coordinación y manejo de errores) e `injection` (proveedores y vinculaciones de Hilt). `data/local/PreviewData.kt` y `PreviewDataPopular.kt` contienen datos de muestra solo para vistas previas; no son una base de datos local persistente.
 
 ---
 

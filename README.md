@@ -4,13 +4,14 @@
 
 **Discover places. Share experiences. Find your next favorite spot.**
 
-[English](./README.md) | [Español](./README.es.md)
+<a href="./README.md"><img src="https://img.shields.io/badge/ENGLISH-CURRENT-1F6B57?style=for-the-badge&labelColor=163D33" alt="English version, current page"></a>
+<a href="./README.es.md"><img src="https://img.shields.io/badge/ESPA%C3%91OL-VER%20EN%20ESPA%C3%91OL-DDE8E1?style=for-the-badge&labelColor=50665B" alt="Leer en español"></a>
 
 </div>
 
 ## Promotional video
 
-https://github.com/user-attachments/assets/51c5f168-5138-4f3f-b2d4-b18493d73697
+https://github.com/user-attachments/assets/3c64ea2a-a61d-4401-9707-049da7fe5c72
 
 ---
 
@@ -35,23 +36,12 @@ WaySpot helps travelers discover, rate, and share places through authentic commu
 
 ---
 
-## Selected app mockups
+## App mockups in motion
 
-These mockups show the current interface in Spanish.
-
-### Explore and map
+The animated preview cycles through the explore, map, and place-detail screens inside a WaySpot phone frame.
 
 <div align="center">
-  <img src="./doc/readme-assets/destinations.jpeg" width="190" alt="Popular destinations screen">
-  <img src="./doc/readme-assets/map-light.jpeg" width="190" alt="Map screen in light theme">
-  <img src="./doc/readme-assets/map-dark.jpeg" width="190" alt="Map screen in dark theme">
-</div>
-
-### Place details
-
-<div align="center">
-  <img src="./doc/readme-assets/place-detail-light.jpeg" width="190" alt="Place details screen in light theme">
-  <img src="./doc/readme-assets/place-detail-dark.jpeg" width="190" alt="Place details screen in dark theme">
+  <img src="./doc/readme-assets/wayspot-mockups-motion.gif" width="500" alt="WaySpot app screens animated inside a phone mockup">
 </div>
 
 ---
@@ -70,14 +60,25 @@ These mockups show the current interface in Spanish.
 
 ## Technical overview: the `data` layer
 
-The `data` package connects the app to its remote services and turns their responses into models the rest of the app can use:
+The `data` package connects ViewModels to Firebase and REST services, keeping remote access and response conversion out of the UI layer.
 
-1. A ViewModel requests information through a repository, such as `PlaceRepository`.
-2. The repository calls a data source through an interface. Hilt connects these interfaces to their implementations in `DataSourceModule`.
-3. The data sources read or write remote services. Places and user/review data use Cloud Firestore; nearby-place recommendations use a Firebase callable function. Retrofit services are also present for REST endpoints.
-4. Remote payloads are represented by DTOs and mapped into app models. Repositories return `Result` values, including failures, to the calling layer.
+### How a place request travels through the app
 
-The package is organized into `datasource` (service access), `dto` (wire formats), `mapper` (conversions), `model` (app-facing data), `repository` (coordination and error handling), and `injection` (Hilt bindings). `data/local/PreviewData.kt` and `PreviewDataPopular.kt` provide preview sample content; they are not a local persistence database.
+1. A ViewModel asks `PlaceRepository` for places or a place by ID.
+2. Hilt provides the repository through its `@Inject` constructor and resolves its `PlaceRemoteDataSource` dependency.
+3. `DataSourceModule` binds `PlaceRemoteDataSource` to `PlaceFirestoreDataSourceImplementation`. That implementation receives `FirebaseFirestore` from Hilt and reads the `places` collection; Firebase tasks are bridged to coroutines with `await()`.
+4. Firestore documents are decoded as DTOs. The repository maps them into app models such as `PlaceInfo` and returns a Kotlin `Result` to the caller.
+
+### How dependency injection is configured
+
+- `FirebaseHiltModule` is installed in Hilt's `SingletonComponent`. Its `@Provides` methods create the Firebase Authentication, Storage, Firestore, and Functions dependencies; Firestore and Functions are marked as singletons.
+- `AppModule` provides a singleton Retrofit client and the Place, Review, and User REST service interfaces.
+- `DataSourceModule` uses `@Binds` to connect data-source interfaces to concrete implementations, including Firestore-backed place, review, and user sources and the callable source for nearby places.
+- Repositories receive these interfaces in `@Inject` constructors. Hilt builds the dependency graph, so ViewModels can depend on repositories without constructing Firebase or Retrofit objects themselves.
+
+Nearby-place lookup follows the same pattern: `NearbyPlacesRepository` calls the callable data source, maps each response to a `NearbyPlace`, and returns a `Result`. Repositories convert ordinary exceptions to failures and rethrow coroutine cancellation so cancellation keeps working correctly.
+
+The package is organized into `datasource` (remote access), `dto` (service payloads), `mapper` (conversions), `model` (app data), `repository` (coordination and error handling), and `injection` (Hilt providers and bindings). `data/local/PreviewData.kt` and `PreviewDataPopular.kt` contain preview-only sample content; they are not a persistent local database.
 
 ---
 
