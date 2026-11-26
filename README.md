@@ -1,3 +1,11 @@
+
+
+https://github.com/user-attachments/assets/51c5f168-5138-4f3f-b2d4-b18493d73697
+
+
+
+https://github.com/user-attachments/assets/3c64ea2a-a61d-4401-9707-049da7fe5c72
+
 <div align="center">
 
 <img src="./app/src/main/res/drawable/branding_logo_claro_wayspot.png" width="210" alt="WaySpot logo">
