@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./app/src/main/res/drawable/branding_logo_claro_wayspot.png" width="210" alt="Logo de WaySpot">
+<img src="./doc/icono-claro-wayspot.png" width="110" alt="Ícono de WaySpot">
 
 **Descubre lugares. Comparte experiencias. Encuentra tu próximo spot.**
 
@@ -8,13 +8,11 @@
 
 </div>
 
-<div align="center">
-  <a href="./doc/readme-assets/wayspot-promo-es.mp4">
-    <img src="./doc/readme-assets/video-preview-es.jpg" width="760" alt="Ver el video promocional de WaySpot en español">
-  </a>
-  <br>
-  <sub>Selecciona la imagen para abrir el video promocional de 60 segundos en español.</sub>
-</div>
+## Video promocional
+
+https://github.com/user-attachments/assets/3c64ea2a-a61d-4401-9707-049da7fe5c72
+
+---
 
 ## Sobre WaySpot
 
@@ -24,6 +22,8 @@ WaySpot es una aplicación Android diseñada para reunir a personas alrededor de
 
 WaySpot ayuda a los viajeros a descubrir, calificar y compartir lugares mediante reseñas auténticas de la comunidad. Estas experiencias ayudan a encontrar destinos, planear viajes con más información y conectar con otras personas que disfrutan explorar.
 
+---
+
 ## Funcionalidades principales
 
 - Explorar destinos turísticos y lugares especiales por categoría.
@@ -32,6 +32,8 @@ WaySpot ayuda a los viajeros a descubrir, calificar y compartir lugares mediante
 - Interactuar con reseñas y seguir a otros usuarios.
 - Guardar lugares para consultarlos después.
 - Explorar el feed de la comunidad y recibir notificaciones de actividad.
+
+---
 
 ## Mockups seleccionados
 
@@ -52,6 +54,8 @@ Estos mockups muestran la interfaz actual en español.
   <img src="./doc/readme-assets/place-detail-dark.jpeg" width="190" alt="Pantalla de detalles del lugar en tema oscuro">
 </div>
 
+---
+
 ## Tecnologías
 
 - Kotlin y Android
@@ -62,6 +66,21 @@ Estos mockups muestran la interfaz actual en español.
 - Hilt para inyección de dependencias
 - Git, GitHub y Android Studio
 
+---
+
+## Descripción técnica: la capa `data`
+
+El paquete `data` conecta la aplicación con sus servicios remotos y transforma sus respuestas en modelos que puede usar el resto de la app:
+
+1. Un ViewModel solicita información a través de un repositorio, por ejemplo `PlaceRepository`.
+2. El repositorio llama a una fuente de datos mediante una interfaz. Hilt conecta esas interfaces con sus implementaciones en `DataSourceModule`.
+3. Las fuentes de datos leen o escriben en servicios remotos. Los lugares y los datos de usuarios/reseñas usan Cloud Firestore; las recomendaciones de lugares cercanos usan una función callable de Firebase. También hay servicios Retrofit para endpoints REST.
+4. Los DTO representan las respuestas remotas y los mappers las convierten en modelos de la aplicación. Los repositorios devuelven valores `Result`, incluidos los errores, a la capa que los llamó.
+
+El paquete se organiza en `datasource` (acceso a servicios), `dto` (formatos de intercambio), `mapper` (conversiones), `model` (datos de la app), `repository` (coordinación y manejo de errores) e `injection` (vinculaciones de Hilt). `data/local/PreviewData.kt` y `PreviewDataPopular.kt` contienen datos de muestra para las vistas previas; no son una base de datos local persistente.
+
+---
+
 ## Identidad visual
 
 La paleta de WaySpot combina verdes inspirados en la naturaleza, calidez y contraste para crear una identidad visual reconocible y cercana.
@@ -70,9 +89,7 @@ La paleta de WaySpot combina verdes inspirados en la naturaleza, calidez y contr
   <img src="./doc/paleta-wayspot.png" width="650" alt="Paleta de colores de la identidad visual de WaySpot">
 </div>
 
-## Diseño en Figma
-
-Los mockups y el diseño de interacción están disponibles en el [archivo de WaySpot en Figma](https://www.figma.com/make/RBOjIUcUe0htgqXmQTybX8/ReviewHub-mobile-app-design?code-node-id=0-6&p=f&t=n2XtAjCNciJ0qnT3-0&fullscreen=1).
+---
 
 ## Equipo del proyecto
 
@@ -82,3 +99,4 @@ Los mockups y el diseño de interacción están disponibles en el [archivo de Wa
 | Santiago Bautista Velásquez | Scrum Master y Developer |
 | Iván Fuenmayor | Software Developer |
 | Andrés Rodríguez Díaz | Software Developer |
+
