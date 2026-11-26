@@ -1,14 +1,6 @@
-
-
-https://github.com/user-attachments/assets/51c5f168-5138-4f3f-b2d4-b18493d73697
-
-
-
-https://github.com/user-attachments/assets/3c64ea2a-a61d-4401-9707-049da7fe5c72
-
 <div align="center">
 
-<img src="./app/src/main/res/drawable/branding_logo_claro_wayspot.png" width="210" alt="WaySpot logo">
+<img src="./doc/icono-claro-wayspot.png" width="110" alt="WaySpot icon">
 
 **Discover places. Share experiences. Find your next favorite spot.**
 
@@ -16,13 +8,11 @@ https://github.com/user-attachments/assets/3c64ea2a-a61d-4401-9707-049da7fe5c72
 
 </div>
 
-<div align="center">
-  <a href="./doc/readme-assets/wayspot-promo-en.mp4">
-    <img src="./doc/readme-assets/video-preview-en.jpg" width="760" alt="Watch the WaySpot promotional video in English">
-  </a>
-  <br>
-  <sub>Select the preview to open the 60-second English promotional video.</sub>
-</div>
+## Promotional video
+
+https://github.com/user-attachments/assets/51c5f168-5138-4f3f-b2d4-b18493d73697
+
+---
 
 ## About WaySpot
 
@@ -32,6 +22,8 @@ WaySpot is an Android app designed to bring people together around discovering t
 
 WaySpot helps travelers discover, rate, and share places through authentic community reviews. These experiences help people find destinations, make more informed travel plans, and connect with others who enjoy exploring.
 
+---
+
 ## Main features
 
 - Explore tourist destinations and special places by category.
@@ -40,6 +32,8 @@ WaySpot helps travelers discover, rate, and share places through authentic commu
 - Interact with reviews and follow other users.
 - Save places for later.
 - Browse a community feed and receive activity notifications.
+
+---
 
 ## Selected app mockups
 
@@ -60,6 +54,8 @@ These mockups show the current interface in Spanish.
   <img src="./doc/readme-assets/place-detail-dark.jpeg" width="190" alt="Place details screen in dark theme">
 </div>
 
+---
+
 ## Technologies
 
 - Kotlin and Android
@@ -70,6 +66,21 @@ These mockups show the current interface in Spanish.
 - Hilt for dependency injection
 - Git, GitHub, and Android Studio
 
+---
+
+## Technical overview: the `data` layer
+
+The `data` package connects the app to its remote services and turns their responses into models the rest of the app can use:
+
+1. A ViewModel requests information through a repository, such as `PlaceRepository`.
+2. The repository calls a data source through an interface. Hilt connects these interfaces to their implementations in `DataSourceModule`.
+3. The data sources read or write remote services. Places and user/review data use Cloud Firestore; nearby-place recommendations use a Firebase callable function. Retrofit services are also present for REST endpoints.
+4. Remote payloads are represented by DTOs and mapped into app models. Repositories return `Result` values, including failures, to the calling layer.
+
+The package is organized into `datasource` (service access), `dto` (wire formats), `mapper` (conversions), `model` (app-facing data), `repository` (coordination and error handling), and `injection` (Hilt bindings). `data/local/PreviewData.kt` and `PreviewDataPopular.kt` provide preview sample content; they are not a local persistence database.
+
+---
+
 ## Visual identity
 
 WaySpot's palette combines nature-inspired greens, warmth, and contrast to create a recognizable and welcoming visual identity.
@@ -78,9 +89,7 @@ WaySpot's palette combines nature-inspired greens, warmth, and contrast to creat
   <img src="./doc/paleta-wayspot.png" width="650" alt="WaySpot visual identity color palette">
 </div>
 
-## Figma design
-
-The app mockups and interaction design are available in [the WaySpot Figma file](https://www.figma.com/make/RBOjIUcUe0htgqXmQTybX8/ReviewHub-mobile-app-design?code-node-id=0-6&p=f&t=n2XtAjCNciJ0qnT3-0&fullscreen=1).
+---
 
 ## Project team
 
@@ -90,3 +99,4 @@ The app mockups and interaction design are available in [the WaySpot Figma file]
 | Santiago Bautista Velásquez | Scrum Master and Developer |
 | Iván Fuenmayor | Software Developer |
 | Andrés Rodríguez Díaz | Software Developer |
+
